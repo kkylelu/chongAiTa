@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		275CC3582BC7BB480062C75C /* PawsPal.plist in Resources */ = {isa = PBXBuildFile; fileRef = 275CC3572BC7BB480062C75C /* PawsPal.plist */; };
 		275CC35B2BC7BF3D0062C75C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC35A2BC7BF3D0062C75C /* FirebaseAnalytics */; };
 		275CC35D2BC7BF3D0062C75C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC35C2BC7BF3D0062C75C /* FirebaseFirestore */; };
 		275CC35F2BC7BF3D0062C75C /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC35E2BC7BF3D0062C75C /* FirebaseFirestoreSwift */; };
 		275CC3612BC7BF3D0062C75C /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC3602BC7BF3D0062C75C /* FirebaseStorage */; };
+		275CC3632BC7C12F0062C75C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */; };
 		27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F975932BC6B01100B2A041 /* AppDelegate.swift */; };
 		27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F975952BC6B01100B2A041 /* SceneDelegate.swift */; };
 		27F975982BC6B01100B2A041 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F975972BC6B01100B2A041 /* ViewController.swift */; };
@@ -45,7 +45,7 @@
 
 /* Begin PBXFileReference section */
 		14A74EBB65BE9EEC875C9D19 /* Pods_chongAiTa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_chongAiTa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		275CC3572BC7BB480062C75C /* PawsPal.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PawsPal.plist; sourceTree = SOURCE_ROOT; };
+		275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		27F975902BC6B01100B2A041 /* chongAiTa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chongAiTa.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27F975932BC6B01100B2A041 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		27F975952BC6B01100B2A041 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -146,7 +146,7 @@
 				27F9759C2BC6B01300B2A041 /* Assets.xcassets */,
 				27F9759E2BC6B01300B2A041 /* LaunchScreen.storyboard */,
 				27F975A12BC6B01300B2A041 /* Info.plist */,
-				275CC3572BC7BB480062C75C /* PawsPal.plist */,
+				275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */,
 			);
 			path = chongAiTa;
 			sourceTree = "<group>";
@@ -297,9 +297,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				27F9759D2BC6B01300B2A041 /* Assets.xcassets in Resources */,
+				275CC3632BC7C12F0062C75C /* GoogleService-Info.plist in Resources */,
 				27F975A02BC6B01300B2A041 /* Base in Resources */,
 				27F9759B2BC6B01100B2A041 /* Base in Resources */,
-				275CC3582BC7BB480062C75C /* PawsPal.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
