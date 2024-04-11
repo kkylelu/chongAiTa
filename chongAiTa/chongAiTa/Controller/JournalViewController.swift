@@ -14,15 +14,17 @@ class JournalViewController: UIViewController {
     let imageButton = UIButton(type: .system)
     let templateButton = UIButton(type: .system)
     let suggestionsButton = UIButton(type: .system)
-    
+    var bottomConstraint: NSLayoutConstraint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         
-    }
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        }
     
-    //MARK: - Setup UI
+    //MARK: - setup UI
     
     func setupUI() {
         
@@ -53,18 +55,17 @@ class JournalViewController: UIViewController {
     
     func setupConstraints() {
 
+        bottomConstraint = buttonContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         NSLayoutConstraint.activate([
-            textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            textView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            textView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            textView.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor)
-        ])
-        
-        NSLayoutConstraint.activate([
-            buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            buttonContainerView.heightAnchor.constraint(equalToConstant: 60),
-            buttonContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                textView.leftAnchor.constraint(equalTo: view.leftAnchor),
+                textView.rightAnchor.constraint(equalTo: view.rightAnchor),
+                textView.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor),
+
+                buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor),
+                buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor),
+                buttonContainerView.heightAnchor.constraint(equalToConstant: 100),
+                bottomConstraint!
         ])
 
         NSLayoutConstraint.activate([
@@ -89,6 +90,25 @@ class JournalViewController: UIViewController {
             suggestionsButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
         ])
     }
+    
+    //MARK: - action
+    @objc func keyboardWillShow(notification: Notification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardHeight = keyboardFrame.cgRectValue.height
+            bottomConstraint?.constant = -keyboardHeight + view.safeAreaInsets.bottom
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded()
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: Notification) {
+        bottomConstraint?.constant = 0
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
 
     
 }
