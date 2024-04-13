@@ -109,10 +109,18 @@ class JournalViewController: UIViewController {
             self.view.layoutIfNeeded()
         }
     }
-
-    @objc func didTapSuggestionsButton(){
-        let vc = UIHostingController(rootView: ContentView())
-        present(vc, animated: true)
+    
+    @objc func didTapSuggestionsButton() {
+        let journalData = JournalData()
+        var contentView = ContentView()
+        contentView.onCompletion = { [weak self] title in
+            self?.textView.text = title
+            self?.dismiss(animated: true, completion: nil)
+        }
+        let hostingController = UIHostingController(rootView: contentView.environmentObject(journalData))
+        present(hostingController, animated: true)
     }
+
+
     
 }
