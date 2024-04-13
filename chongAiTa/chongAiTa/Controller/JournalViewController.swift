@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class JournalViewController: UIViewController {
 
@@ -38,7 +39,7 @@ class JournalViewController: UIViewController {
         
         //            imageButton.addTarget(self, action: #selector(didTapImageButton), for: .touchUpInside)
         //            templateButton.addTarget(self, action: #selector(didTapTemplateButton), for: .touchUpInside)
-        //            suggestionsButton.addTarget(self, action: #selector(didTapSuggestionsButton), for: .touchUpInside)
+                    suggestionsButton.addTarget(self, action: #selector(didTapSuggestionsButton), for: .touchUpInside)
         
         // 設定 containerView
         let buttons = [imageButton, templateButton, suggestionsButton]
@@ -109,6 +110,9 @@ class JournalViewController: UIViewController {
         }
     }
 
-
+    @objc func didTapSuggestionsButton(){
+        let vc = UIHostingController(rootView: ContentView())
+        present(vc, animated: true)
+    }
     
 }
