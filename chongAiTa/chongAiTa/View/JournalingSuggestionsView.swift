@@ -19,22 +19,18 @@ struct ContentView: View {
     @State var suggestionLocations: [IdentifiableLocation] = []
     @State private var region = MKCoordinateRegion()
     
-    var onCompletion: ((String) -> Void)?
+    var onCompletion: ((String, UIImage?) -> Void)?
 
     var body: some View {
            VStack {
                Spacer().frame(height: 25)
                
-//               if journalData.showPicker {
-                   JournalingSuggestionsPicker {
-                       Text("Select Journaling Suggestion")
-                   } onCompletion: { suggestion in
-                       onCompletion?(suggestion.title ?? "No title")
-                       suggestionTitle = suggestion.title
-                       loadContent(suggestion: suggestion)
-                       loadLocation(suggestion: suggestion)
-//                       journalData.showPicker = false // 完成後關閉 picker
-//                   }
+               JournalingSuggestionsPicker {
+                   Text("Select Journaling Suggestion")
+               } onCompletion: { suggestion in
+                   suggestionTitle = suggestion.title
+                   loadContent(suggestion: suggestion)
+                   loadLocation(suggestion: suggestion)
                }
                
                Spacer().frame(height: 25)
@@ -72,6 +68,10 @@ struct ContentView: View {
     private func loadContent(suggestion: JournalingSuggestion) {
         Task {
             suggestionContent = await suggestion.content(forType: UIImage.self).map { UIImageWrapper(image: $0) }
+            if let image = suggestionContent.first?.image {
+                journalData.selectedImage = image
+                onCompletion?(suggestion.title ?? "No title", image)
+            }
         }
     }
     

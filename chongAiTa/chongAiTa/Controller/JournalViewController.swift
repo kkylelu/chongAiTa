@@ -109,16 +109,33 @@ class JournalViewController: UIViewController {
             self.view.layoutIfNeeded()
         }
     }
-    
+
     @objc func didTapSuggestionsButton() {
         let journalData = JournalData()
         var contentView = ContentView()
-        contentView.onCompletion = { [weak self] title in
+        contentView.onCompletion = { [weak self] (title: String, image: UIImage?) in
             self?.textView.text = title
+            if let image = journalData.selectedImage {
+                self?.insertImage(image)
+            }
             self?.dismiss(animated: true, completion: nil)
         }
         let hostingController = UIHostingController(rootView: contentView.environmentObject(journalData))
         present(hostingController, animated: true)
+    }
+
+    // 在 textView 插入圖片
+    func insertImage(_ image: UIImage) {
+        let textAttachment = NSTextAttachment()
+        textAttachment.image = image
+        
+        let attributedString = NSAttributedString(attachment: textAttachment)
+        
+        let mutableAttributedString = NSMutableAttributedString(attributedString: textView.attributedText)
+        mutableAttributedString.append(NSAttributedString(string: "\n"))
+        mutableAttributedString.append(attributedString)
+        
+        textView.attributedText = mutableAttributedString
     }
 
 
