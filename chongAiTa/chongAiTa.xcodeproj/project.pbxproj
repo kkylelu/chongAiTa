@@ -658,6 +658,8 @@
 				DEVELOPMENT_TEAM = K4Y56753AN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = chongAiTa/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "請開啟相機權限，讓您拍攝照片加入日記";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "請開啟相簿權限，讓您選擇照片加入日記";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -689,6 +691,8 @@
 				DEVELOPMENT_TEAM = K4Y56753AN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = chongAiTa/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "請開啟相機權限，讓您拍攝照片加入日記";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "請開啟相簿權限，讓您選擇照片加入日記";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

@@ -8,9 +8,8 @@
 import UIKit
 import SwiftUI
 
-class JournalViewController: UIViewController {
+class JournalViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
-//    let textView = UITextView()
     let titleTextView = UITextView()
     let bodyTextView = UITextView()
     let buttonContainerView = UIView()
@@ -18,6 +17,7 @@ class JournalViewController: UIViewController {
     let templateButton = UIButton(type: .system)
     let suggestionsButton = UIButton(type: .system)
     var bottomConstraint: NSLayoutConstraint?
+    let imagePicker = UIImagePickerController()
     
     let activityIndicator = UIActivityIndicatorView(style: .large)
     var activeImageProcessingCount = 0
@@ -27,12 +27,16 @@ class JournalViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = false
+        
         activityIndicator.center = view.center
         activityIndicator.hidesWhenStopped = true
         view.addSubview(activityIndicator)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -75,7 +79,7 @@ class JournalViewController: UIViewController {
 
         
         
-        //            imageButton.addTarget(self, action: #selector(didTapImageButton), for: .touchUpInside)
+        imageButton.addTarget(self, action: #selector(didTapImageButton), for: .touchUpInside)
         //            templateButton.addTarget(self, action: #selector(didTapTemplateButton), for: .touchUpInside)
         suggestionsButton.addTarget(self, action: #selector(didTapSuggestionsButton), for: .touchUpInside)
         
@@ -168,16 +172,14 @@ class JournalViewController: UIViewController {
     @objc func keyboardWillShow(notification: Notification) {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardHeight = keyboardFrame.cgRectValue.height
-            bottomConstraint?.constant = -keyboardHeight + view.safeAreaInsets.bottom
+            bottomConstraint?.constant = -keyboardHeight // 設置為鍵盤高度
+            
             UIView.animate(withDuration: 0.3) {
                 self.view.layoutIfNeeded()
             }
-            // 確保游標始終顯示
-            if let selectedRange = bodyTextView.selectedTextRange {
-                bodyTextView.scrollRangeToVisible(bodyTextView.selectedRange)
-            }
         }
     }
+
     
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0
@@ -198,11 +200,47 @@ class JournalViewController: UIViewController {
         present(hostingController, animated: true)
     }
     
+    @objc func didTapImageButton() {
+            let alertController = UIAlertController(title: "選擇圖片來源", message: nil, preferredStyle: .actionSheet)
+            alertController.addAction(UIAlertAction(title: "相簿", style: .default, handler: { [weak self] _ in
+                self?.imagePicker.sourceType = .photoLibrary
+                self?.present(self!.imagePicker, animated: true, completion: nil)
+            }))
+            alertController.addAction(UIAlertAction(title: "相機", style: .default, handler: { [weak self] _ in
+                self?.imagePicker.sourceType = .camera
+                self?.present(self!.imagePicker, animated: true, completion: nil)
+            }))
+            alertController.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+            
+            present(alertController, animated: true, completion: nil)
+        }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let selectedImage = info[.originalImage] as? UIImage {
+            let targetWidth = bodyTextView.bounds.width / 2
+            resizeImage(selectedImage, targetWidth: targetWidth) { [weak self] resizedImage in
+                DispatchQueue.main.async {
+                    if let resizedImage = resizedImage {
+                        self?.insertImage(resizedImage)
+                    }
+                    self?.dismiss(animated: true, completion: nil)
+                }
+            }
+        } else {
+            dismiss(animated: true, completion: nil)
+        }
+    }
+
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            dismiss(animated: true, completion: nil)
+        }
+    
     
     func processImages(_ images: [UIImage]) {
         for image in images {
             showActivityIndicator()
-            resizeImage(image, targetWidth: 300) { [weak self] resizedImage in
+            resizeImage(image, targetWidth: bodyTextView.bounds.width / 2) { [weak self] resizedImage in
                 DispatchQueue.main.async {
                     if let resizedImage = resizedImage {
                         self?.insertImage(resizedImage)
@@ -220,16 +258,25 @@ class JournalViewController: UIViewController {
             let textAttachment = NSTextAttachment()
             textAttachment.image = image
             
-            let oldTextAttributes = [NSAttributedString.Key.font: self.bodyTextView.font]
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .left
+            
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: self.bodyTextView.font!,
+                .paragraphStyle: paragraphStyle
+            ]
+            
             let attributedStringWithImage = NSAttributedString(attachment: textAttachment)
+            let imageString = NSMutableAttributedString(attributedString: attributedStringWithImage)
+            imageString.addAttributes(attrs, range: NSRange(location: 0, length: imageString.length))
+            
             let mutableAttributedString = NSMutableAttributedString(attributedString: self.bodyTextView.attributedText)
             
-            mutableAttributedString.append(NSAttributedString(string: "\n", attributes: oldTextAttributes))
-            mutableAttributedString.append(attributedStringWithImage)
-            mutableAttributedString.append(NSAttributedString(string: "\n", attributes: oldTextAttributes))
+            mutableAttributedString.append(NSAttributedString(string: "\n", attributes: attrs))
+            mutableAttributedString.append(imageString)
+            mutableAttributedString.append(NSAttributedString(string: "\n", attributes: attrs))
             
             self.bodyTextView.attributedText = mutableAttributedString
-            
             self.bodyTextView.becomeFirstResponder()
             
             let newPosition = self.bodyTextView.endOfDocument
@@ -237,8 +284,6 @@ class JournalViewController: UIViewController {
         }
     }
 
-
-    
     func resizeImage(_ image: UIImage, targetWidth: CGFloat, completion: @escaping (UIImage?) -> Void) {
         let size = image.size
         let scaleFactor = targetWidth / size.width
