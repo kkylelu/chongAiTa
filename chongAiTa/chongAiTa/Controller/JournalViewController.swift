@@ -172,6 +172,10 @@ class JournalViewController: UIViewController {
             UIView.animate(withDuration: 0.3) {
                 self.view.layoutIfNeeded()
             }
+            // 確保游標始終顯示
+            if let selectedRange = bodyTextView.selectedTextRange {
+                bodyTextView.scrollRangeToVisible(bodyTextView.selectedRange)
+            }
         }
     }
     
