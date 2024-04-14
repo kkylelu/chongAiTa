@@ -49,6 +49,30 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     
     func setupUI() {
         
+        // Navigationbar
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+            datePicker.backgroundColor = UIColor.clear
+            datePicker.tintColor = UIColor.white
+            datePicker.setValue(UIColor.white, forKey: "textColor")
+            datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+            let leftBarButtonItem = UIBarButtonItem(customView: datePicker)
+            navigationItem.leftBarButtonItem = leftBarButtonItem
+        
+        let rightBarButtonItem = UIBarButtonItem(title: "完成", style: .done, target: self, action: #selector(doneButtonTapped))
+            navigationItem.rightBarButtonItem = rightBarButtonItem
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = UIColor.B1
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        
+        navigationController?.navigationBar.tintColor = UIColor.white
+        
+        // TextView
+
         let grayColor = UIColor.systemGray
 
         titleTextView.font = UIFont.boldSystemFont(ofSize: 30)
@@ -83,7 +107,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         //            templateButton.addTarget(self, action: #selector(didTapTemplateButton), for: .touchUpInside)
         suggestionsButton.addTarget(self, action: #selector(didTapSuggestionsButton), for: .touchUpInside)
         
-        // 設定 containerView
+        // containerView
         let buttons = [imageButton, templateButton, suggestionsButton]
         for button in buttons {
             buttonContainerView.addSubview(button)
@@ -167,6 +191,14 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     
     
     //MARK: - action
+    
+    @objc func dateChanged(_ datePicker: UIDatePicker) {
+        // 處理日期改變
+    }
+    
+    @objc func doneButtonTapped() {
+        // 點選完成按鈕
+    }
     
     // 讓鍵盤把 bottomConstraint 往上推
     @objc func keyboardWillShow(notification: Notification) {
