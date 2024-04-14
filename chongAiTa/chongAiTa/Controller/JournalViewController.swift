@@ -10,8 +10,9 @@ import SwiftUI
 
 class JournalViewController: UIViewController {
     
-    let textView = UITextView()
-    let titleLabel = UILabel()
+//    let textView = UITextView()
+    let titleTextView = UITextView()
+    let bodyTextView = UITextView()
     let buttonContainerView = UIView()
     let imageButton = UIButton(type: .system)
     let templateButton = UIButton(type: .system)
@@ -36,7 +37,7 @@ class JournalViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        textView.becomeFirstResponder()
+        bodyTextView.becomeFirstResponder()
     }
 
     
@@ -46,18 +47,16 @@ class JournalViewController: UIViewController {
         
         let grayColor = UIColor.systemGray
 
-        titleLabel.font = UIFont(name: "HelveticaNeue", size: 30)
-        titleLabel.numberOfLines = 0
-        titleLabel.textAlignment = .left
+        titleTextView.font = UIFont.boldSystemFont(ofSize: 30)
+        titleTextView.isEditable = true
+        titleTextView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(titleTextView)
         
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(titleLabel)
-        
-        textView.font = UIFont(name: "HelveticaNeue", size: 24)
-        textView.isEditable = true
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(textView)
-        
+        bodyTextView.font = UIFont.systemFont(ofSize: 24)
+        bodyTextView.isEditable = true
+        bodyTextView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bodyTextView)
+
 
         imageButton.setImage(UIImage(systemName: "photo")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
         imageButton.setTitle("照片", for: .normal)
@@ -98,6 +97,18 @@ class JournalViewController: UIViewController {
         
     }
     
+    // 設定標題和 body 的 textView
+    func updateTextViews(title: String, body: String) {
+        let titleFont = UIFont.boldSystemFont(ofSize: 30)
+        let bodyFont = UIFont.systemFont(ofSize: 24)
+        
+        titleTextView.font = titleFont
+        titleTextView.text = title
+        
+        bodyTextView.font = bodyFont
+        bodyTextView.text = body
+    }
+    
     func setupConstraints() {
         
         bottomConstraint = buttonContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
@@ -108,15 +119,17 @@ class JournalViewController: UIViewController {
             }
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
-            textView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            textView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            textView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
-            textView.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor),
+            titleTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+                titleTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+                titleTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+                titleTextView.heightAnchor.constraint(equalToConstant: 80),
             
+            bodyTextView.topAnchor.constraint(equalTo: titleTextView.bottomAnchor, constant: 10),
+                bodyTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+                bodyTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+                bodyTextView.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor, constant: -20),
+
             buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             buttonContainerView.heightAnchor.constraint(equalToConstant: 50),
@@ -147,6 +160,8 @@ class JournalViewController: UIViewController {
         ])
     }
     
+    
+    
     //MARK: - action
     
     // 讓鍵盤把 bottomConstraint 往上推
@@ -171,7 +186,7 @@ class JournalViewController: UIViewController {
         let journalData = JournalData()
         var contentView = ContentView()
         contentView.onCompletion = { [weak self] (title: String, images: [UIImage]) in
-            self?.titleLabel.text = title
+            self?.updateTextViews(title: title, body: self?.bodyTextView.text ?? "")
             self?.processImages(images)
             self?.dismiss(animated: true, completion: nil)
         }
@@ -201,15 +216,24 @@ class JournalViewController: UIViewController {
             let textAttachment = NSTextAttachment()
             textAttachment.image = image
             
-            let attributedString = NSAttributedString(attachment: textAttachment)
+            let oldTextAttributes = [NSAttributedString.Key.font: self.bodyTextView.font]
+            let attributedStringWithImage = NSAttributedString(attachment: textAttachment)
+            let mutableAttributedString = NSMutableAttributedString(attributedString: self.bodyTextView.attributedText)
             
-            let mutableAttributedString = NSMutableAttributedString(attributedString: self.textView.attributedText)
-            mutableAttributedString.append(NSAttributedString(string: "\n"))
-            mutableAttributedString.append(attributedString)
+            mutableAttributedString.append(NSAttributedString(string: "\n", attributes: oldTextAttributes))
+            mutableAttributedString.append(attributedStringWithImage)
+            mutableAttributedString.append(NSAttributedString(string: "\n", attributes: oldTextAttributes))
             
-            self.textView.attributedText = mutableAttributedString
+            self.bodyTextView.attributedText = mutableAttributedString
+            
+            self.bodyTextView.becomeFirstResponder()
+            
+            let newPosition = self.bodyTextView.endOfDocument
+            self.bodyTextView.selectedTextRange = self.bodyTextView.textRange(from: newPosition, to: newPosition)
         }
     }
+
+
     
     func resizeImage(_ image: UIImage, targetWidth: CGFloat, completion: @escaping (UIImage?) -> Void) {
         let size = image.size
