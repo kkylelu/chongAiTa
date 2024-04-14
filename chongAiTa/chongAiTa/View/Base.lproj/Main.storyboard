@@ -8,20 +8,43 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
-        <scene sceneID="tne-QT-ifu">
+        <!--Journal Home View Controller-->
+        <scene sceneID="ZtO-Kb-VsG">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                <viewController storyboardIdentifier="JournalHomeViewController" id="HPv-bg-hqz" customClass="JournalHomeViewController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="fXu-Mk-BEX">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemYellowColor"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="1Xl-lw-Ub2">
+                                <rect key="frame" x="16" y="103" width="361" height="666"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="JournalHomeCell" rowHeight="156" id="EB4-rI-c7q">
+                                        <rect key="frame" x="0.0" y="50" width="361" height="156"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="EB4-rI-c7q" id="aUM-YQ-2WR">
+                                            <rect key="frame" x="0.0" y="0.0" width="361" height="156"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="ZOc-o9-7ge"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="1Xl-lw-Ub2" firstAttribute="top" secondItem="ZOc-o9-7ge" secondAttribute="top" id="1wb-zv-ryF"/>
+                            <constraint firstItem="1Xl-lw-Ub2" firstAttribute="bottom" secondItem="ZOc-o9-7ge" secondAttribute="bottom" id="9jk-Y4-Z4l"/>
+                            <constraint firstItem="ZOc-o9-7ge" firstAttribute="trailing" secondItem="1Xl-lw-Ub2" secondAttribute="trailing" constant="16" id="TxQ-KS-Vy9"/>
+                            <constraint firstItem="1Xl-lw-Ub2" firstAttribute="leading" secondItem="ZOc-o9-7ge" secondAttribute="leading" constant="16" id="wKj-pi-1kN"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="HK3-in-k92"/>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="K7t-zM-WOg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-703" y="-2"/>
+            <point key="canvasLocation" x="235.87786259541983" y="1256.3380281690143"/>
         </scene>
         <!--Journal View Controller-->
         <scene sceneID="ntw-4m-1lW">
@@ -37,7 +60,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="daR-CO-DFw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1105" y="1268"/>
+            <point key="canvasLocation" x="1105" y="1241"/>
         </scene>
         <!--日記-->
         <scene sceneID="kFI-eg-uCb">
@@ -51,7 +74,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="XEz-nO-ufL" kind="relationship" relationship="rootViewController" id="Aof-Yg-W1r"/>
+                        <segue destination="HPv-bg-hqz" kind="relationship" relationship="rootViewController" id="riG-G2-XY1"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hFD-lA-kh8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -64,6 +87,7 @@
                 <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="KUh-zi-7Sf" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="EG1-OJ-5p4">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
@@ -78,8 +102,8 @@
     </scenes>
     <resources>
         <image name="square.and.pencil" catalog="system" width="128" height="121"/>
-        <systemColor name="systemYellowColor">
-            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
     </resources>
 </document>
