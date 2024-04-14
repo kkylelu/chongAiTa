@@ -116,7 +116,11 @@ class JournalViewController: UIViewController {
         contentView.onCompletion = { [weak self] (title: String, image: UIImage?) in
             self?.textView.text = title
             if let image = journalData.selectedImage {
-                self?.insertImage(image)
+                self?.resizeImage(image, targetWidth: 100) { resizedImage in
+                    if let resizedImage = resizedImage {
+                        self?.insertImage(resizedImage)
+                    }
+                }
             }
             self?.dismiss(animated: true, completion: nil)
         }
@@ -124,20 +128,32 @@ class JournalViewController: UIViewController {
         present(hostingController, animated: true)
     }
 
-    // 在 textView 插入圖片
+    
+    // 在 textView 插入圖片並 resize
     func insertImage(_ image: UIImage) {
-        let textAttachment = NSTextAttachment()
-        textAttachment.image = image
-        
-        let attributedString = NSAttributedString(attachment: textAttachment)
-        
-        let mutableAttributedString = NSMutableAttributedString(attributedString: textView.attributedText)
-        mutableAttributedString.append(NSAttributedString(string: "\n"))
-        mutableAttributedString.append(attributedString)
-        
-        textView.attributedText = mutableAttributedString
+            let textAttachment = NSTextAttachment()
+            textAttachment.image = image
+            
+            let attributedString = NSAttributedString(attachment: textAttachment)
+            
+            let mutableAttributedString = NSMutableAttributedString(attributedString: textView.attributedText)
+            mutableAttributedString.append(NSAttributedString(string: "\n"))
+            mutableAttributedString.append(attributedString)
+            
+            textView.attributedText = mutableAttributedString
+        }
+    
+    // 調整圖片為等比例縮放
+    func resizeImage(_ image: UIImage, targetWidth: CGFloat, completion: @escaping (UIImage?) -> Void) {
+        let size = image.size
+        let scaleFactor = targetWidth / size.width
+        let newHeight = size.height * scaleFactor
+        let newSize = CGSize(width: targetWidth, height: newHeight)
+
+        // 異步生成縮圖
+        image.prepareThumbnail(of: newSize, completionHandler: { thumbnail in
+            completion(thumbnail)
+        })
     }
-
-
     
 }
