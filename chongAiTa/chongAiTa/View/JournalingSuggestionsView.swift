@@ -23,18 +23,26 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Spacer().frame(height: 25)
+            Spacer()
             
             JournalingSuggestionsPicker {
-                Text("Select Journaling Suggestion")
-            } onCompletion: { suggestion in
-                suggestionTitle = suggestion.title
-                loadContent(suggestion: suggestion)
-                loadLocation(suggestion: suggestion)
-            }
-            
-            Spacer().frame(height: 25)
-            Text(suggestionTitle ?? "")
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Image(systemName: "lightbulb")
+                                .foregroundColor(.blue)
+                            Text("點選匯入 AI 日記建議")
+                        }
+                    }
+                } onCompletion: { suggestion in
+                    suggestionTitle = suggestion.title
+                    loadContent(suggestion: suggestion)
+                    loadLocation(suggestion: suggestion)
+                }
+                        
+                Spacer()
+                        
+                Text(suggestionTitle ?? "")
             
             List {
                 ForEach(suggestionContent, id: \.image) { item in

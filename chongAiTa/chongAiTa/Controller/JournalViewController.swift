@@ -11,6 +11,7 @@ import SwiftUI
 class JournalViewController: UIViewController {
     
     let textView = UITextView()
+    let titleLabel = UILabel()
     let buttonContainerView = UIView()
     let imageButton = UIButton(type: .system)
     let templateButton = UIButton(type: .system)
@@ -20,6 +21,7 @@ class JournalViewController: UIViewController {
     let activityIndicator = UIActivityIndicatorView(style: .large)
     var activeImageProcessingCount = 0
     
+    // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -32,17 +34,47 @@ class JournalViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        textView.becomeFirstResponder()
+    }
+
+    
     //MARK: - setup UI
     
     func setupUI() {
         
-        textView.font = UIFont.systemFont(ofSize: 16)
+        let grayColor = UIColor.systemGray
+
+        titleLabel.font = UIFont(name: "HelveticaNeue", size: 30)
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .left
+        
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(titleLabel)
+        
+        textView.font = UIFont(name: "HelveticaNeue", size: 24)
+        textView.isEditable = true
         textView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(textView)
         
-        imageButton.setImage(UIImage(systemName: "photo"), for: .normal)
-        templateButton.setImage(UIImage(systemName: "doc"), for: .normal)
-        suggestionsButton.setImage(UIImage(systemName: "lightbulb"), for: .normal)
+
+        imageButton.setImage(UIImage(systemName: "photo")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
+        imageButton.setTitle("照片", for: .normal)
+        imageButton.tintColor = grayColor
+        imageButton.titleLabel?.textAlignment = .center
+
+//        templateButton.setImage(UIImage(systemName: "doc")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
+//        templateButton.setTitle("範本", for: .normal)
+//        templateButton.tintColor = grayColor
+//        templateButton.titleLabel?.textAlignment = .center
+
+        suggestionsButton.setImage(UIImage(systemName: "lightbulb")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
+        suggestionsButton.setTitle("建議", for: .normal)
+        suggestionsButton.tintColor = grayColor
+        suggestionsButton.titleLabel?.textAlignment = .center
+
+        
         
         //            imageButton.addTarget(self, action: #selector(didTapImageButton), for: .touchUpInside)
         //            templateButton.addTarget(self, action: #selector(didTapTemplateButton), for: .touchUpInside)
@@ -54,8 +86,13 @@ class JournalViewController: UIViewController {
             buttonContainerView.addSubview(button)
             button.translatesAutoresizingMaskIntoConstraints = false
         }
+        
         buttonContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(buttonContainerView)
+        
+        buttonContainerView.layer.cornerRadius = 10
+        buttonContainerView.layer.borderWidth = 1
+        buttonContainerView.layer.borderColor = UIColor.lightGray.cgColor
         
         setupConstraints()
         
@@ -63,43 +100,56 @@ class JournalViewController: UIViewController {
     
     func setupConstraints() {
         
-        bottomConstraint = buttonContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        bottomConstraint = buttonContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        
+        guard let bottom = bottomConstraint else {
+                print("Failed to init bottomConstraint")
+                return
+            }
+        
         NSLayoutConstraint.activate([
-            textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            textView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            textView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            textView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
+            textView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            textView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             textView.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor),
             
-            buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            buttonContainerView.heightAnchor.constraint(equalToConstant: 100),
-            bottomConstraint!
+            buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            buttonContainerView.heightAnchor.constraint(equalToConstant: 50),
+            bottom
+           
         ])
         
         NSLayoutConstraint.activate([
             imageButton.leftAnchor.constraint(equalTo: buttonContainerView.leftAnchor),
             imageButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
             imageButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
-            imageButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
+            imageButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/2)
         ])
         
-        NSLayoutConstraint.activate([
-            templateButton.leftAnchor.constraint(equalTo: imageButton.rightAnchor),
-            templateButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
-            templateButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
-            templateButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
-        ])
+//        NSLayoutConstraint.activate([
+//            templateButton.leftAnchor.constraint(equalTo: imageButton.rightAnchor),
+//            templateButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
+//            templateButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
+//            templateButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
+//        ])
         
         NSLayoutConstraint.activate([
             suggestionsButton.leftAnchor.constraint(equalTo: templateButton.rightAnchor),
             suggestionsButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
             suggestionsButton.rightAnchor.constraint(equalTo: buttonContainerView.rightAnchor),
             suggestionsButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
-            suggestionsButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
+            suggestionsButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/2)
         ])
     }
     
     //MARK: - action
+    
+    // 讓鍵盤把 bottomConstraint 往上推
     @objc func keyboardWillShow(notification: Notification) {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardHeight = keyboardFrame.cgRectValue.height
@@ -121,7 +171,7 @@ class JournalViewController: UIViewController {
         let journalData = JournalData()
         var contentView = ContentView()
         contentView.onCompletion = { [weak self] (title: String, images: [UIImage]) in
-            self?.textView.text = title
+            self?.titleLabel.text = title
             self?.processImages(images)
             self?.dismiss(animated: true, completion: nil)
         }
