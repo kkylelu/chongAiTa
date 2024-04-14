@@ -9,7 +9,7 @@ import UIKit
 import SwiftUI
 
 class JournalViewController: UIViewController {
-
+    
     let textView = UITextView()
     let buttonContainerView = UIView()
     let imageButton = UIButton(type: .system)
@@ -17,13 +17,20 @@ class JournalViewController: UIViewController {
     let suggestionsButton = UIButton(type: .system)
     var bottomConstraint: NSLayoutConstraint?
     
+    let activityIndicator = UIActivityIndicatorView(style: .large)
+    var activeImageProcessingCount = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         
+        activityIndicator.center = view.center
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        }
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
     
     //MARK: - setup UI
     
@@ -39,7 +46,7 @@ class JournalViewController: UIViewController {
         
         //            imageButton.addTarget(self, action: #selector(didTapImageButton), for: .touchUpInside)
         //            templateButton.addTarget(self, action: #selector(didTapTemplateButton), for: .touchUpInside)
-                    suggestionsButton.addTarget(self, action: #selector(didTapSuggestionsButton), for: .touchUpInside)
+        suggestionsButton.addTarget(self, action: #selector(didTapSuggestionsButton), for: .touchUpInside)
         
         // 設定 containerView
         let buttons = [imageButton, templateButton, suggestionsButton]
@@ -51,38 +58,38 @@ class JournalViewController: UIViewController {
         view.addSubview(buttonContainerView)
         
         setupConstraints()
-    
+        
     }
     
     func setupConstraints() {
-
+        
         bottomConstraint = buttonContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         NSLayoutConstraint.activate([
-                textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-                textView.leftAnchor.constraint(equalTo: view.leftAnchor),
-                textView.rightAnchor.constraint(equalTo: view.rightAnchor),
-                textView.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor),
-
-                buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor),
-                buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor),
-                buttonContainerView.heightAnchor.constraint(equalToConstant: 100),
-                bottomConstraint!
+            textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            textView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            textView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            textView.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor),
+            
+            buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            buttonContainerView.heightAnchor.constraint(equalToConstant: 100),
+            bottomConstraint!
         ])
-
+        
         NSLayoutConstraint.activate([
             imageButton.leftAnchor.constraint(equalTo: buttonContainerView.leftAnchor),
             imageButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
             imageButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
             imageButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
         ])
-
+        
         NSLayoutConstraint.activate([
             templateButton.leftAnchor.constraint(equalTo: imageButton.rightAnchor),
             templateButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
             templateButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
             templateButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
         ])
-
+        
         NSLayoutConstraint.activate([
             suggestionsButton.leftAnchor.constraint(equalTo: templateButton.rightAnchor),
             suggestionsButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
@@ -102,32 +109,42 @@ class JournalViewController: UIViewController {
             }
         }
     }
-
+    
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
         }
     }
-
+    
     @objc func didTapSuggestionsButton() {
         let journalData = JournalData()
         var contentView = ContentView()
-        contentView.onCompletion = { [weak self] (title: String, image: UIImage?) in
+        contentView.onCompletion = { [weak self] (title: String, images: [UIImage]) in
             self?.textView.text = title
-            if let image = journalData.selectedImage {
-                self?.resizeImage(image, targetWidth: 300) { resizedImage in
-                    if let resizedImage = resizedImage {
-                        self?.insertImage(resizedImage)
-                    }
-                }
-            }
+            self?.processImages(images)
             self?.dismiss(animated: true, completion: nil)
         }
         let hostingController = UIHostingController(rootView: contentView.environmentObject(journalData))
         present(hostingController, animated: true)
     }
-
+    
+    
+    func processImages(_ images: [UIImage]) {
+        for image in images {
+            showActivityIndicator()
+            resizeImage(image, targetWidth: 300) { [weak self] resizedImage in
+                DispatchQueue.main.async {
+                    if let resizedImage = resizedImage {
+                        self?.insertImage(resizedImage)
+                    }
+                    self?.hideActivityIndicator()
+                }
+            }
+        }
+    }
+    
+    
     // 在 textView 插入圖片並 resize
     func insertImage(_ image: UIImage) {
         DispatchQueue.main.async {
@@ -143,18 +160,34 @@ class JournalViewController: UIViewController {
             self.textView.attributedText = mutableAttributedString
         }
     }
-
+    
     func resizeImage(_ image: UIImage, targetWidth: CGFloat, completion: @escaping (UIImage?) -> Void) {
         let size = image.size
         let scaleFactor = targetWidth / size.width
         let newHeight = size.height * scaleFactor
         let newSize = CGSize(width: targetWidth, height: newHeight)
-
+        
         image.prepareThumbnail(of: newSize, completionHandler: { [weak self] thumbnail in
             guard let strongSelf = self else { return }
             completion(thumbnail)
         })
     }
-
     
+    func showActivityIndicator() {
+        DispatchQueue.main.async {
+            if self.activeImageProcessingCount == 0 {
+                self.activityIndicator.startAnimating()
+            }
+            self.activeImageProcessingCount += 1
+        }
+    }
+    
+    func hideActivityIndicator() {
+        DispatchQueue.main.async {
+            self.activeImageProcessingCount -= 1
+            if self.activeImageProcessingCount == 0 {
+                self.activityIndicator.stopAnimating()
+            }
+        }
+    }
 }

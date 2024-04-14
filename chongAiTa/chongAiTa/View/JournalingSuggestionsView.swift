@@ -19,32 +19,32 @@ struct ContentView: View {
     @State var suggestionLocations: [IdentifiableLocation] = []
     @State private var region = MKCoordinateRegion()
     
-    var onCompletion: ((String, UIImage?) -> Void)?
-
+    var onCompletion: ((String, [UIImage]) -> Void)?
+    
     var body: some View {
-           VStack {
-               Spacer().frame(height: 25)
-               
-               JournalingSuggestionsPicker {
-                   Text("Select Journaling Suggestion")
-               } onCompletion: { suggestion in
-                   suggestionTitle = suggestion.title
-                   loadContent(suggestion: suggestion)
-                   loadLocation(suggestion: suggestion)
-               }
-               
-               Spacer().frame(height: 25)
-               Text(suggestionTitle ?? "")
-               
-               List {
-                   ForEach(suggestionContent, id: \.image) { item in
-                       Image(uiImage: item.image)
-                           .resizable()
-                           .aspectRatio(contentMode: .fit)
-                           .frame(maxHeight: 200)
-                   }
-               }
-               
+        VStack {
+            Spacer().frame(height: 25)
+            
+            JournalingSuggestionsPicker {
+                Text("Select Journaling Suggestion")
+            } onCompletion: { suggestion in
+                suggestionTitle = suggestion.title
+                loadContent(suggestion: suggestion)
+                loadLocation(suggestion: suggestion)
+            }
+            
+            Spacer().frame(height: 25)
+            Text(suggestionTitle ?? "")
+            
+            List {
+                ForEach(suggestionContent, id: \.image) { item in
+                    Image(uiImage: item.image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxHeight: 200)
+                }
+            }
+            
             
             if !suggestionLocations.isEmpty {
                 let location = suggestionLocations[0].location
@@ -65,17 +65,17 @@ struct ContentView: View {
         }
     }
     
-    private func loadContent(suggestion: JournalingSuggestion) {
+    func loadContent(suggestion: JournalingSuggestion) {
         Task {
-            suggestionContent = await suggestion.content(forType: UIImage.self).map { UIImageWrapper(image: $0) }
-            if let image = suggestionContent.first?.image {
-                journalData.selectedImage = image
-                onCompletion?(suggestion.title ?? "No title", image)
-            }
+            let images = await suggestion.content(forType: UIImage.self)
+            suggestionContent = images.map { UIImageWrapper(image: $0) }
+            journalData.selectedImages = images
+            onCompletion?(suggestion.title, images)
         }
     }
     
-    private func loadLocation(suggestion: JournalingSuggestion) {
+    
+    func loadLocation(suggestion: JournalingSuggestion) {
         Task {
             if let locations = await suggestion.content(forType: JournalingSuggestion.Location.self).first {
                 let identifiableLocation = IdentifiableLocation(location: locations)

@@ -11,6 +11,6 @@ import Combine
 class JournalData: ObservableObject {
     @Published var selectedTitle: String = ""
     @Published var showPicker: Bool = false
-    @Published var selectedImage: UIImage?
+    @Published var selectedImages: [UIImage] = []
 }
 
