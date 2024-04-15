@@ -8,6 +8,10 @@
 import UIKit
 import SwiftUI
 
+protocol JournalViewControllerDelegate: AnyObject {
+    func journalEntryDidSave(_ journal: Journal)
+}
+
 class JournalViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
     let titleTextView = UITextView()
@@ -21,6 +25,12 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     
     let activityIndicator = UIActivityIndicatorView(style: .large)
     var activeImageProcessingCount = 0
+    
+    var selectedDate: Date?
+    var selectedImage: UIImage?
+    var selectedLocation: String?
+    
+    weak var delegate: JournalViewControllerDelegate?
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -36,6 +46,8 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        selectedDate = Date()
         
     }
     
@@ -53,16 +65,17 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         
         // Navigationbar
         let datePicker = UIDatePicker()
+        datePicker.date = Date()
         datePicker.datePickerMode = .date
-            datePicker.backgroundColor = UIColor.clear
-            datePicker.tintColor = UIColor.white
-            datePicker.setValue(UIColor.white, forKey: "textColor")
-            datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
-            let leftBarButtonItem = UIBarButtonItem(customView: datePicker)
-            navigationItem.leftBarButtonItem = leftBarButtonItem
+        datePicker.backgroundColor = UIColor.clear
+        datePicker.tintColor = UIColor.white
+        datePicker.setValue(UIColor.white, forKey: "textColor")
+        datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+        let leftBarButtonItem = UIBarButtonItem(customView: datePicker)
+        navigationItem.leftBarButtonItem = leftBarButtonItem
         
         let rightBarButtonItem = UIBarButtonItem(title: "完成", style: .done, target: self, action: #selector(doneButtonTapped))
-            navigationItem.rightBarButtonItem = rightBarButtonItem
+        navigationItem.rightBarButtonItem = rightBarButtonItem
         
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = UIColor.B1
@@ -74,9 +87,9 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         navigationController?.navigationBar.tintColor = UIColor.white
         
         // TextView
-
+        
         let grayColor = UIColor.systemGray
-
+        
         titleTextView.font = UIFont.boldSystemFont(ofSize: 30)
         titleTextView.isEditable = true
         titleTextView.translatesAutoresizingMaskIntoConstraints = false
@@ -86,23 +99,23 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         bodyTextView.isEditable = true
         bodyTextView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bodyTextView)
-
-
+        
+        
         imageButton.setImage(UIImage(systemName: "photo")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
         imageButton.setTitle("照片", for: .normal)
         imageButton.tintColor = grayColor
         imageButton.titleLabel?.textAlignment = .center
-
-//        templateButton.setImage(UIImage(systemName: "doc")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
-//        templateButton.setTitle("範本", for: .normal)
-//        templateButton.tintColor = grayColor
-//        templateButton.titleLabel?.textAlignment = .center
-
+        
+        //        templateButton.setImage(UIImage(systemName: "doc")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
+        //        templateButton.setTitle("範本", for: .normal)
+        //        templateButton.tintColor = grayColor
+        //        templateButton.titleLabel?.textAlignment = .center
+        
         suggestionsButton.setImage(UIImage(systemName: "lightbulb")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
         suggestionsButton.setTitle("建議", for: .normal)
         suggestionsButton.tintColor = grayColor
         suggestionsButton.titleLabel?.textAlignment = .center
-
+        
         
         
         imageButton.addTarget(self, action: #selector(didTapImageButton), for: .touchUpInside)
@@ -195,12 +208,27 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     //MARK: - Action
     
     @objc func dateChanged(_ datePicker: UIDatePicker) {
-        // 處理日期改變
+        selectedDate = datePicker.date
     }
     
     @objc func doneButtonTapped() {
-        // 點選完成按鈕
+        // 首先只測試 title 和 date
+        if let title = titleTextView.text, let date = selectedDate {
+            print("title and date are valid")
+            // 暫時創建一個 journal 對象而不包括 image 和 location
+            let journal = Journal(title: title, date: date, image: UIImage(), location: "Default Location")
+            delegate?.journalEntryDidSave(journal)
+            navigationController?.popViewController(animated: true)
+        } else {
+            if titleTextView.text == nil {
+                print("Error: Title is missing")
+            }
+            if selectedDate == nil {
+                print("Error: Date is missing")
+            }
+        }
     }
+
     
     // 讓鍵盤把 bottomConstraint 往上推
     @objc func keyboardWillShow(notification: Notification) {

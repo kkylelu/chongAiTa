@@ -11,6 +11,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     @IBOutlet weak var tableView: UITableView!
     var floatingButton: UIButton!
+    var journalsArray: [Journal] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +23,8 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         
         setupFloatingButton()
     }
+    
+    // MARK: - Setup UI
     
     func setupFloatingButton(){
         floatingButton = UIButton(type: .custom)
@@ -51,27 +54,49 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     @objc func floatingButtonTapped() {
         let journalVC = JournalViewController()
+        journalVC.delegate = self
         navigationController?.pushViewController(journalVC, animated: true)
     }
+
     
+    func showJournalViewController() {
+        let journalVC = JournalViewController()
+        journalVC.delegate = self
+    }
+    
+    
+    // MARK: - TableView Delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return journalsArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "JournalHomeCell", for: indexPath) as? JournalHomeTableViewCell else {
-                return UITableViewCell()
-            }
-            
-            cell.timeLabel.text = "10:15"
-            cell.journalTitleLabel.text = "這裡可自由輸入想要呈現的日記標題"
-            cell.journalLocationLabel.text = "公園"
-            cell.JournalImageView.image = UIImage(named: "Placeholder picture")
-
-            return cell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "JournalHomeCell", for: indexPath) as? JournalHomeTableViewCell else {
+            return UITableViewCell()
         }
+        
+        let journal = journalsArray[indexPath.row]
+        
+        let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
+            dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE HH:mm"
+
+        cell.timeLabel.text = dateFormatter.string(from: journal.date)
+        cell.journalTitleLabel.text = journal.title
+        cell.journalLocationLabel.text = journal.location
+        cell.JournalImageView.image = journal.image
+        
+        return cell
+    }
 
         func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
             return 165.0
         }
     }
+
+extension JournalHomeViewController: JournalViewControllerDelegate {
+    func journalEntryDidSave(_ journal: Journal) {
+        self.journalsArray.append(journal)
+        self.tableView.reloadData()
+    }
+}

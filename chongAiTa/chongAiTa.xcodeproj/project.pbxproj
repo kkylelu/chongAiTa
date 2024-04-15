@@ -20,6 +20,7 @@
 		27A4621B2BCBE89D00503F3E /* JournalHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A4621A2BCBE89D00503F3E /* JournalHomeViewController.swift */; };
 		27A4621F2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27A4621E2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib */; };
 		27A462202BCBEAEA00503F3E /* JournalHomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A4621D2BCBEAEA00503F3E /* JournalHomeTableViewCell.swift */; };
+		27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004482BCCE0A100C87472 /* JournalContent.swift */; };
 		27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F975932BC6B01100B2A041 /* AppDelegate.swift */; };
 		27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F975952BC6B01100B2A041 /* SceneDelegate.swift */; };
 		27F9759B2BC6B01100B2A041 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 27F9759A2BC6B01100B2A041 /* Base */; };
@@ -62,6 +63,7 @@
 		27A4621A2BCBE89D00503F3E /* JournalHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalHomeViewController.swift; sourceTree = "<group>"; };
 		27A4621D2BCBEAEA00503F3E /* JournalHomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalHomeTableViewCell.swift; sourceTree = "<group>"; };
 		27A4621E2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JournalHomeTableViewCell.xib; sourceTree = "<group>"; };
+		27F004482BCCE0A100C87472 /* JournalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalContent.swift; sourceTree = "<group>"; };
 		27F975902BC6B01100B2A041 /* chongAiTa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chongAiTa.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27F975932BC6B01100B2A041 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		27F975952BC6B01100B2A041 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 			children = (
 				27A462132BCAC00D00503F3E /* JournalingSuggestionsModel.swift */,
 				27A462152BCAD83D00503F3E /* JournalPickerData.swift */,
+				27F004482BCCE0A100C87472 /* JournalContent.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -500,6 +503,7 @@
 				27A4621B2BCBE89D00503F3E /* JournalHomeViewController.swift in Sources */,
 				27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */,
 				27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */,
+				27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
