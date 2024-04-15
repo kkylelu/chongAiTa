@@ -27,8 +27,10 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     var activeImageProcessingCount = 0
     
     var selectedDate: Date?
-    var selectedImage: UIImage?
+    var selectedImages = [UIImage]()
     var selectedLocation: String?
+    
+    var imagesReadyToSave = false
     
     weak var delegate: JournalViewControllerDelegate?
     
@@ -55,7 +57,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         super.viewDidAppear(animated)
         bodyTextView.becomeFirstResponder()
     }
-
+    
     
     //MARK: - Setup UI
     
@@ -87,7 +89,6 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         navigationController?.navigationBar.tintColor = UIColor.white
         
         // TextView
-        
         let grayColor = UIColor.systemGray
         
         titleTextView.font = UIFont.boldSystemFont(ofSize: 30)
@@ -157,27 +158,27 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         bottomConstraint = buttonContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         
         guard let bottom = bottomConstraint else {
-                print("Failed to init bottomConstraint")
-                return
-            }
+            print("Failed to init bottomConstraint")
+            return
+        }
         
         NSLayoutConstraint.activate([
             
             titleTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-                titleTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-                titleTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-                titleTextView.heightAnchor.constraint(equalToConstant: 80),
+            titleTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            titleTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            titleTextView.heightAnchor.constraint(equalToConstant: 80),
             
             bodyTextView.topAnchor.constraint(equalTo: titleTextView.bottomAnchor, constant: 10),
-                bodyTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-                bodyTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-                bodyTextView.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor, constant: -20),
-
+            bodyTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            bodyTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            bodyTextView.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor, constant: -20),
+            
             buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             buttonContainerView.heightAnchor.constraint(equalToConstant: 50),
             bottom
-           
+            
         ])
         
         NSLayoutConstraint.activate([
@@ -187,12 +188,12 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
             imageButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/2)
         ])
         
-//        NSLayoutConstraint.activate([
-//            templateButton.leftAnchor.constraint(equalTo: imageButton.rightAnchor),
-//            templateButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
-//            templateButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
-//            templateButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
-//        ])
+        //        NSLayoutConstraint.activate([
+        //            templateButton.leftAnchor.constraint(equalTo: imageButton.rightAnchor),
+        //            templateButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
+        //            templateButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
+        //            templateButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
+        //        ])
         
         NSLayoutConstraint.activate([
             suggestionsButton.leftAnchor.constraint(equalTo: templateButton.rightAnchor),
@@ -212,23 +213,17 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     }
     
     @objc func doneButtonTapped() {
-        // 首先只測試 title 和 date
         if let title = titleTextView.text, let date = selectedDate {
             print("title and date are valid")
-            // 暫時創建一個 journal 對象而不包括 image 和 location
-            let journal = Journal(title: title, date: date, image: UIImage(), location: "Default Location")
+            let journal = Journal(title: title, date: date, images: selectedImages, location: "Default Location")
             delegate?.journalEntryDidSave(journal)
             navigationController?.popViewController(animated: true)
         } else {
-            if titleTextView.text == nil {
-                print("Error: Title is missing")
-            }
             if selectedDate == nil {
                 print("Error: Date is missing")
             }
         }
     }
-
     
     // 讓鍵盤把 bottomConstraint 往上推
     @objc func keyboardWillShow(notification: Notification) {
@@ -241,7 +236,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
             }
         }
     }
-
+    
     
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0
@@ -263,19 +258,19 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     }
     
     @objc func didTapImageButton() {
-            let alertController = UIAlertController(title: "選擇圖片來源", message: nil, preferredStyle: .actionSheet)
-            alertController.addAction(UIAlertAction(title: "相簿", style: .default, handler: { [weak self] _ in
-                self?.imagePicker.sourceType = .photoLibrary
-                self?.present(self!.imagePicker, animated: true, completion: nil)
-            }))
-            alertController.addAction(UIAlertAction(title: "相機", style: .default, handler: { [weak self] _ in
-                self?.imagePicker.sourceType = .camera
-                self?.present(self!.imagePicker, animated: true, completion: nil)
-            }))
-            alertController.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-            
-            present(alertController, animated: true, completion: nil)
-        }
+        let alertController = UIAlertController(title: "選擇圖片來源", message: nil, preferredStyle: .actionSheet)
+        alertController.addAction(UIAlertAction(title: "相簿", style: .default, handler: { [weak self] _ in
+            self?.imagePicker.sourceType = .photoLibrary
+            self?.present(self!.imagePicker, animated: true, completion: nil)
+        }))
+        alertController.addAction(UIAlertAction(title: "相機", style: .default, handler: { [weak self] _ in
+            self?.imagePicker.sourceType = .camera
+            self?.present(self!.imagePicker, animated: true, completion: nil)
+        }))
+        alertController.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        
+        present(alertController, animated: true, completion: nil)
+    }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let selectedImage = info[.originalImage] as? UIImage {
@@ -283,7 +278,10 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
             resizeImage(selectedImage, targetWidth: targetWidth) { [weak self] resizedImage in
                 DispatchQueue.main.async {
                     if let resizedImage = resizedImage {
+                        self?.selectedImages.append(resizedImage)
                         self?.insertImage(resizedImage)
+                        print("Image processed and added to the array. Total now: \(self?.selectedImages.count ?? 0)")
+                        self?.imagesReadyToSave = true
                     }
                     self?.dismiss(animated: true, completion: nil)
                 }
@@ -292,27 +290,41 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
             dismiss(animated: true, completion: nil)
         }
     }
-
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            dismiss(animated: true, completion: nil)
-        }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
     
     
     func processImages(_ images: [UIImage]) {
+        var processedImagesCount = 0
+        let totalImages = images.count
         for image in images {
             showActivityIndicator()
             resizeImage(image, targetWidth: bodyTextView.bounds.width / 2) { [weak self] resizedImage in
                 DispatchQueue.main.async {
                     if let resizedImage = resizedImage {
-                        self?.insertImage(resizedImage)
+                        self?.selectedImages.append(resizedImage)
+                        processedImagesCount += 1
+                        print("Processed \(processedImagesCount) of \(totalImages) images")
                     }
                     self?.hideActivityIndicator()
+                    if processedImagesCount == totalImages {
+                        print("All images processed.")
+                        self?.imagesReadyToSave = true
+                        // 在處理完所有圖片後，將圖片插入到 textView 中
+                        self?.insertImagesIntoTextView()
+                    }
                 }
             }
         }
     }
     
+    func insertImagesIntoTextView() {
+        for image in selectedImages {
+            insertImage(image)
+        }
+    }
     
     // 在 textView 插入圖片並 resize
     func insertImage(_ image: UIImage) {
@@ -345,7 +357,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
             self.bodyTextView.selectedTextRange = self.bodyTextView.textRange(from: newPosition, to: newPosition)
         }
     }
-
+    
     func resizeImage(_ image: UIImage, targetWidth: CGFloat, completion: @escaping (UIImage?) -> Void) {
         let size = image.size
         let scaleFactor = targetWidth / size.width
@@ -353,6 +365,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         let newSize = CGSize(width: targetWidth, height: newHeight)
         
         image.prepareThumbnail(of: newSize, completionHandler: { [weak self] thumbnail in
+            print("Is main thread: \(Thread.isMainThread)")
             guard let strongSelf = self else { return }
             completion(thumbnail)
         })

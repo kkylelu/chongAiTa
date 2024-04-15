@@ -79,12 +79,21 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         
         let dateFormatter = DateFormatter()
             dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
-            dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE HH:mm"
+            dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
 
         cell.timeLabel.text = dateFormatter.string(from: journal.date)
         cell.journalTitleLabel.text = journal.title
         cell.journalLocationLabel.text = journal.location
-        cell.JournalImageView.image = journal.image
+        
+        if !journal.images.isEmpty {
+            cell.JournalImageView.contentMode = .scaleAspectFill
+            cell.JournalImageView.clipsToBounds = true
+                cell.JournalImageView.image = journal.images.first
+                print("Displaying image for row \(indexPath.row)")
+            } else {
+                cell.JournalImageView.image = nil
+                print("No image to display for row \(indexPath.row)")
+            }
         
         return cell
     }

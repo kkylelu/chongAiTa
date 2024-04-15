@@ -9,7 +9,7 @@ import UIKit
 struct Journal {
     var title: String
     var date: Date
-    var image: UIImage
+    var images: [UIImage]
     var location: String
 
 }
