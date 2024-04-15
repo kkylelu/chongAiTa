@@ -45,9 +45,11 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     }
 
     
-    //MARK: - setup UI
+    //MARK: - Setup UI
     
     func setupUI() {
+        
+        view.backgroundColor = .white
         
         // Navigationbar
         let datePicker = UIDatePicker()
@@ -190,7 +192,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     
     
     
-    //MARK: - action
+    //MARK: - Action
     
     @objc func dateChanged(_ datePicker: UIDatePicker) {
         // 處理日期改變
@@ -221,7 +223,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     }
     
     @objc func didTapSuggestionsButton() {
-        let journalData = JournalData()
+        let journalData = JournalPickerData()
         var contentView = ContentView()
         contentView.onCompletion = { [weak self] (title: String, images: [UIImage]) in
             self?.updateTextViews(title: title, body: self?.bodyTextView.text ?? "")

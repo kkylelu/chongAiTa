@@ -15,7 +15,7 @@
 		275CC3632BC7C12F0062C75C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */; };
 		27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */; };
 		27A462142BCAC00D00503F3E /* JournalingSuggestionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462132BCAC00D00503F3E /* JournalingSuggestionsModel.swift */; };
-		27A462162BCAD83D00503F3E /* JournalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462152BCAD83D00503F3E /* JournalData.swift */; };
+		27A462162BCAD83D00503F3E /* JournalPickerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462152BCAD83D00503F3E /* JournalPickerData.swift */; };
 		27A462192BCBE27600503F3E /* UIColorHexCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462182BCBE27600503F3E /* UIColorHexCode.swift */; };
 		27A4621B2BCBE89D00503F3E /* JournalHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A4621A2BCBE89D00503F3E /* JournalHomeViewController.swift */; };
 		27A4621F2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27A4621E2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib */; };
@@ -57,7 +57,7 @@
 		275CC3642BC7D00D0062C75C /* chongAiTa.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = chongAiTa.entitlements; sourceTree = "<group>"; };
 		27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingSuggestionsView.swift; sourceTree = "<group>"; };
 		27A462132BCAC00D00503F3E /* JournalingSuggestionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingSuggestionsModel.swift; sourceTree = "<group>"; };
-		27A462152BCAD83D00503F3E /* JournalData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalData.swift; sourceTree = "<group>"; };
+		27A462152BCAD83D00503F3E /* JournalPickerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalPickerData.swift; sourceTree = "<group>"; };
 		27A462182BCBE27600503F3E /* UIColorHexCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorHexCode.swift; sourceTree = "<group>"; };
 		27A4621A2BCBE89D00503F3E /* JournalHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalHomeViewController.swift; sourceTree = "<group>"; };
 		27A4621D2BCBEAEA00503F3E /* JournalHomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalHomeTableViewCell.swift; sourceTree = "<group>"; };
@@ -133,7 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				27A462132BCAC00D00503F3E /* JournalingSuggestionsModel.swift */,
-				27A462152BCAD83D00503F3E /* JournalData.swift */,
+				27A462152BCAD83D00503F3E /* JournalPickerData.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -492,7 +492,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				27A462142BCAC00D00503F3E /* JournalingSuggestionsModel.swift in Sources */,
-				27A462162BCAD83D00503F3E /* JournalData.swift in Sources */,
+				27A462162BCAD83D00503F3E /* JournalPickerData.swift in Sources */,
 				274CE0D72BC8275C00277222 /* JournalViewController.swift in Sources */,
 				27A462192BCBE27600503F3E /* UIColorHexCode.swift in Sources */,
 				27A462202BCBEAEA00503F3E /* JournalHomeTableViewCell.swift in Sources */,

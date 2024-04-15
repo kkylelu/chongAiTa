@@ -12,7 +12,7 @@ import MapKit
 
 
 struct ContentView: View {
-    @EnvironmentObject var journalData: JournalData
+    @EnvironmentObject var journalData: JournalPickerData
     
     @State var suggestionTitle: String? = nil
     @State var suggestionContent = [UIImageWrapper]()
