@@ -12,29 +12,26 @@ class TextGenerationManager {
     static let shared = TextGenerationManager()
 
     func generateSummary(from journals: [Journal], completion: @escaping (Result<String, Error>) -> Void) {
-        let urlEndpoint = OpenAINetworkHelper.shared.baseURL + "completions"
+        let urlEndpoint = OpenAINetworkHelper.shared.baseURL + "chat/completions"
         let journalTexts = journals.map { $0.body }.joined(separator: "\n")
+        let messages = [
+            ["role": "system", "content": "你是一個寵物日記摘要專家，請以親切的語氣，幫寵物主人回顧這個月紀錄的寵物日記內容，用寵物主人的口吻敘述成一篇小故事。請把特定時間例如「今天」、「晚上」，取代為「有一天」、「某天晚上」這樣的敘述。請用台灣繁體中文回覆。請限制在 200 個 token 內說完故事。"],
+            ["role": "user", "content": journalTexts]
+        ]
         let parameters: Parameters = [
-            "prompt": "Say this is a test", //Summarize the following journal entries:\n\(journalTexts)
-            "max_tokens": 100,
-            "model": "gpt-3.5-turbo-instruct"
+            "model": "gpt-3.5-turbo",
+            "messages": messages,
+            "max_tokens": 200
         ]
 
         NetworkManager.shared.request(url: urlEndpoint, method: .post, parameters: parameters, headers: OpenAINetworkHelper.shared.headers()) { (result: Result<OpenAIResponse, Error>) in
             switch result {
             case .success(let response):
-                let summary = response.choices.first?.text ?? ""
+                let summary = response.choices.first?.message.content ?? ""
                 completion(.success(summary))
             case .failure(let error):
                 completion(.failure(error))
             }
         }
     }
-}
-
-struct OpenAIResponse: Codable {
-    struct Choice: Codable {
-        let text: String
-    }
-    let choices: [Choice]
 }

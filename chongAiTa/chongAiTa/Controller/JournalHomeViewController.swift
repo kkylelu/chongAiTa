@@ -85,7 +85,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func displaySummaryAlert(_ summary: String) {
-        let alert = UIAlertController(title: "日記回顧", message: summary, preferredStyle: .alert)
+        let alert = UIAlertController(title: "AI 日記回顧", message: summary, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "關閉", style: .default))
         self.present(alert, animated: true)
     }
