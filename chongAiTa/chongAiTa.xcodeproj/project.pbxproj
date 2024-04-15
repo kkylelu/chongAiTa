@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		270D97772BCD3E7A00AA8D79 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270D97762BCD3E7A00AA8D79 /* APIKeys.swift */; };
 		274CE0D72BC8275C00277222 /* JournalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE0D62BC8275C00277222 /* JournalViewController.swift */; };
 		275CC35B2BC7BF3D0062C75C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC35A2BC7BF3D0062C75C /* FirebaseAnalytics */; };
 		275CC35D2BC7BF3D0062C75C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC35C2BC7BF3D0062C75C /* FirebaseFirestore */; };
@@ -21,6 +22,11 @@
 		27A4621F2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27A4621E2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib */; };
 		27A462202BCBEAEA00503F3E /* JournalHomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A4621D2BCBEAEA00503F3E /* JournalHomeTableViewCell.swift */; };
 		27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004482BCCE0A100C87472 /* JournalContent.swift */; };
+		27F0044C2BCD33A500C87472 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 27F0044B2BCD33A500C87472 /* Alamofire */; };
+		27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */; };
+		27F004512BCD384400C87472 /* OpenAINetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */; };
+		27F004532BCD386600C87472 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004522BCD386600C87472 /* NetworkManager.swift */; };
+		27F004552BCD3D5900C87472 /* API-Keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27F004542BCD3D5900C87472 /* API-Keys.plist */; };
 		27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F975932BC6B01100B2A041 /* AppDelegate.swift */; };
 		27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F975952BC6B01100B2A041 /* SceneDelegate.swift */; };
 		27F9759B2BC6B01100B2A041 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 27F9759A2BC6B01100B2A041 /* Base */; };
@@ -53,6 +59,7 @@
 
 /* Begin PBXFileReference section */
 		14A74EBB65BE9EEC875C9D19 /* Pods_chongAiTa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_chongAiTa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		270D97762BCD3E7A00AA8D79 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
 		274CE0D62BC8275C00277222 /* JournalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalViewController.swift; sourceTree = "<group>"; };
 		275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		275CC3642BC7D00D0062C75C /* chongAiTa.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = chongAiTa.entitlements; sourceTree = "<group>"; };
@@ -64,6 +71,10 @@
 		27A4621D2BCBEAEA00503F3E /* JournalHomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalHomeTableViewCell.swift; sourceTree = "<group>"; };
 		27A4621E2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JournalHomeTableViewCell.xib; sourceTree = "<group>"; };
 		27F004482BCCE0A100C87472 /* JournalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalContent.swift; sourceTree = "<group>"; };
+		27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGenerationManager.swift; sourceTree = "<group>"; };
+		27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAINetworkHelper.swift; sourceTree = "<group>"; };
+		27F004522BCD386600C87472 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		27F004542BCD3D5900C87472 /* API-Keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "API-Keys.plist"; sourceTree = "<group>"; };
 		27F975902BC6B01100B2A041 /* chongAiTa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chongAiTa.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27F975932BC6B01100B2A041 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		27F975952BC6B01100B2A041 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -94,6 +105,7 @@
 				275CC35B2BC7BF3D0062C75C /* FirebaseAnalytics in Frameworks */,
 				31B11AA4BBB594B0494B8965 /* Pods_chongAiTa.framework in Frameworks */,
 				275CC35D2BC7BF3D0062C75C /* FirebaseFirestore in Frameworks */,
+				27F0044C2BCD33A500C87472 /* Alamofire in Frameworks */,
 				275CC3612BC7BF3D0062C75C /* FirebaseStorage in Frameworks */,
 				275CC35F2BC7BF3D0062C75C /* FirebaseFirestoreSwift in Frameworks */,
 			);
@@ -178,6 +190,17 @@
 			path = JournalHomeCell;
 			sourceTree = "<group>";
 		};
+		27F0044D2BCD36CD00C87472 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */,
+				27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */,
+				27F004522BCD386600C87472 /* NetworkManager.swift */,
+				270D97762BCD3E7A00AA8D79 /* APIKeys.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		27F975872BC6B01100B2A041 = {
 			isa = PBXGroup;
 			children = (
@@ -203,6 +226,7 @@
 		27F975922BC6B01100B2A041 /* chongAiTa */ = {
 			isa = PBXGroup;
 			children = (
+				27F0044D2BCD36CD00C87472 /* Network */,
 				27A462172BCBE25300503F3E /* Extention */,
 				274CE0DA2BC8277E00277222 /* Controller */,
 				274CE0D92BC8277900277222 /* View */,
@@ -211,6 +235,7 @@
 				27F975932BC6B01100B2A041 /* AppDelegate.swift */,
 				27F975952BC6B01100B2A041 /* SceneDelegate.swift */,
 				27F9759C2BC6B01300B2A041 /* Assets.xcassets */,
+				27F004542BCD3D5900C87472 /* API-Keys.plist */,
 				27F975A12BC6B01300B2A041 /* Info.plist */,
 				275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */,
 			);
@@ -267,6 +292,7 @@
 				275CC35C2BC7BF3D0062C75C /* FirebaseFirestore */,
 				275CC35E2BC7BF3D0062C75C /* FirebaseFirestoreSwift */,
 				275CC3602BC7BF3D0062C75C /* FirebaseStorage */,
+				27F0044B2BCD33A500C87472 /* Alamofire */,
 			);
 			productName = chongAiTa;
 			productReference = 27F975902BC6B01100B2A041 /* chongAiTa.app */;
@@ -345,6 +371,7 @@
 			mainGroup = 27F975872BC6B01100B2A041;
 			packageReferences = (
 				275CC3592BC7BF3D0062C75C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				27F0044A2BCD33A500C87472 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			productRefGroup = 27F975912BC6B01100B2A041 /* Products */;
 			projectDirPath = "";
@@ -363,6 +390,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				27F9759D2BC6B01300B2A041 /* Assets.xcassets in Resources */,
+				27F004552BCD3D5900C87472 /* API-Keys.plist in Resources */,
 				275CC3632BC7C12F0062C75C /* GoogleService-Info.plist in Resources */,
 				27A4621F2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib in Resources */,
 				27F975A02BC6B01300B2A041 /* Base in Resources */,
@@ -496,9 +524,13 @@
 			files = (
 				27A462142BCAC00D00503F3E /* JournalingSuggestionsModel.swift in Sources */,
 				27A462162BCAD83D00503F3E /* JournalPickerData.swift in Sources */,
+				270D97772BCD3E7A00AA8D79 /* APIKeys.swift in Sources */,
 				274CE0D72BC8275C00277222 /* JournalViewController.swift in Sources */,
+				27F004532BCD386600C87472 /* NetworkManager.swift in Sources */,
 				27A462192BCBE27600503F3E /* UIColorHexCode.swift in Sources */,
 				27A462202BCBEAEA00503F3E /* JournalHomeTableViewCell.swift in Sources */,
+				27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */,
+				27F004512BCD384400C87472 /* OpenAINetworkHelper.swift in Sources */,
 				27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */,
 				27A4621B2BCBE89D00503F3E /* JournalHomeViewController.swift in Sources */,
 				27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */,
@@ -874,6 +906,14 @@
 				minimumVersion = 10.24.0;
 			};
 		};
+		27F0044A2BCD33A500C87472 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.9.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -896,6 +936,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 275CC3592BC7BF3D0062C75C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		27F0044B2BCD33A500C87472 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27F0044A2BCD33A500C87472 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

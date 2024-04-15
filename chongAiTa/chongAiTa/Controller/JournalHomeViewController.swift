@@ -21,10 +21,14 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         
         tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
+        
         setupFloatingButton()
+        
     }
     
     // MARK: - Setup UI
+    
     
     func setupFloatingButton(){
         floatingButton = UIButton(type: .custom)
@@ -62,6 +66,28 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     func showJournalViewController() {
         let journalVC = JournalViewController()
         journalVC.delegate = self
+    }
+    
+    // MARK: - Action
+    
+    // 日記回顧
+    @objc func generateSummary() {
+        TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let summary):
+                    self?.displaySummaryAlert(summary)
+                case .failure(let error):
+                    print("Error generating summary: \(error)")
+                }
+            }
+        }
+    }
+    
+    func displaySummaryAlert(_ summary: String) {
+        let alert = UIAlertController(title: "日記回顧", message: summary, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "關閉", style: .default))
+        self.present(alert, animated: true)
     }
     
     
