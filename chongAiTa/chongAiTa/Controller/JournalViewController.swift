@@ -32,8 +32,11 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     
     var imagesReadyToSave = false
     
+    var journal: Journal?
+    
     weak var delegate: JournalViewControllerDelegate?
     
+
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,11 +54,15 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         
         selectedDate = Date()
         
+        if let journal = journal {
+                    updateUI(with: journal)
+                }
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        bodyTextView.becomeFirstResponder()
+            moveTextViewCursorToEnd()
     }
     
     
@@ -141,6 +148,11 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         
     }
     
+    func moveTextViewCursorToEnd() {
+        let newPosition = bodyTextView.endOfDocument
+        bodyTextView.selectedTextRange = bodyTextView.textRange(from: newPosition, to: newPosition)
+    }
+    
     // 設定標題和 body 的 textView
     func updateTextViews(title: String, body: String) {
         let titleFont = UIFont.boldSystemFont(ofSize: 30)
@@ -204,7 +216,20 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         ])
     }
     
-    
+    // MARK: - UpdateUI
+    func updateUI(with journal: Journal) {
+        titleTextView.text = journal.title
+        
+        let attributedString = NSMutableAttributedString(string: journal.body)
+        let textViewFont = bodyTextView.font ?? UIFont.systemFont(ofSize: 24)
+        let range = NSRange(location: 0, length: attributedString.length)
+        attributedString.addAttribute(.font, value: textViewFont, range: range)
+        
+        bodyTextView.attributedText = attributedString
+        selectedImages = journal.images
+        insertImagesIntoTextView()
+    }
+
     
     //MARK: - Action
     
@@ -213,9 +238,9 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     }
     
     @objc func doneButtonTapped() {
-        if let title = titleTextView.text, let date = selectedDate {
+        if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
             print("title and date are valid")
-            let journal = Journal(title: title, date: date, images: selectedImages, location: "Default Location")
+            let journal = Journal(title: title, body: body, date: date, images: selectedImages, location: "Default Location")
             delegate?.journalEntryDidSave(journal)
             navigationController?.popViewController(animated: true)
         } else {
@@ -321,9 +346,28 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     }
     
     func insertImagesIntoTextView() {
+        let attributedString = NSMutableAttributedString(attributedString: bodyTextView.attributedText)
+        
+        let textViewFont = bodyTextView.font ?? UIFont.systemFont(ofSize: 24)
+        let textViewAttributes: [NSAttributedString.Key: Any] = [
+            .font: textViewFont
+        ]
+        
         for image in selectedImages {
-            insertImage(image)
+            let attachment = NSTextAttachment()
+            attachment.image = image
+            
+            let attachmentString = NSAttributedString(attachment: attachment)
+            
+            if attributedString.length > 0 {
+                attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
+            }
+            
+            attributedString.append(attachmentString)
+            attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
         }
+        
+        bodyTextView.attributedText = attributedString
     }
     
     // 在 textView 插入圖片並 resize

@@ -8,6 +8,7 @@
 import UIKit
 struct Journal {
     var title: String
+    var body: String
     var date: Date
     var images: [UIImage]
     var location: String
