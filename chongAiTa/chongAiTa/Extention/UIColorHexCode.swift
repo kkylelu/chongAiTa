@@ -11,13 +11,15 @@ private enum STColor: String {
     case B1 = "#F59245"
     case B2 = "#fcdbc1"
     case B3 = "#a3612e"
+    case B4 = "#311D0E"
 }
 
 extension UIColor {
 
     static let B1 = UIColor.hexStringToUIColor(hex: STColor.B1.rawValue)
     static let B2 = UIColor.hexStringToUIColor(hex: STColor.B2.rawValue)
-    static let B3 = UIColor.hexStringToUIColor(hex: STColor.B2.rawValue)
+    static let B3 = UIColor.hexStringToUIColor(hex: STColor.B3.rawValue)
+    static let B4 = UIColor.hexStringToUIColor(hex: STColor.B4.rawValue)
 
     static func hexStringToUIColor(hex: String) -> UIColor {
         var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()

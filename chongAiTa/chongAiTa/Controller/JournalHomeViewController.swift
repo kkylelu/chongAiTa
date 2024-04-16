@@ -61,7 +61,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         journalVC.delegate = self
         navigationController?.pushViewController(journalVC, animated: true)
     }
-
+    
     
     func showJournalViewController() {
         let journalVC = JournalViewController()
@@ -104,9 +104,9 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         let journal = journalsArray[indexPath.row]
         
         let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
-            dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
-
+        dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
+        dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
+        
         cell.timeLabel.text = dateFormatter.string(from: journal.date)
         cell.journalTitleLabel.text = journal.title
         cell.journalLocationLabel.text = journal.location
@@ -114,29 +114,52 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         if !journal.images.isEmpty {
             cell.JournalImageView.contentMode = .scaleAspectFill
             cell.JournalImageView.clipsToBounds = true
-                cell.JournalImageView.image = journal.images.first
-                print("Displaying image for row \(indexPath.row)")
-            } else {
-                cell.JournalImageView.image = nil
-                print("No image to display for row \(indexPath.row)")
-            }
+            cell.JournalImageView.image = journal.images.first
+            print("Displaying image for row \(indexPath.row)")
+        } else {
+            cell.JournalImageView.image = nil
+            print("No image to display for row \(indexPath.row)")
+        }
         
         return cell
     }
-
-        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            return 165.0
-        }
     
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 165.0
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedJournal = journalsArray[indexPath.row]
         let journalVC = JournalViewController()
         journalVC.journal = selectedJournal
         navigationController?.pushViewController(journalVC, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] (action, view, completionHandler) in
+            guard let strongSelf = self else {
+                completionHandler(false)
+                return
+            }
+
+            // 刪除資料
+            strongSelf.journalsArray.remove(at: indexPath.row)
+
+            // 從 tableView 中刪除對應的 cell
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+
+            completionHandler(true)
+        }
+
+        deleteAction.backgroundColor = UIColor.B4
+
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        configuration.performsFirstActionWithFullSwipe = true
+        return configuration
+    }
 
     
-    }
+}
 
 extension JournalHomeViewController: JournalViewControllerDelegate {
     func journalEntryDidSave(_ journal: Journal) {
