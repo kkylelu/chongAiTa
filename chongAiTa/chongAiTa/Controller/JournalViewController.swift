@@ -12,7 +12,7 @@ protocol JournalViewControllerDelegate: AnyObject {
     func journalEntryDidSave(_ journal: Journal)
 }
 
-class JournalViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+class JournalViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
     
     let titleTextView = UITextView()
     let bodyTextView = UITextView()
@@ -32,11 +32,14 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     
     var imagesReadyToSave = false
     
+    let titlePlaceholder = "輸入標題"
+    let bodyPlaceholder = "輸入內容"
+    
     var journal: Journal?
     
     weak var delegate: JournalViewControllerDelegate?
     
-
+    
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,20 +58,32 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         selectedDate = Date()
         
         if let journal = journal {
-                    updateUI(with: journal)
-                }
-        
+            updateUI(with: journal)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-            moveTextViewCursorToEnd()
+            if journal == nil {
+                titleTextView.becomeFirstResponder()
+            } else {
+                bodyTextView.becomeFirstResponder()
+            }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        titleTextView.resignFirstResponder()
+            bodyTextView.resignFirstResponder()
     }
     
     
     //MARK: - Setup UI
     
     func setupUI() {
+        
+        titleTextView.delegate = self
+        bodyTextView.delegate = self
         
         view.backgroundColor = .white
         
@@ -98,16 +113,21 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         // TextView
         let grayColor = UIColor.systemGray
         
+        titleTextView.text = titlePlaceholder
+        titleTextView.textColor = .lightGray
+        
         titleTextView.font = UIFont.boldSystemFont(ofSize: 30)
         titleTextView.isEditable = true
         titleTextView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(titleTextView)
         
+        bodyTextView.text = bodyPlaceholder
+        bodyTextView.textColor = .lightGray
+        
         bodyTextView.font = UIFont.systemFont(ofSize: 24)
         bodyTextView.isEditable = true
         bodyTextView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bodyTextView)
-        
         
         imageButton.setImage(UIImage(systemName: "photo")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
         imageButton.setTitle("照片", for: .normal)
@@ -146,23 +166,6 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         
         setupConstraints()
         
-    }
-    
-    func moveTextViewCursorToEnd() {
-        let newPosition = bodyTextView.endOfDocument
-        bodyTextView.selectedTextRange = bodyTextView.textRange(from: newPosition, to: newPosition)
-    }
-    
-    // 設定標題和 body 的 textView
-    func updateTextViews(title: String, body: String) {
-        let titleFont = UIFont.boldSystemFont(ofSize: 30)
-        let bodyFont = UIFont.systemFont(ofSize: 24)
-        
-        titleTextView.font = titleFont
-        titleTextView.text = title
-        
-        bodyTextView.font = bodyFont
-        bodyTextView.text = body
     }
     
     func setupConstraints() {
@@ -216,20 +219,66 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
         ])
     }
     
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView === titleTextView && textView.text == titlePlaceholder {
+            textView.text = nil
+            textView.textColor = .black
+        } else if textView === bodyTextView && textView.text == bodyPlaceholder {
+            textView.text = nil
+            textView.textColor = .black
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView === titleTextView && textView.text.isEmpty {
+            textView.text = titlePlaceholder
+            textView.textColor = .lightGray
+        } else if textView === bodyTextView && textView.text.isEmpty {
+            textView.text = bodyPlaceholder
+            textView.textColor = .lightGray
+        }
+    }
+    
+    
     // MARK: - UpdateUI
     func updateUI(with journal: Journal) {
         titleTextView.text = journal.title
+        bodyTextView.text = journal.body
         
+        // 判斷是否需要設定非 placeholder 文本顏色
+        titleTextView.textColor = journal.title.isEmpty ? .lightGray : .black
+        bodyTextView.textColor = journal.body.isEmpty ? .lightGray : .black
+
+        // 如果日記內容與 placeholder 相同，則仍顯示為 lightGray
+        if titleTextView.text == titlePlaceholder {
+            titleTextView.textColor = .lightGray
+        }
+        if bodyTextView.text == bodyPlaceholder {
+            bodyTextView.textColor = .lightGray
+        }
+
         let attributedString = NSMutableAttributedString(string: journal.body)
         let textViewFont = bodyTextView.font ?? UIFont.systemFont(ofSize: 24)
         let range = NSRange(location: 0, length: attributedString.length)
         attributedString.addAttribute(.font, value: textViewFont, range: range)
-        
+
         bodyTextView.attributedText = attributedString
         selectedImages = journal.images
         insertImagesIntoTextView()
     }
 
+    
+    func updateTextViews(title: String, body: String) {
+        let titleFont = UIFont.boldSystemFont(ofSize: 30)
+        let bodyFont = UIFont.systemFont(ofSize: 24)
+        
+        titleTextView.font = titleFont
+        titleTextView.text = title
+        
+        bodyTextView.font = bodyFont
+        bodyTextView.text = body
+    }
+    
     
     //MARK: - Action
     
@@ -254,14 +303,18 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate &
     @objc func keyboardWillShow(notification: Notification) {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardHeight = keyboardFrame.cgRectValue.height
-            bottomConstraint?.constant = -keyboardHeight // 設置為鍵盤高度
             
-            UIView.animate(withDuration: 0.3) {
-                self.view.layoutIfNeeded()
+            DispatchQueue.main.async {
+                let bottomSafeAreaInset = self.view.safeAreaInsets.bottom
+                self.bottomConstraint?.constant = -(keyboardHeight - bottomSafeAreaInset)
+                
+                UIView.animate(withDuration: 0.3) {
+                    self.view.layoutIfNeeded()
+                }
             }
         }
     }
-    
+
     
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0

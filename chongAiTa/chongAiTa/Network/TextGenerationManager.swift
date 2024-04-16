@@ -15,13 +15,12 @@ class TextGenerationManager {
         let urlEndpoint = OpenAINetworkHelper.shared.baseURL + "chat/completions"
         let journalTexts = journals.map { $0.body }.joined(separator: "\n")
         let messages = [
-            ["role": "system", "content": "你是一個寵物日記摘要專家，請以親切的語氣，幫寵物主人回顧這個月紀錄的寵物日記內容，用寵物主人的口吻敘述成一篇小故事。請把特定時間例如「今天」、「晚上」，取代為「有一天」、「某天晚上」這樣的敘述。請用台灣繁體中文回覆。請限制在 200 個 token 內說完故事。"],
+            ["role": "system", "content": "You are a professional pet diary summarizer. Please, with a warm and friendly tone, help pet owners reflect on their pets' diary entries from this month and transform these records into a complete short story using the pet owner's voice. In the story, use vague terms like 'one day' or 'one evening' instead of specific times to broaden the story's universality. Ensure that the story is complete within a 200 token limit, with no cliffhangers or unfinished sentences. The story should include a clear beginning, development, and conclusion to ensure semantic completeness. Please respond in Traditional Chinese (Taiwan)."],
             ["role": "user", "content": journalTexts]
         ]
         let parameters: Parameters = [
             "model": "gpt-3.5-turbo",
             "messages": messages,
-            "max_tokens": 200
         ]
 
         NetworkManager.shared.request(url: urlEndpoint, method: .post, parameters: parameters, headers: OpenAINetworkHelper.shared.headers()) { (result: Result<OpenAIResponse, Error>) in
