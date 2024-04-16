@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import JournalingSuggestions
 
 class JournalHomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -102,15 +103,14 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         let journal = journalsArray[indexPath.row]
+            cell.journalTitleLabel.text = journal.title
+            cell.journalLocationLabel.text = "\(journal.place ?? "未知"), \(journal.city ?? "城市")"
         
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
         dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
-        
         cell.timeLabel.text = dateFormatter.string(from: journal.date)
-        cell.journalTitleLabel.text = journal.title
-        cell.journalLocationLabel.text = journal.location
-        
+
         if !journal.images.isEmpty {
             cell.JournalImageView.contentMode = .scaleAspectFill
             cell.JournalImageView.clipsToBounds = true
@@ -163,7 +163,17 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
 
 extension JournalHomeViewController: JournalViewControllerDelegate {
     func journalEntryDidSave(_ journal: Journal) {
-        self.journalsArray.append(journal)
-        self.tableView.reloadData()
+        journalsArray.append(journal)
+        tableView.reloadData()
     }
+
+    func locationDidPick(_ location: JournalingSuggestion.Location) {
+        if let last = journalsArray.indices.last {
+            journalsArray[last].place = location.place
+            journalsArray[last].city = location.city
+            tableView.reloadData()
+            print("Location updated for last journal: Place - \(location.place ?? "nil"), City - \(location.city ?? "nil")")
+        }
+    }
+
 }

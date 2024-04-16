@@ -7,9 +7,11 @@
 
 import UIKit
 import SwiftUI
+import JournalingSuggestions
 
 protocol JournalViewControllerDelegate: AnyObject {
     func journalEntryDidSave(_ journal: Journal)
+    func locationDidPick(_ location: JournalingSuggestion.Location)
 }
 
 class JournalViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
@@ -29,6 +31,8 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     var selectedDate: Date?
     var selectedImages = [UIImage]()
     var selectedLocation: String?
+    var selectedPlace: String?
+    var selectedCity: String?
     
     var imagesReadyToSave = false
     
@@ -288,16 +292,17 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     @objc func doneButtonTapped() {
         if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
-            print("title and date are valid")
-            let journal = Journal(title: title, body: body, date: date, images: selectedImages, location: "Default Location")
+            let journal = Journal(title: title, body: body, date: date, images: selectedImages, place: selectedPlace, city: selectedCity)
             delegate?.journalEntryDidSave(journal)
             navigationController?.popViewController(animated: true)
         } else {
+            print("Error: Missing information")
             if selectedDate == nil {
                 print("Error: Date is missing")
             }
         }
     }
+
     
     // 讓鍵盤把 bottomConstraint 往上推
     @objc func keyboardWillShow(notification: Notification) {
@@ -326,14 +331,17 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     @objc func didTapSuggestionsButton() {
         let journalData = JournalPickerData()
         var contentView = ContentView()
-        contentView.onCompletion = { [weak self] (title: String, images: [UIImage]) in
+        contentView.onCompletion = { [weak self] (title: String, images: [UIImage], place: String?, city: String?) in
             self?.updateTextViews(title: title, body: self?.bodyTextView.text ?? "")
             self?.processImages(images)
+            self?.selectedPlace = place
+            self?.selectedCity = city
             self?.dismiss(animated: true, completion: nil)
         }
         let hostingController = UIHostingController(rootView: contentView.environmentObject(journalData))
         present(hostingController, animated: true)
     }
+
     
     @objc func didTapImageButton() {
         let alertController = UIAlertController(title: "選擇圖片來源", message: nil, preferredStyle: .actionSheet)

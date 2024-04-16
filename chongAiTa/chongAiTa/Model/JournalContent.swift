@@ -11,6 +11,6 @@ struct Journal {
     var body: String
     var date: Date
     var images: [UIImage]
-    var location: String
-
+    var place: String?
+    var city: String?
 }

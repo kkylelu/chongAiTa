@@ -19,7 +19,7 @@ struct ContentView: View {
     @State var suggestionLocations: [IdentifiableLocation] = []
     @State private var region = MKCoordinateRegion()
     
-    var onCompletion: ((String, [UIImage]) -> Void)?
+    var onCompletion: ((String, [UIImage], String?, String?) -> Void)?
     
     var body: some View {
         VStack {
@@ -35,6 +35,8 @@ struct ContentView: View {
                         }
                     }
                 } onCompletion: { suggestion in
+                    // 印出 suggetionPicker 夾帶的所有資料
+                    print("Suggestion: \(suggestion)")
                     suggestionTitle = suggestion.title
                     loadContent(suggestion: suggestion)
                     loadLocation(suggestion: suggestion)
@@ -78,7 +80,8 @@ struct ContentView: View {
             let images = await suggestion.content(forType: UIImage.self)
             suggestionContent = images.map { UIImageWrapper(image: $0) }
             journalData.selectedImages = images
-            onCompletion?(suggestion.title, images)
+            // 暫時沒有地點參數，先傳 nil
+            onCompletion?(suggestion.title, images, nil, nil)
         }
     }
     
@@ -86,13 +89,19 @@ struct ContentView: View {
     func loadLocation(suggestion: JournalingSuggestion) {
         Task {
             if let locations = await suggestion.content(forType: JournalingSuggestion.Location.self).first {
+                print("Location Place: \(locations.place ?? "")")
+                print("Location City: \(locations.city ?? "")")
                 let identifiableLocation = IdentifiableLocation(location: locations)
                 suggestionLocations = [identifiableLocation]
                 if let coordinate = locations.location?.coordinate {
                     region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                 }
+                onCompletion?(suggestion.title, journalData.selectedImages, locations.place, locations.city)
+            } else {
+                onCompletion?(suggestion.title, journalData.selectedImages, nil, nil)
             }
         }
     }
+
 }
 
