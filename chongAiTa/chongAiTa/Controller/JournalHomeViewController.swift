@@ -69,13 +69,13 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     @objc func handleNewJournalEntry(_ notification: Notification) {
         if let newJournal = notification.userInfo?["journal"] as? Journal {
             if let index = journalsArray.firstIndex(where: { $0.id == newJournal.id }) {
-                // 更新現有日記
                 journalsArray[index] = newJournal
             } else {
-                // 新增日記
                 journalsArray.append(newJournal)
             }
-            tableView.reloadData()
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
         }
     }
 
@@ -112,8 +112,9 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         let journal = journalsArray[indexPath.row]
+        print("Location: \(journal.place ?? "未知地點"), \(journal.city ?? "未知地區")")
             cell.journalTitleLabel.text = journal.title
-            cell.journalLocationLabel.text = "\(journal.place ?? "未知"), \(journal.city ?? "城市")"
+            cell.journalLocationLabel.text = "\(journal.place ?? "未知地點"), \(journal.city ?? "未知地區")"
         
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "zh_Hant_TW")

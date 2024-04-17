@@ -80,7 +80,6 @@ struct ContentView: View {
             let images = await suggestion.content(forType: UIImage.self)
             suggestionContent = images.map { UIImageWrapper(image: $0) }
             journalData.selectedImages = images
-            // 暫時沒有地點參數，先傳 nil
             onCompletion?(suggestion.title, images, nil, nil)
         }
     }

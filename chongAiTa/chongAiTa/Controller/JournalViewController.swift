@@ -279,13 +279,8 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             navigationController?.popViewController(animated: true)
         } else {
             print("Error: Missing information")
-            if selectedDate == nil {
-                print("Error: Date is missing")
-            }
         }
     }
-
-
     
     // 讓鍵盤把 bottomConstraint 往上推
     @objc func keyboardWillShow(notification: Notification) {
@@ -315,12 +310,15 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         let journalData = JournalPickerData()
         var contentView = ContentView()
         contentView.onCompletion = { [weak self] (title: String, images: [UIImage], place: String?, city: String?) in
-            self?.updateTextViews(title: title, body: self?.bodyTextView.text ?? "")
-            self?.processImages(images)
-            self?.selectedPlace = place
-            self?.selectedCity = city
-            self?.dismiss(animated: true, completion: nil)
+            DispatchQueue.main.async {
+                self?.updateTextViews(title: title, body: self?.bodyTextView.text ?? "")
+                self?.processImages(images)
+                self?.selectedPlace = place
+                self?.selectedCity = city
+                self?.dismiss(animated: true, completion: nil)
+            }
         }
+
         let hostingController = UIHostingController(rootView: contentView.environmentObject(journalData))
         present(hostingController, animated: true)
     }
