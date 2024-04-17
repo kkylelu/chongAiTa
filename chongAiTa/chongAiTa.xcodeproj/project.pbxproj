@@ -16,6 +16,7 @@
 		275CC3632BC7C12F0062C75C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */; };
 		277FE39B2BCD7C0400F63F6A /* OpenAIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */; };
 		278D20DB2BCF825600F80764 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278D20DA2BCF825600F80764 /* MapViewController.swift */; };
+		278D46552BCFCD0300C4F677 /* NewJournalNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278D46542BCFCD0300C4F677 /* NewJournalNotification.swift */; };
 		27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */; };
 		27A462142BCAC00D00503F3E /* JournalingSuggestionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462132BCAC00D00503F3E /* JournalingSuggestionsModel.swift */; };
 		27A462162BCAD83D00503F3E /* JournalPickerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462152BCAD83D00503F3E /* JournalPickerData.swift */; };
@@ -67,6 +68,7 @@
 		275CC3642BC7D00D0062C75C /* chongAiTa.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = chongAiTa.entitlements; sourceTree = "<group>"; };
 		277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIResponse.swift; sourceTree = "<group>"; };
 		278D20DA2BCF825600F80764 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		278D46542BCFCD0300C4F677 /* NewJournalNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewJournalNotification.swift; sourceTree = "<group>"; };
 		27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingSuggestionsView.swift; sourceTree = "<group>"; };
 		27A462132BCAC00D00503F3E /* JournalingSuggestionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingSuggestionsModel.swift; sourceTree = "<group>"; };
 		27A462152BCAD83D00503F3E /* JournalPickerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalPickerData.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 				27A462152BCAD83D00503F3E /* JournalPickerData.swift */,
 				27F004482BCCE0A100C87472 /* JournalContent.swift */,
 				277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */,
+				278D46542BCFCD0300C4F677 /* NewJournalNotification.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -564,6 +567,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				278D46552BCFCD0300C4F677 /* NewJournalNotification.swift in Sources */,
 				277FE39B2BCD7C0400F63F6A /* OpenAIResponse.swift in Sources */,
 				27A462142BCAC00D00503F3E /* JournalingSuggestionsModel.swift in Sources */,
 				27A462162BCAD83D00503F3E /* JournalPickerData.swift in Sources */,

@@ -9,11 +9,6 @@ import UIKit
 import SwiftUI
 import JournalingSuggestions
 
-protocol JournalViewControllerDelegate: AnyObject {
-    func journalEntryDidSave(_ journal: Journal)
-    func locationDidPick(_ location: JournalingSuggestion.Location)
-}
-
 class JournalViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
     
     let titleTextView = UITextView()
@@ -40,9 +35,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     let bodyPlaceholder = "輸入內容"
     
     var journal: Journal?
-    
-    weak var delegate: JournalViewControllerDelegate?
-    
+        
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -138,11 +131,6 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         imageButton.tintColor = grayColor
         imageButton.titleLabel?.textAlignment = .center
         
-        //        templateButton.setImage(UIImage(systemName: "doc")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
-        //        templateButton.setTitle("範本", for: .normal)
-        //        templateButton.tintColor = grayColor
-        //        templateButton.titleLabel?.textAlignment = .center
-        
         suggestionsButton.setImage(UIImage(systemName: "lightbulb")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
         suggestionsButton.setTitle("建議", for: .normal)
         suggestionsButton.tintColor = grayColor
@@ -206,13 +194,6 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             imageButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
             imageButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/2)
         ])
-        
-        //        NSLayoutConstraint.activate([
-        //            templateButton.leftAnchor.constraint(equalTo: imageButton.rightAnchor),
-        //            templateButton.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
-        //            templateButton.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
-        //            templateButton.widthAnchor.constraint(equalTo: buttonContainerView.widthAnchor, multiplier: 1/3)
-        //        ])
         
         NSLayoutConstraint.activate([
             suggestionsButton.leftAnchor.constraint(equalTo: templateButton.rightAnchor),
@@ -292,8 +273,9 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     @objc func doneButtonTapped() {
         if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
-            let journal = Journal(title: title, body: body, date: date, images: selectedImages, place: selectedPlace, city: selectedCity)
-            delegate?.journalEntryDidSave(journal)
+            let newJournal = Journal(id: journal?.id ?? UUID(), title: title, body: body, date: date, images: selectedImages, place: selectedPlace, city: selectedCity)
+            
+            NotificationCenter.default.post(name: .newJournalEntrySaved, object: nil, userInfo: ["journal": newJournal])
             navigationController?.popViewController(animated: true)
         } else {
             print("Error: Missing information")
@@ -302,6 +284,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             }
         }
     }
+
 
     
     // 讓鍵盤把 bottomConstraint 往上推

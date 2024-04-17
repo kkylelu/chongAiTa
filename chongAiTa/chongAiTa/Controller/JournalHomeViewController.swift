@@ -25,8 +25,9 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
         
         setupFloatingButton()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNewJournalEntry(_:)), name: .newJournalEntrySaved, object: nil)
         
-    }
+        }
     
     // MARK: - Setup UI
     
@@ -59,19 +60,27 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     @objc func floatingButtonTapped() {
         let journalVC = JournalViewController()
-        journalVC.delegate = self
         navigationController?.pushViewController(journalVC, animated: true)
     }
     
     
-    func showJournalViewController() {
-        let journalVC = JournalViewController()
-        journalVC.delegate = self
-    }
-    
     // MARK: - Action
     
-    // 日記回顧
+    @objc func handleNewJournalEntry(_ notification: Notification) {
+        if let newJournal = notification.userInfo?["journal"] as? Journal {
+            if let index = journalsArray.firstIndex(where: { $0.id == newJournal.id }) {
+                // 更新現有日記
+                journalsArray[index] = newJournal
+            } else {
+                // 新增日記
+                journalsArray.append(newJournal)
+            }
+            tableView.reloadData()
+        }
+    }
+
+    
+    // AI 日記回顧
     @objc func generateSummary() {
         TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
             DispatchQueue.main.async {
@@ -159,21 +168,4 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     }
 
     
-}
-
-extension JournalHomeViewController: JournalViewControllerDelegate {
-    func journalEntryDidSave(_ journal: Journal) {
-        journalsArray.append(journal)
-        tableView.reloadData()
-    }
-
-    func locationDidPick(_ location: JournalingSuggestion.Location) {
-        if let last = journalsArray.indices.last {
-            journalsArray[last].place = location.place
-            journalsArray[last].city = location.city
-            tableView.reloadData()
-            print("Location updated for last journal: Place - \(location.place ?? "nil"), City - \(location.city ?? "nil")")
-        }
-    }
-
 }
