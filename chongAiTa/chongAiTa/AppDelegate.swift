@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let apiKeys = APIKeys(resourceName: "API-Keys")
         GMSServices.provideAPIKey(apiKeys.googleMapsAPIKey)
+        GMSServices.provideAPIKey(apiKeys.googlePlacesAPIKey)
         
         FirebaseApp.configure()
         

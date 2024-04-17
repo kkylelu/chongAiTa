@@ -30,4 +30,8 @@ class APIKeys {
     var googleMapsAPIKey: String {
             dictionary["GOOGLEMAPS_AUTHORIZATION"] as? String ?? ""
         }
+    
+    var googlePlacesAPIKey: String {
+            dictionary["GOOGLEPLACES_AUTHORIZATION"] as? String ?? ""
+        }
 }

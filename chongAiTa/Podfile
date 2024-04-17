@@ -9,6 +9,8 @@ target 'chongAiTa' do
 	pod 'SwiftLint'
 	pod 'IQKeyboardManagerSwift'
 	pod 'GoogleMaps'
+	pod 'GooglePlaces'
+
 
   target 'chongAiTaTests' do
     inherit! :search_paths

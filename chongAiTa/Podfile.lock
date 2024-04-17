@@ -4,25 +4,29 @@ PODS:
   - GoogleMaps/Base (8.4.0)
   - GoogleMaps/Maps (8.4.0):
     - GoogleMaps/Base
+  - GooglePlaces (8.5.0)
   - IQKeyboardManagerSwift (7.0.1)
   - SwiftLint (0.54.0)
 
 DEPENDENCIES:
   - GoogleMaps
+  - GooglePlaces
   - IQKeyboardManagerSwift
   - SwiftLint
 
 SPEC REPOS:
   trunk:
     - GoogleMaps
+    - GooglePlaces
     - IQKeyboardManagerSwift
     - SwiftLint
 
 SPEC CHECKSUMS:
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
+  GooglePlaces: 426efb69051e7b460e16300ba63598687d10fa1a
   IQKeyboardManagerSwift: 7f6b1b1d1497855d2beea7f2f10ffcc6978525b1
   SwiftLint: c1de071d9d08c8aba837545f6254315bc900e211
 
-PODFILE CHECKSUM: 8a48d1c0c6bfc66a8574cfb3ba7c349fda6d17fa
+PODFILE CHECKSUM: 7f4378a5a68d0d6daf32a6a6f2e361796bdfbcee
 
 COCOAPODS: 1.15.2

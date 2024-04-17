@@ -5,6 +5,10 @@ This application makes use of the following third party libraries:
 
 Copyright 2024 Google LLC
 
+## GooglePlaces
+
+Copyright 2024 Google LLC
+
 ## IQKeyboardManagerSwift
 
 MIT License
