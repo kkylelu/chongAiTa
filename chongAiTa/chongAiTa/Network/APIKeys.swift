@@ -26,4 +26,8 @@ class APIKeys {
     var openAiAPIKey: String {
         dictionary["OPENAI_AUTHORIZATION"] as? String ?? ""
     }
+    
+    var googleMapsAPIKey: String {
+            dictionary["GOOGLEMAPS_AUTHORIZATION"] as? String ?? ""
+        }
 }

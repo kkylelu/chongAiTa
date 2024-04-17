@@ -15,6 +15,7 @@
 		275CC3612BC7BF3D0062C75C /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC3602BC7BF3D0062C75C /* FirebaseStorage */; };
 		275CC3632BC7C12F0062C75C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */; };
 		277FE39B2BCD7C0400F63F6A /* OpenAIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */; };
+		278D20DB2BCF825600F80764 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278D20DA2BCF825600F80764 /* MapViewController.swift */; };
 		27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */; };
 		27A462142BCAC00D00503F3E /* JournalingSuggestionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462132BCAC00D00503F3E /* JournalingSuggestionsModel.swift */; };
 		27A462162BCAD83D00503F3E /* JournalPickerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462152BCAD83D00503F3E /* JournalPickerData.swift */; };
@@ -65,6 +66,7 @@
 		275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		275CC3642BC7D00D0062C75C /* chongAiTa.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = chongAiTa.entitlements; sourceTree = "<group>"; };
 		277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIResponse.swift; sourceTree = "<group>"; };
+		278D20DA2BCF825600F80764 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingSuggestionsView.swift; sourceTree = "<group>"; };
 		27A462132BCAC00D00503F3E /* JournalingSuggestionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingSuggestionsModel.swift; sourceTree = "<group>"; };
 		27A462152BCAD83D00503F3E /* JournalPickerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalPickerData.swift; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 			children = (
 				274CE0D62BC8275C00277222 /* JournalViewController.swift */,
 				27A4621A2BCBE89D00503F3E /* JournalHomeViewController.swift */,
+				278D20DA2BCF825600F80764 /* MapViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 				27F9758D2BC6B01100B2A041 /* Frameworks */,
 				27F9758E2BC6B01100B2A041 /* Resources */,
 				6ACEA9D4EDE9564215F2B1E3 /* [CP] Embed Pods Frameworks */,
+				0D805CF432E2EEB8E3170A40 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -329,6 +333,7 @@
 				27F975AD2BC6B01300B2A041 /* Frameworks */,
 				27F975AE2BC6B01300B2A041 /* Resources */,
 				B1FEBB49767F6D9A40A1A281 /* [CP] Embed Pods Frameworks */,
+				A09AC036E72196E9D63239E3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -418,6 +423,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0D805CF432E2EEB8E3170A40 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-chongAiTa/Pods-chongAiTa-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-chongAiTa/Pods-chongAiTa-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-chongAiTa/Pods-chongAiTa-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		6ACEA9D4EDE9564215F2B1E3 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -455,6 +477,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A09AC036E72196E9D63239E3 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-chongAiTa-chongAiTaUITests/Pods-chongAiTa-chongAiTaUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-chongAiTa-chongAiTaUITests/Pods-chongAiTa-chongAiTaUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-chongAiTa-chongAiTaUITests/Pods-chongAiTa-chongAiTaUITests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		ACA1FDAB4ABFBDFB7B322DA7 /* [CP] Check Pods Manifest.lock */ = {
@@ -540,6 +579,7 @@
 				27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */,
 				27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */,
 				27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */,
+				278D20DB2BCF825600F80764 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
