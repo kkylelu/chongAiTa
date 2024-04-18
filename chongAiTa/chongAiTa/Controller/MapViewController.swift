@@ -37,14 +37,27 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         marker.snippet = "100台北市中正區仁愛路二段99號"
         marker.map = mapView
         
+        let hospitalButton = UIButton(type: .custom)
+        hospitalButton.backgroundColor = UIColor.hexStringToUIColor(hex: "#FEAABC")
+        hospitalButton.layer.cornerRadius = 28
+        hospitalButton.layer.shadowOpacity = 0.3
+        hospitalButton.layer.shadowRadius = 4
+        hospitalButton.layer.shadowOffset = CGSize(width: 0, height: 4)
+        let hospitalButtonImage = UIImage(systemName: "cross.case.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
+        hospitalButton.setImage(hospitalButtonImage, for: .normal)
+        hospitalButton.tintColor = .white
+        hospitalButton.translatesAutoresizingMaskIntoConstraints = false
+        hospitalButton.addTarget(self, action: #selector(findNearbyAnimalHospitals), for: .touchUpInside)
+        view.addSubview(hospitalButton)
+        
         let currentLocButton = UIButton(type: .custom)
         currentLocButton.backgroundColor = UIColor.B1
         currentLocButton.layer.cornerRadius = 28
         currentLocButton.layer.shadowOpacity = 0.3
         currentLocButton.layer.shadowRadius = 4
         currentLocButton.layer.shadowOffset = CGSize(width: 0, height: 4)
-        let image = UIImage(systemName: "location.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
-        currentLocButton.setImage(image, for: .normal)
+        let currentLocButtonImage = UIImage(systemName: "location.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
+        currentLocButton.setImage(currentLocButtonImage, for: .normal)
         currentLocButton.tintColor = .white
         currentLocButton.translatesAutoresizingMaskIntoConstraints = false
         
@@ -59,7 +72,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             currentLocButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
             currentLocButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -25),
             currentLocButton.widthAnchor.constraint(equalToConstant: 56),
-            currentLocButton.heightAnchor.constraint(equalToConstant: 56)
+            currentLocButton.heightAnchor.constraint(equalToConstant: 56),
+            
+            hospitalButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            hospitalButton.bottomAnchor.constraint(equalTo: currentLocButton.topAnchor, constant: -15),
+            hospitalButton.widthAnchor.constraint(equalToConstant: 56),
+            hospitalButton.heightAnchor.constraint(equalToConstant: 56)
         ])
     }
     
@@ -86,4 +104,43 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("找不到使用者的位置: \(error.localizedDescription)")
     }
+    
+    @objc func findNearbyAnimalHospitals() {
+        guard let location = locationManager.location else {
+            print("無法獲取用戶位置")
+            return
+        }
+        
+        let apiKeys = APIKeys(resourceName: "API-Keys")
+        let googlePlacesAPIKey = apiKeys.googlePlacesAPIKey
+        
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
+        // 查詢範圍為 5000 公尺
+        let radius = 5000
+        let type = "veterinary_care"
+        
+        let url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(latitude),\(longitude)&radius=\(radius)&type=\(type)&key=\(googlePlacesAPIKey)"
+        
+        NetworkManager.shared.request(url: url, method: .get, parameters: nil, headers: []) { (result: Result<PlacesResponse, Error>) in
+            switch result {
+            case .success(let data):
+                for place in data.results {
+                    self.addPlaceMarker(place)
+                }
+            case .failure(let error):
+                print("錯誤：\(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func addPlaceMarker(_ place: Place) {
+        let marker = GMSMarker()
+        marker.position = CLLocationCoordinate2D(latitude: place.geometry.location.lat, longitude: place.geometry.location.lng)
+        marker.title = place.name
+        marker.snippet = place.vicinity
+        marker.map = mapView
+        mapView.selectedMarker = marker
+    }
+    
 }
