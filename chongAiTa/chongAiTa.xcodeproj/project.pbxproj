@@ -17,6 +17,8 @@
 		27694EF92BD0D28200D90167 /* ChatBotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694EF82BD0D28200D90167 /* ChatBotViewController.swift */; };
 		27694F4D2BD0F02F00D90167 /* ChatBotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694F4C2BD0F02F00D90167 /* ChatBotManager.swift */; };
 		27694F502BD0F80F00D90167 /* MessageBubbleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694F4F2BD0F80F00D90167 /* MessageBubbleTableViewCell.swift */; };
+		27694F532BD1232E00D90167 /* petsfaq.json in Resources */ = {isa = PBXBuildFile; fileRef = 27694F522BD1232E00D90167 /* petsfaq.json */; };
+		27694F552BD124AB00D90167 /* FAQEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694F542BD124AB00D90167 /* FAQEntry.swift */; };
 		277FE39B2BCD7C0400F63F6A /* OpenAIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */; };
 		2780026F2BD0B426007AD842 /* GooglePlacesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */; };
 		278D20DB2BCF825600F80764 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278D20DA2BCF825600F80764 /* MapViewController.swift */; };
@@ -73,6 +75,8 @@
 		27694EF82BD0D28200D90167 /* ChatBotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBotViewController.swift; sourceTree = "<group>"; };
 		27694F4C2BD0F02F00D90167 /* ChatBotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBotManager.swift; sourceTree = "<group>"; };
 		27694F4F2BD0F80F00D90167 /* MessageBubbleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleTableViewCell.swift; sourceTree = "<group>"; };
+		27694F522BD1232E00D90167 /* petsfaq.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = petsfaq.json; sourceTree = "<group>"; };
+		27694F542BD124AB00D90167 /* FAQEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQEntry.swift; sourceTree = "<group>"; };
 		277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIResponse.swift; sourceTree = "<group>"; };
 		2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GooglePlacesResponse.swift; sourceTree = "<group>"; };
 		278D20DA2BCF825600F80764 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -166,6 +170,7 @@
 				277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */,
 				278D46542BCFCD0300C4F677 /* NewJournalNotification.swift */,
 				2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */,
+				27694F542BD124AB00D90167 /* FAQEntry.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -199,6 +204,14 @@
 				27694F4F2BD0F80F00D90167 /* MessageBubbleTableViewCell.swift */,
 			);
 			path = MessageBubbleTableViewCell;
+			sourceTree = "<group>";
+		};
+		27694F512BD1230200D90167 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				27694F522BD1232E00D90167 /* petsfaq.json */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		27A462172BCBE25300503F3E /* Extention */ = {
@@ -255,6 +268,7 @@
 		27F975922BC6B01100B2A041 /* chongAiTa */ = {
 			isa = PBXGroup;
 			children = (
+				27694F512BD1230200D90167 /* Resources */,
 				27F0044D2BCD36CD00C87472 /* Network */,
 				27A462172BCBE25300503F3E /* Extention */,
 				274CE0DA2BC8277E00277222 /* Controller */,
@@ -420,6 +434,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27694F532BD1232E00D90167 /* petsfaq.json in Resources */,
 				27F9759D2BC6B01300B2A041 /* Assets.xcassets in Resources */,
 				27F004552BCD3D5900C87472 /* API-Keys.plist in Resources */,
 				275CC3632BC7C12F0062C75C /* GoogleService-Info.plist in Resources */,
@@ -604,6 +619,7 @@
 				27A4621B2BCBE89D00503F3E /* JournalHomeViewController.swift in Sources */,
 				27694F4D2BD0F02F00D90167 /* ChatBotManager.swift in Sources */,
 				27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */,
+				27694F552BD124AB00D90167 /* FAQEntry.swift in Sources */,
 				27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */,
 				27694F502BD0F80F00D90167 /* MessageBubbleTableViewCell.swift in Sources */,
 				27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */,

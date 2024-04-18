@@ -28,7 +28,7 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func configureQuickReplyButtons() {
-        let messages = ["狗為什麼不吃飼料？", "多久要帶狗去打疫苗？", "狗可以吃巧克力嗎?"]
+        let messages = ["狗狗會感冒嗎？", "多久要帶狗狗去打疫苗？", "狗狗可以吃巧克力嗎？"]
         
         for message in messages {
             let button = UIButton(type: .system)
@@ -114,21 +114,43 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     
     @objc func sendMessage(message: String) {
-        // 聊天列表預設快速回覆
+        // 快速回覆
         appendMessageAndReload(message)
         
-        ChatBotManager.shared.sendChatMessage(message: message) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let response):
-                    self?.appendMessageAndReload("\(response)")
-                case .failure(let error):
-                    self?.messages.append("Error: \(error.localizedDescription)")
-                    self?.appendMessageAndReload("Error: \(error.localizedDescription)")
+        if let faqData = loadFAQData(), let response = searchFAQ(for: message, in: faqData) {
+            self.appendMessageAndReload(response)
+        } else {
+            // 超出 faq 題庫範圍時 call API
+            ChatBotManager.shared.sendChatMessage(message: message) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let response):
+                        self?.appendMessageAndReload("\(response)")
+                    case .failure(let error):
+                        self?.messages.append("Error: \(error.localizedDescription)")
+                        self?.appendMessageAndReload("Error: \(error.localizedDescription)")
+                    }
                 }
             }
         }
     }
+    
+    func searchFAQ(for question: String, in data: FAQCategory) -> String? {
+        // 關鍵字分割
+        let keywords = question.components(separatedBy: " ")
+        let categories = [data.health, data.nutrition, data.care]
+
+        for category in categories {
+            for entry in category {
+                let entryKeywords = entry.question.components(separatedBy: " ")
+                if keywords.contains(where: { entryKeywords.contains($0.lowercased()) }) {
+                    return entry.answer
+                }
+            }
+        }
+        return nil
+    }
+
 
     
     func appendMessageAndReload(_ message: String) {
@@ -146,6 +168,20 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         sendMessage(message: text)
         textField.text = ""
     }
+    
+    func loadFAQData() -> FAQCategory? {
+        guard let url = Bundle.main.url(forResource: "petsfaq", withExtension: "json") else { return nil }
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let jsonData = try decoder.decode(FAQCategory.self, from: data)
+            return jsonData
+        } catch {
+            print("Failed to load or parse FAQ data: \(error)")
+            return nil
+        }
+    }
+
 
     
     // MARK: - TableView Delegate
