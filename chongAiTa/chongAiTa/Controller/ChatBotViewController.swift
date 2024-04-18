@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
@@ -19,6 +20,7 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        downloadFAQs()
         
         setupUI()
         configureTableView()
@@ -135,6 +137,82 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    func downloadFAQs() {
+        let db = Firestore.firestore()
+        let categories = ["health", "nutrition", "care"]
+        var allFAQs: [String: [FAQEntry]] = [:]
+        let dispatchGroup = DispatchGroup()
+
+        for category in categories {
+            dispatchGroup.enter()
+            db.collection("faqs").document("id").collection(category).getDocuments { (snapshot, error) in
+                if let error = error {
+                    print("下載 \(category) 分類的文件出錯: \(error)")
+                } else if let snapshot = snapshot {
+                    var categoryFAQs: [FAQEntry] = []
+                    for document in snapshot.documents {
+                        let question = document.data()["question"] as? String ?? "No question"
+                        let answer = document.data()["answer"] as? String ?? "No answer"
+                        categoryFAQs.append(FAQEntry(question: question, answer: answer))
+                    }
+                    allFAQs[category] = categoryFAQs
+                    
+                    // 確保在所有類別的FAQ都已經讀取之後再更新 local 檔案
+                    if allFAQs.keys.count == categories.count {
+                        self.updateLocalFAQs(allFAQs)
+                    }
+                }
+                dispatchGroup.notify(queue: .main) {
+                        self.updateLocalFAQs(allFAQs)
+                    }
+            }
+        }
+    }
+
+    func updateLocalFAQs(_ faqs: [String: [FAQEntry]]) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(faqs) {
+            let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+            let fileURL = urls[0].appendingPathComponent("petsfaq.json")
+            do {
+                try encoded.write(to: fileURL)
+                print("成功更新預設 FAQ")
+
+                // 驗證資料是否被寫入
+                let data = try Data(contentsOf: fileURL)
+                let decoder = JSONDecoder()
+                if let decodedFAQs = try? decoder.decode([String: [FAQEntry]].self, from: data) {
+                    print("驗證成功，資料已被寫入且可以正確讀取。")
+                    print(decodedFAQs)
+                } else {
+                    print("資料寫入後無法解碼，請檢查資料結構和JSON格式。")
+                }
+            } catch {
+                print("更新預設 FAQ 失敗: \(error)")
+            }
+        }
+    }
+
+    func loadFAQData() -> FAQCategory? {
+        let fileManager = FileManager.default
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let fileURL = urls[0].appendingPathComponent("petsfaq.json")
+
+        if fileManager.fileExists(atPath: fileURL.path) {
+            do {
+                let data = try Data(contentsOf: fileURL)
+                let decoder = JSONDecoder()
+                let jsonData = try decoder.decode(FAQCategory.self, from: data)
+                return jsonData
+            } catch {
+                print("Failed to load or parse FAQ data: \(error)")
+            }
+        } else {
+            print("FAQ file does not exist at path: \(fileURL.path)")
+        }
+        return nil
+    }
+
     func searchFAQ(for question: String, in data: FAQCategory) -> String? {
         // 關鍵字分割
         let keywords = question.components(separatedBy: " ")
@@ -150,8 +228,6 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         return nil
     }
-
-
     
     func appendMessageAndReload(_ message: String) {
         messages.append(message)
@@ -168,21 +244,6 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         sendMessage(message: text)
         textField.text = ""
     }
-    
-    func loadFAQData() -> FAQCategory? {
-        guard let url = Bundle.main.url(forResource: "petsfaq", withExtension: "json") else { return nil }
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let jsonData = try decoder.decode(FAQCategory.self, from: data)
-            return jsonData
-        } catch {
-            print("Failed to load or parse FAQ data: \(error)")
-            return nil
-        }
-    }
-
-
     
     // MARK: - TableView Delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
