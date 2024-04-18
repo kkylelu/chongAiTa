@@ -15,6 +15,7 @@
 		275CC3612BC7BF3D0062C75C /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC3602BC7BF3D0062C75C /* FirebaseStorage */; };
 		275CC3632BC7C12F0062C75C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */; };
 		27694EF92BD0D28200D90167 /* ChatBotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694EF82BD0D28200D90167 /* ChatBotViewController.swift */; };
+		27694F4D2BD0F02F00D90167 /* ChatBotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694F4C2BD0F02F00D90167 /* ChatBotManager.swift */; };
 		277FE39B2BCD7C0400F63F6A /* OpenAIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */; };
 		2780026F2BD0B426007AD842 /* GooglePlacesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */; };
 		278D20DB2BCF825600F80764 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278D20DA2BCF825600F80764 /* MapViewController.swift */; };
@@ -69,6 +70,7 @@
 		275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		275CC3642BC7D00D0062C75C /* chongAiTa.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = chongAiTa.entitlements; sourceTree = "<group>"; };
 		27694EF82BD0D28200D90167 /* ChatBotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBotViewController.swift; sourceTree = "<group>"; };
+		27694F4C2BD0F02F00D90167 /* ChatBotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBotManager.swift; sourceTree = "<group>"; };
 		277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIResponse.swift; sourceTree = "<group>"; };
 		2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GooglePlacesResponse.swift; sourceTree = "<group>"; };
 		278D20DA2BCF825600F80764 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */,
 				27F004522BCD386600C87472 /* NetworkManager.swift */,
 				270D97762BCD3E7A00AA8D79 /* APIKeys.swift */,
+				27694F4C2BD0F02F00D90167 /* ChatBotManager.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -588,6 +591,7 @@
 				27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */,
 				27694EF92BD0D28200D90167 /* ChatBotViewController.swift in Sources */,
 				27A4621B2BCBE89D00503F3E /* JournalHomeViewController.swift in Sources */,
+				27694F4D2BD0F02F00D90167 /* ChatBotManager.swift in Sources */,
 				27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */,
 				27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */,
 				27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */,
