@@ -10,32 +10,41 @@ import GoogleMaps
 import GooglePlaces
 import CoreLocation
 
-class MapViewController: UIViewController, CLLocationManagerDelegate {
+class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDelegate {
     
     var mapView: GMSMapView!
     let locationManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        
         setupUI()
         setupCurrentLocButton()
+        
+        // 顯示使用者目前位置
+        mapView.isMyLocationEnabled = true
+        
+        mapView.delegate = self
+
     }
     
     func setupUI() {
+                
         let camera = GMSCameraPosition.camera(withLatitude: 25.039413072140746, longitude: 121.53243457301599, zoom: 16.0)
         mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
         mapView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mapView)
         
-        let marker = GMSMarker()
-        marker.position = CLLocationCoordinate2D(latitude: 25.039413072140746, longitude: 121.53243457301599)
-        marker.title = "AppWorks School"
-        marker.snippet = "100台北市中正區仁愛路二段99號"
-        marker.map = mapView
+//        let marker = GMSMarker()
+//        marker.position = CLLocationCoordinate2D(latitude: 25.039413072140746, longitude: 121.53243457301599)
+//        marker.title = "AppWorks School"
+//        marker.snippet = "100台北市中正區仁愛路二段99號"
+//        marker.map = mapView
         
         let hospitalButton = UIButton(type: .custom)
         hospitalButton.backgroundColor = UIColor.hexStringToUIColor(hex: "#FEAABC")
@@ -139,8 +148,42 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         marker.position = CLLocationCoordinate2D(latitude: place.geometry.location.lat, longitude: place.geometry.location.lng)
         marker.title = place.name
         marker.snippet = place.vicinity
+        marker.userData = place
         marker.map = mapView
-        mapView.selectedMarker = marker
     }
+
+    func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker) {
+
+        guard let place = marker.userData as? Place else {
+            print("錯誤：無法獲取地點資料")
+            return
+        }
+
+        let alertController = UIAlertController(
+            title: "導航到 \(place.name)",
+            message: "你想要打開 Google 地圖進行導航嗎？",
+            preferredStyle: .alert
+        )
+
+        let openAction = UIAlertAction(title: "打開", style: .default) { _ in
+            if let url = URL(string: "comgooglemaps://?saddr=&daddr=\(place.geometry.location.lat),\(place.geometry.location.lng)&directionsmode=driving"),
+               UIApplication.shared.canOpenURL(url) {
+                // 如果有安裝 Google 地圖 App 就打開
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            } else if let webUrl = URL(string: "https://www.google.com/maps/dir/?api=1&destination=\(place.geometry.location.lat),\(place.geometry.location.lng)&travelmode=driving") {
+                // 如果沒有地圖 App，打開瀏覽器中的 Google 地圖
+                UIApplication.shared.open(webUrl, options: [:], completionHandler: nil)
+            }
+        }
+
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+
+        alertController.addAction(openAction)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
+    }
+
+
     
 }
