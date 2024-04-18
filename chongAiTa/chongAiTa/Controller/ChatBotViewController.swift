@@ -20,16 +20,27 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         super.viewDidLoad()
         
         setupUI()
+        configureTableView()
         
+        tableView.register(MessageBubbleTableViewCell.self, forCellReuseIdentifier: "MessageBubbleTableViewCell")
     }
     
     //MARK: - Setup UI
+    func configureTableView(){
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+        tableView.estimatedRowHeight = 44
+        tableView.rowHeight = UITableView.automaticDimension
+        
+        tableView.separatorStyle = .none
+        tableView.keyboardDismissMode = .interactive
+    }
+    
     func setupUI() {
         tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "messageCell")
-        tableView.dataSource = self
-        tableView.delegate = self
         view.addSubview(tableView)
         
         textField = UITextField()
@@ -63,14 +74,14 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @objc func sendMessage() {
         guard let text = textField.text, !text.isEmpty else { return }
-        appendMessageAndReload("User: \(text)")
+        appendMessageAndReload("\(text)")
         textField.text = ""
         
         ChatBotManager.shared.sendChatMessage(message: text) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
-                    self?.appendMessageAndReload("AI: \(response)")
+                    self?.appendMessageAndReload("\(response)")
                 case .failure(let error):
                     self?.messages.append("Error: \(error.localizedDescription)")
                     self?.appendMessageAndReload("Error: \(error.localizedDescription)")
@@ -88,16 +99,16 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
     }
     
-    
-    
     // MARK: - TableView Delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "messageCell", for: indexPath)
-        cell.textLabel?.text = messages[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MessageBubbleTableViewCell", for: indexPath) as! MessageBubbleTableViewCell
+        let message = messages[indexPath.row]
+        // 偶數行是 user 的對話
+        cell.configure(with: message, isFromCurrentUser: indexPath.row % 2 == 0)
         return cell
     }
     
