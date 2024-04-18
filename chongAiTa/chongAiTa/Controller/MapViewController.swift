@@ -125,8 +125,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         let latitude = location.coordinate.latitude
         let longitude = location.coordinate.longitude
-        // 查詢範圍為 5000 公尺
-        let radius = 5000
+        // 查詢範圍為 3000 公尺
+        let radius = 3000
         let type = "veterinary_care"
         
         let url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(latitude),\(longitude)&radius=\(radius)&type=\(type)&key=\(googlePlacesAPIKey)"

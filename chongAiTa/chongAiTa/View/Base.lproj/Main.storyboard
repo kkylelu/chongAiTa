@@ -55,6 +55,22 @@
             </objects>
             <point key="canvasLocation" x="1946" y="1227"/>
         </scene>
+        <!--Chat Bot View Controller-->
+        <scene sceneID="lGG-DS-Jcl">
+            <objects>
+                <viewController id="47a-pQ-gQo" customClass="ChatBotViewController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qRY-Lb-uKb">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="vnM-mH-JdT"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Dn6-md-chu"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Rrr-XA-hfD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2818" y="1227"/>
+        </scene>
         <!--Journal View Controller-->
         <scene sceneID="ntw-4m-1lW">
             <objects>
@@ -103,6 +119,7 @@
                     <connections>
                         <segue destination="Qru-u0-Mq8" kind="relationship" relationship="viewControllers" id="jTe-90-29S"/>
                         <segue destination="756-Ex-WO4" kind="relationship" relationship="viewControllers" id="vFZ-PP-xph"/>
+                        <segue destination="Kep-Mo-Ozq" kind="relationship" relationship="viewControllers" id="xgn-Em-mWw"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jX6-GP-P5m" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -128,9 +145,29 @@
             </objects>
             <point key="canvasLocation" x="1946" y="513"/>
         </scene>
+        <!--問 AI-->
+        <scene sceneID="zrA-Fz-hzi">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Kep-Mo-Ozq" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="問 AI" image="message" catalog="system" id="4x9-3M-01B"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="49A-OI-0IT">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="47a-pQ-gQo" kind="relationship" relationship="rootViewController" id="uYz-vx-dSg"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6HX-8z-RF2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2818" y="522"/>
+        </scene>
     </scenes>
     <resources>
         <image name="map" catalog="system" width="128" height="112"/>
+        <image name="message" catalog="system" width="128" height="116"/>
         <image name="square.and.pencil" catalog="system" width="128" height="121"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
