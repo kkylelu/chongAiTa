@@ -65,7 +65,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         currentLocButton.layer.shadowOpacity = 0.3
         currentLocButton.layer.shadowRadius = 4
         currentLocButton.layer.shadowOffset = CGSize(width: 0, height: 4)
-        let currentLocButtonImage = UIImage(systemName: "location.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
+        let currentLocButtonImage = UIImage(systemName: "mappin.and.ellipse", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
         currentLocButton.setImage(currentLocButtonImage, for: .normal)
         currentLocButton.tintColor = .white
         currentLocButton.translatesAutoresizingMaskIntoConstraints = false

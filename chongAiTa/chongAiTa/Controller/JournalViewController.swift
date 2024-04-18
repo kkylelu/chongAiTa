@@ -131,12 +131,10 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         imageButton.tintColor = grayColor
         imageButton.titleLabel?.textAlignment = .center
         
-        suggestionsButton.setImage(UIImage(systemName: "lightbulb")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
-        suggestionsButton.setTitle("建議", for: .normal)
+        suggestionsButton.setImage(UIImage(systemName: "wand.and.stars")?.withTintColor(grayColor, renderingMode: .alwaysOriginal), for: .normal)
+        suggestionsButton.setTitle("靈感", for: .normal)
         suggestionsButton.tintColor = grayColor
         suggestionsButton.titleLabel?.textAlignment = .center
-        
-        
         
         imageButton.addTarget(self, action: #selector(didTapImageButton), for: .touchUpInside)
         //            templateButton.addTarget(self, action: #selector(didTapTemplateButton), for: .touchUpInside)

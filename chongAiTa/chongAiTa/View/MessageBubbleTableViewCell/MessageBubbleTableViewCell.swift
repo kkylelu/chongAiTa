@@ -46,24 +46,29 @@ class MessageBubbleTableViewCell: UITableViewCell {
         messageLabel.text = message
         messageLabel.textColor = isFromCurrentUser ? .white : .black
         bubbleBackgroundView.backgroundColor = isFromCurrentUser ? .B1 : .systemGray6
-        
+
         NSLayoutConstraint.deactivate(messageLabel.constraints)
-        
-        let verticalConstraints = [
-            messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
-        ]
-        NSLayoutConstraint.activate(verticalConstraints)
-        
-        let horizontalConstraint = isFromCurrentUser ?
-        messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -35) :
-        messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 35)
-        NSLayoutConstraint.activate([horizontalConstraint])
-        
-        // 新增對齊到對面邊的 layout，限制最大寬度，但根據內容自動調整寬度
-        let oppositeConstraint = isFromCurrentUser ?
-        messageLabel.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 100) :
-        messageLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -100)
-        NSLayoutConstraint.activate([oppositeConstraint])
+
+        let topConstraint = messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16)
+        let bottomConstraint = messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+        NSLayoutConstraint.activate([topConstraint, bottomConstraint])
+
+        if isFromCurrentUser {
+            // 來自使用者的訊息
+            let trailingConstraint = messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -35)
+            NSLayoutConstraint.activate([trailingConstraint])
+
+            let leadingConstraint = messageLabel.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 100)
+            NSLayoutConstraint.activate([leadingConstraint])
+            
+        } else {
+            // 來自 AI 的訊息
+            let leadingConstraint = messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 35)
+            NSLayoutConstraint.activate([leadingConstraint])
+
+            let trailingConstraint = messageLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -100)
+            NSLayoutConstraint.activate([trailingConstraint])
+        }
     }
+
 }

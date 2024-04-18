@@ -12,6 +12,7 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     var tableView: UITableView!
     var textField: UITextField!
     var sendButton: UIButton!
+    var quickReplyButtons: [UIButton] = []
     
     var messages: [String] = []
     
@@ -21,8 +22,23 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         setupUI()
         configureTableView()
+        configureQuickReplyButtons()
         
         tableView.register(MessageBubbleTableViewCell.self, forCellReuseIdentifier: "MessageBubbleTableViewCell")
+    }
+    
+    func configureQuickReplyButtons() {
+        let messages = ["狗為什麼不吃飼料？", "多久要帶狗去打疫苗？", "狗可以吃巧克力嗎?"]
+        
+        for message in messages {
+            let button = UIButton(type: .system)
+            button.setTitle(message, for: .normal)
+            button.addTarget(self, action: #selector(quickReplyTapped(_:)), for: .touchUpInside)
+            view.addSubview(button)
+            quickReplyButtons.append(button)
+        }
+        
+        layoutQuickReplyButtons()
     }
     
     //MARK: - Setup UI
@@ -50,8 +66,9 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         sendButton = UIButton(type: .system)
         sendButton.translatesAutoresizingMaskIntoConstraints = false
-        sendButton.setTitle("Send", for: .normal)
-        sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
+        let sendButtonImage = UIImage(systemName: "paperplane.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 24, weight: .medium))
+        sendButton.setImage(sendButtonImage, for: .normal)
+        sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
         view.addSubview(sendButton)
         
         NSLayoutConstraint.activate([
@@ -61,23 +78,46 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
             tableView.bottomAnchor.constraint(equalTo: textField.topAnchor),
             
             textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            textField.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            textField.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -20),
+            textField.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -15),
+            textField.centerYAnchor.constraint(equalTo: sendButton.centerYAnchor),
             
-            sendButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            sendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            sendButton.widthAnchor.constraint(equalToConstant: 80)
+            sendButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
+            sendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -25),
+            sendButton.widthAnchor.constraint(equalToConstant: 56),
+            sendButton.heightAnchor.constraint(equalToConstant: 56)
         ])
+    }
+    
+    func layoutQuickReplyButtons() {
+        let buttonHeight: CGFloat = 40
+        // 每個按鈕之間的垂直間距
+        let spacing: CGFloat = 50
+
+        for (index, button) in quickReplyButtons.enumerated() {
+            button.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                button.bottomAnchor.constraint(equalTo: textField.topAnchor, constant: -(spacing * CGFloat(index + 1))),
+                button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                button.heightAnchor.constraint(equalToConstant: buttonHeight)
+            ])
+        }
     }
     
     // MARK: - Action
     
-    @objc func sendMessage() {
-        guard let text = textField.text, !text.isEmpty else { return }
-        appendMessageAndReload("\(text)")
-        textField.text = ""
+    @objc func quickReplyTapped(_ sender: UIButton) {
+        guard let message = sender.titleLabel?.text else { return }
+        sendMessage(message: message)
         
-        ChatBotManager.shared.sendChatMessage(message: text) { [weak self] result in
+        quickReplyButtons.forEach { $0.isHidden = true }
+    }
+
+    
+    @objc func sendMessage(message: String) {
+        // 聊天列表預設快速回覆
+        appendMessageAndReload(message)
+        
+        ChatBotManager.shared.sendChatMessage(message: message) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
@@ -89,6 +129,7 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
         }
     }
+
     
     func appendMessageAndReload(_ message: String) {
         messages.append(message)
@@ -98,6 +139,14 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.endUpdates()
         tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
     }
+    
+    @objc func sendButtonTapped() {
+        // 使用者輸入訊息
+        guard let text = textField.text, !text.isEmpty else { return }
+        sendMessage(message: text)
+        textField.text = ""
+    }
+
     
     // MARK: - TableView Delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
