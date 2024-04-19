@@ -9,6 +9,9 @@ import UIKit
 
 class CalendarViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
+    
+    let weekHeaderView = UIView()
+       let weekDays = ["一", "二", "三", "四", "五", "六", "日"]
     var collectionView: UICollectionView!
     var currentMonthDate = Date()
     
@@ -47,6 +50,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     }
     
     // MARK: - Setup UI
+    
     func setupUI() {
         let layout = UICollectionViewFlowLayout()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -56,14 +60,41 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         collectionView.dataSource = self
         collectionView.register(DateCell.self, forCellWithReuseIdentifier: "DateCell")
         
+        weekHeaderView.translatesAutoresizingMaskIntoConstraints = false
+        weekHeaderView.backgroundColor = .systemGray6
+
+        view.addSubview(weekHeaderView)
         view.addSubview(collectionView)
-        
+
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            weekHeaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            weekHeaderView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            weekHeaderView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            weekHeaderView.heightAnchor.constraint(equalToConstant: 20),
+    
+            collectionView.topAnchor.constraint(equalTo: weekHeaderView.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
         ])
+        
+        // 新增星期標籤到 weekHeaderView 中
+        var lastAnchor = weekHeaderView.leadingAnchor
+        for day in weekDays {
+            let dayLabel = UILabel()
+            dayLabel.text = day
+            dayLabel.textAlignment = .center
+            weekHeaderView.addSubview(dayLabel)
+            dayLabel.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                dayLabel.topAnchor.constraint(equalTo: weekHeaderView.topAnchor),
+                dayLabel.bottomAnchor.constraint(equalTo: weekHeaderView.bottomAnchor),
+                dayLabel.widthAnchor.constraint(equalTo: weekHeaderView.widthAnchor, multiplier: 1/CGFloat(weekDays.count)),
+                dayLabel.leadingAnchor.constraint(equalTo: lastAnchor)
+            ])
+            lastAnchor = dayLabel.trailingAnchor
+        }
     }
     
     func configureCollectionView() {
