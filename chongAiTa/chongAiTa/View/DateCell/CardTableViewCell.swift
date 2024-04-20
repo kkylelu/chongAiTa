@@ -11,7 +11,8 @@ import UIKit
 
 class CardTableViewCell: UITableViewCell {
     let titleLabel = UILabel()
-    let dateLabel = UILabel()
+    let iconImageView = UIImageView()
+    private var selectedDate: Date?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -23,33 +24,33 @@ class CardTableViewCell: UITableViewCell {
     }
 
     func setupUI() {
+        iconImageView.translatesAutoresizingMaskIntoConstraints = false
+        iconImageView.layer.cornerRadius = 15
+        iconImageView.clipsToBounds = true
+        iconImageView.contentMode = .scaleAspectFill
 
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(dateLabel)
-        
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
-            dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-            dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            dateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
-        ])
-        
         titleLabel.textColor = .black
-        dateLabel.textColor = .darkGray
+
+        contentView.addSubview(iconImageView)
+        contentView.addSubview(titleLabel)
+
+        NSLayoutConstraint.activate([
+            iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            iconImageView.widthAnchor.constraint(equalToConstant: 30),
+            iconImageView.heightAnchor.constraint(equalToConstant: 30),
+
+            titleLabel.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 8),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+        ])
     }
-    
-    func configure(with title: String, date: Date) {
+
+    func configure(with title: String, icon: UIImage, date: Date) {
         titleLabel.text = title
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateLabel.text = dateFormatter.string(from: date)
+        iconImageView.image = icon
+        selectedDate = date
     }
 }
 

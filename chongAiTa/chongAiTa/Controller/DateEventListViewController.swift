@@ -31,8 +31,21 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.reloadData()
     }
     
+    // MARK: - Setup UI
+    
     func setupUI() {
         view.backgroundColor = .yellow
+    }
+    
+    func getIconForCategory(_ category: ActivityCategory) -> UIImage {
+        switch category {
+        case .food:
+            return UIImage(named: "foodIcon")!
+        case .medication:
+            return UIImage(named: "medicationIcon")!
+        case .exercise:
+            return UIImage(named: "exerciseIcon")!
+        }
     }
     
     func setupPresetActivities() {
@@ -43,6 +56,7 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
             DefaultActivity(category: .medication, date: selectedDate)
         ]
     }
+    
     
     func setupTableView() {
         tableView = UITableView(frame: .zero, style: .grouped)
@@ -61,6 +75,8 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
         ])
     }
     
+    // MARK: - TableView Delegate
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return defaultActivities.count
     }
@@ -71,20 +87,19 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
         }
         
         let defaultActivity = defaultActivities[indexPath.row]
-        cell.configure(with: defaultActivity.category.displayName, date: defaultActivity.date)
+        let icon = getIconForCategory(defaultActivity.category) //Error: Cannot find 'getIconForCategory' in scope
+        cell.configure(with: defaultActivity.category.displayName, icon: icon, date: defaultActivity.date)
         
         return cell
     }
 
-
-
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let defaultActivity = defaultActivities[indexPath.row]
-        let newEvent = CalendarEvents(title: defaultActivity.category.rawValue.description, date: defaultActivity.date, activity: defaultActivity)
         let eventDetailVC = EventDetailViewController()
-        eventDetailVC.event = newEvent
+        eventDetailVC.configure(with: defaultActivity.date) 
         navigationController?.pushViewController(eventDetailVC, animated: true)
     }
+
 
 }
