@@ -6,16 +6,39 @@
 //
 
 import Foundation
-struct CalendarEvents {
-//    var id: UUID
-    var title: String
-//    var type: Int
-    var date: Date
 
-    init(title: String, date: Date) {
-//        self.id = id
+struct CalendarEvents {
+    var title: String
+    var date: Date
+    var activity: DefaultActivity
+
+    init(title: String, date: Date, activity: DefaultActivity) {
         self.title = title
-//        self.type = type
         self.date = date
+        self.activity = activity
+    }
+}
+
+struct DefaultActivity {
+    var category: ActivityCategory
+    var date: Date
+}
+
+
+enum ActivityCategory: Int {
+    case food = 0
+    case medication = 1
+    case exercise = 2
+    // 後續可增加更多類別
+
+    var displayName: String {
+        switch self {
+        case .food:
+            return "餵食"
+        case .medication:
+            return "看醫生"
+        case .exercise:
+            return "運動"
+        }
     }
 }

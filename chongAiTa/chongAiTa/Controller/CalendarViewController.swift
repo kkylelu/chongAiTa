@@ -221,18 +221,16 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // 點擊日期開新的 VC
-        
         let firstDayIndex = firstWeekdayOfMonth
         let dateOffset = indexPath.item - firstDayIndex
         if dateOffset >= 0 && dateOffset < daysInMonth {
             // 確保點擊的是有效日期
             let selectedDate = Calendar.current.date(byAdding: .day, value: dateOffset, to: firstOfMonth())!
             
-            let event = calendarEventsArray.first(where: { $0.date == selectedDate })
-                let calendarDateVC = CalendarDateViewController()
-                calendarDateVC.calendarEvent = event
-                navigationController?.pushViewController(calendarDateVC, animated: true)
+            let calendarDateVC = CalendarDateViewController()
+            calendarDateVC.selectedDate = selectedDate
+            navigationController?.pushViewController(calendarDateVC, animated: true)
         }
     }
+
 }

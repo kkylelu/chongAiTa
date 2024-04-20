@@ -9,37 +9,40 @@ import UIKit
 
 class DateEventListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    var selectedDate: Date
     var tableView: UITableView!
-    let today = Date()
-    var events = [CalendarEvents]()
+    var defaultActivities: [DefaultActivity] = []
+    
+    init(date: Date) {
+        self.selectedDate = date
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
         setupTableView()
-        setupFakeData()
+        setupPresetActivities()
         tableView.reloadData()
     }
     
-    // MARK: - Setup UI
-    
-    func setupUI(){
+    func setupUI() {
         view.backgroundColor = .yellow
-        
     }
     
-    // MARK: - Setup Fake Data
-        
-        func setupFakeData() {
-            let calendar = Calendar.current
-            events = [
-                CalendarEvents(title: "餵食", date: calendar.date(byAdding: .day, value: 0, to: today)!),
-                CalendarEvents(title: "運動", date: calendar.date(byAdding: .day, value: 1, to: today)!),
-                CalendarEvents(title: "看醫生", date: calendar.date(byAdding: .day, value: 2, to: today)!)
-            ]
-        }
-    
+    func setupPresetActivities() {
+        let calendar = Calendar.current
+        defaultActivities = [
+            DefaultActivity(category: .food, date: selectedDate),
+            DefaultActivity(category: .exercise, date: selectedDate),
+            DefaultActivity(category: .medication, date: selectedDate)
+        ]
+    }
     
     func setupTableView() {
         tableView = UITableView(frame: .zero, style: .grouped)
@@ -58,29 +61,30 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
         ])
     }
     
-    // MARK: - TableView Delegate
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return events.count
+        return defaultActivities.count
     }
-    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CardTableViewCell", for: indexPath) as? CardTableViewCell else {
             return UITableViewCell()
         }
         
-        let event = events[indexPath.row]
-        cell.configure(with: event)
+        let defaultActivity = defaultActivities[indexPath.row]
+        cell.configure(with: defaultActivity.category.displayName, date: defaultActivity.date)
         
         return cell
     }
+
+
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            let event = events[indexPath.row]
-            let eventDetailVC = EventDetailViewController()
-            // 傳遞事件數據到詳情頁面
-            eventDetailVC.event = event
-            navigationController?.pushViewController(eventDetailVC, animated: true)
-        }
+        let defaultActivity = defaultActivities[indexPath.row]
+        let newEvent = CalendarEvents(title: defaultActivity.category.rawValue.description, date: defaultActivity.date, activity: defaultActivity)
+        let eventDetailVC = EventDetailViewController()
+        eventDetailVC.event = newEvent
+        navigationController?.pushViewController(eventDetailVC, animated: true)
+    }
+
 }

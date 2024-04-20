@@ -10,57 +10,46 @@
 import UIKit
 
 class CardTableViewCell: UITableViewCell {
-    
     let titleLabel = UILabel()
-    let checkboxImageView = UIImageView()
+    let dateLabel = UILabel()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupCardStyle()
         setupUI()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func setupCardStyle() {
 
-        // cell 的背景是透明的，陰影才能顯示
-        self.backgroundColor = .clear
-        contentView.backgroundColor = .white
-        contentView.layer.cornerRadius = 10
-        contentView.layer.shadowOpacity = 0.1
-        contentView.layer.shadowRadius = 5
-        contentView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        contentView.layer.shadowColor = UIColor.black.cgColor
-        contentView.layer.masksToBounds = false
-    }
-    
     func setupUI() {
+
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(dateLabel)
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        checkboxImageView.translatesAutoresizingMaskIntoConstraints = false
+        dateLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(checkboxImageView)
-
         NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-
-            checkboxImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            checkboxImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            checkboxImageView.widthAnchor.constraint(equalToConstant: 30),
-            checkboxImageView.heightAnchor.constraint(equalToConstant: 30)
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            
+            dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            dateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
         ])
+        
+        titleLabel.textColor = .black
+        dateLabel.textColor = .darkGray
     }
-
     
-    func configure(with event: CalendarEvents) {
-        titleLabel.text = event.title
-        checkboxImageView.image = UIImage(systemName: "checkmark.circle")
+    func configure(with title: String, date: Date) {
+        titleLabel.text = title
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateLabel.text = dateFormatter.string(from: date)
     }
-
 }
 
