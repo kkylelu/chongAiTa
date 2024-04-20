@@ -233,8 +233,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
                 let calendarDateVC = CalendarDateViewController()
                 calendarDateVC.calendarEvent = event
                 navigationController?.pushViewController(calendarDateVC, animated: true)
-          
-            
         }
     }
 }

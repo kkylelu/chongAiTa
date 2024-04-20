@@ -7,15 +7,15 @@
 
 import Foundation
 struct CalendarEvents {
-    var id: UUID
+//    var id: UUID
     var title: String
-    var type: Int
+//    var type: Int
     var date: Date
 
-    init(id: UUID, title: String, type: Int, date: Date) {
-        self.id = id
+    init(title: String, date: Date) {
+//        self.id = id
         self.title = title
-        self.type = type
+//        self.type = type
         self.date = date
     }
 }

@@ -8,6 +8,7 @@
 import UIKit
 
 class CalendarDateViewController: UIViewController {
+   
 
     var floatingButton: UIButton!
     var calendarEvent: CalendarEvents?
@@ -15,6 +16,7 @@ class CalendarDateViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupUI()
         setupFloatingButton()
     }
     
@@ -51,11 +53,12 @@ class CalendarDateViewController: UIViewController {
         ])
         
     }
+
     
     @objc func floatingButtonTapped() {
-        let calendarVC = CalendarViewController()
-        navigationController?.pushViewController(calendarVC, animated: true)
+        let dateEventListVC = DateEventListViewController()
+        navigationController?.pushViewController(dateEventListVC, animated: true)
     }
-  
+    
 
 }

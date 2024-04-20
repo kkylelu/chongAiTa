@@ -102,6 +102,36 @@
             </objects>
             <point key="canvasLocation" x="3700" y="1909"/>
         </scene>
+        <!--Date Event List View Controller-->
+        <scene sceneID="CuX-ad-HBx">
+            <objects>
+                <viewController id="Wtw-7O-ufO" customClass="DateEventListViewController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Z53-6D-exg">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="kE5-OS-Esa"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tY5-hH-0Y2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3700" y="2598"/>
+        </scene>
+        <!--Event Detail View Controller-->
+        <scene sceneID="sh6-lB-6PS">
+            <objects>
+                <viewController id="waC-4m-DY8" customClass="EventDetailViewController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="vZS-gZ-oCc">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="YmR-nh-L4e"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5ka-j3-FPg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3691" y="3230"/>
+        </scene>
         <!--Journal View Controller-->
         <scene sceneID="ntw-4m-1lW">
             <objects>
