@@ -37,6 +37,7 @@
 		27A939032BD36D4B00BF4845 /* DateEventListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A939022BD36D4B00BF4845 /* DateEventListViewController.swift */; };
 		27A939052BD3716300BF4845 /* CardTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A939042BD3716300BF4845 /* CardTableViewCell.swift */; };
 		27A939072BD3AC2200BF4845 /* EventDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A939062BD3AC2200BF4845 /* EventDetailViewController.swift */; };
+		27A9390B2BD4206E00BF4845 /* NewEventNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390A2BD4206E00BF4845 /* NewEventNotification.swift */; };
 		27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004482BCCE0A100C87472 /* JournalContent.swift */; };
 		27F0044C2BCD33A500C87472 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 27F0044B2BCD33A500C87472 /* Alamofire */; };
 		27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */; };
@@ -102,6 +103,7 @@
 		27A939022BD36D4B00BF4845 /* DateEventListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEventListViewController.swift; sourceTree = "<group>"; };
 		27A939042BD3716300BF4845 /* CardTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTableViewCell.swift; sourceTree = "<group>"; };
 		27A939062BD3AC2200BF4845 /* EventDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailViewController.swift; sourceTree = "<group>"; };
+		27A9390A2BD4206E00BF4845 /* NewEventNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEventNotification.swift; sourceTree = "<group>"; };
 		27F004482BCCE0A100C87472 /* JournalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalContent.swift; sourceTree = "<group>"; };
 		27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGenerationManager.swift; sourceTree = "<group>"; };
 		27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAINetworkHelper.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */,
 				27694F542BD124AB00D90167 /* FAQEntry.swift */,
 				27A939002BD3680F00BF4845 /* CalendarEvents.swift */,
+				27A9390A2BD4206E00BF4845 /* NewEventNotification.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -643,6 +646,7 @@
 				27F004532BCD386600C87472 /* NetworkManager.swift in Sources */,
 				27A462192BCBE27600503F3E /* UIColorHexCode.swift in Sources */,
 				27A462202BCBEAEA00503F3E /* JournalHomeTableViewCell.swift in Sources */,
+				27A9390B2BD4206E00BF4845 /* NewEventNotification.swift in Sources */,
 				2780026F2BD0B426007AD842 /* GooglePlacesResponse.swift in Sources */,
 				27A939012BD3680F00BF4845 /* CalendarEvents.swift in Sources */,
 				27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */,

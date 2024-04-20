@@ -34,7 +34,7 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="日誌建議地點" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RGG-zd-xhO">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="內容預覽" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RGG-zd-xhO" userLabel="Journal Description Label">
                         <rect key="frame" x="16" y="125" width="233" height="21"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="233" id="kQX-jd-s90"/>
@@ -71,7 +71,7 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="JournalImageView" destination="tup-Va-jQc" id="Ml0-HD-mMK"/>
-                <outlet property="journalLocationLabel" destination="RGG-zd-xhO" id="9Hd-Ss-zTF"/>
+                <outlet property="journalContentLabel" destination="RGG-zd-xhO" id="9Hd-Ss-zTF"/>
                 <outlet property="journalTitleLabel" destination="Taj-NR-Eg9" id="b0w-pd-Ir0"/>
                 <outlet property="timeLabel" destination="NVe-BT-gHT" id="PiJ-pi-3fM"/>
             </connections>

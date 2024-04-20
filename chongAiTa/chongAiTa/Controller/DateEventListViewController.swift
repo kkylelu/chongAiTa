@@ -66,7 +66,7 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.separatorStyle = .none
         view.addSubview(tableView)
-
+        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
@@ -87,19 +87,19 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
         }
         
         let defaultActivity = defaultActivities[indexPath.row]
-        let icon = getIconForCategory(defaultActivity.category) //Error: Cannot find 'getIconForCategory' in scope
+        let icon = getIconForCategory(defaultActivity.category)
         cell.configure(with: defaultActivity.category.displayName, icon: icon, date: defaultActivity.date)
         
         return cell
     }
-
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let defaultActivity = defaultActivities[indexPath.row]
         let eventDetailVC = EventDetailViewController()
-        eventDetailVC.configure(with: defaultActivity.date) 
+        let icon = getIconForCategory(defaultActivity.category)
+        let displayName = defaultActivity.category.displayName
+        let selectedTime = defaultActivity.date
+        eventDetailVC.configure(image: icon, title: displayName, date: selectedTime, activity: defaultActivity)
         navigationController?.pushViewController(eventDetailVC, animated: true)
     }
-
-
 }

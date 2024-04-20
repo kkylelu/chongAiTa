@@ -5,17 +5,21 @@
 //  Created by Kyle Lu on 2024/4/20.
 //
 
-import Foundation
+import UIKit
 
 struct CalendarEvents {
     var title: String
     var date: Date
     var activity: DefaultActivity
-
-    init(title: String, date: Date, activity: DefaultActivity) {
+    var content: String?
+    var image: UIImage?
+    
+    init(title: String, date: Date, activity: DefaultActivity, content: String? = nil, image: UIImage? = nil) {
         self.title = title
         self.date = date
         self.activity = activity
+        self.content = content
+        self.image = image
     }
 }
 
@@ -30,7 +34,7 @@ enum ActivityCategory: Int {
     case medication = 1
     case exercise = 2
     // 後續可增加更多類別
-
+    
     var displayName: String {
         switch self {
         case .food:
