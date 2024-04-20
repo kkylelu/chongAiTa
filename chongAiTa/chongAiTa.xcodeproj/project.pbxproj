@@ -32,6 +32,8 @@
 		27A4621B2BCBE89D00503F3E /* JournalHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A4621A2BCBE89D00503F3E /* JournalHomeViewController.swift */; };
 		27A4621F2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27A4621E2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib */; };
 		27A462202BCBEAEA00503F3E /* JournalHomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A4621D2BCBEAEA00503F3E /* JournalHomeTableViewCell.swift */; };
+		27A938FF2BD364E900BF4845 /* CalendarDateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A938FE2BD364E900BF4845 /* CalendarDateViewController.swift */; };
+		27A939012BD3680F00BF4845 /* CalendarEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A939002BD3680F00BF4845 /* CalendarEvents.swift */; };
 		27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004482BCCE0A100C87472 /* JournalContent.swift */; };
 		27F0044C2BCD33A500C87472 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 27F0044B2BCD33A500C87472 /* Alamofire */; };
 		27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */; };
@@ -92,6 +94,8 @@
 		27A4621A2BCBE89D00503F3E /* JournalHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalHomeViewController.swift; sourceTree = "<group>"; };
 		27A4621D2BCBEAEA00503F3E /* JournalHomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalHomeTableViewCell.swift; sourceTree = "<group>"; };
 		27A4621E2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JournalHomeTableViewCell.xib; sourceTree = "<group>"; };
+		27A938FE2BD364E900BF4845 /* CalendarDateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDateViewController.swift; sourceTree = "<group>"; };
+		27A939002BD3680F00BF4845 /* CalendarEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvents.swift; sourceTree = "<group>"; };
 		27F004482BCCE0A100C87472 /* JournalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalContent.swift; sourceTree = "<group>"; };
 		27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGenerationManager.swift; sourceTree = "<group>"; };
 		27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAINetworkHelper.swift; sourceTree = "<group>"; };
@@ -183,6 +187,7 @@
 				278D46542BCFCD0300C4F677 /* NewJournalNotification.swift */,
 				2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */,
 				27694F542BD124AB00D90167 /* FAQEntry.swift */,
+				27A939002BD3680F00BF4845 /* CalendarEvents.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -208,6 +213,7 @@
 				278D20DA2BCF825600F80764 /* MapViewController.swift */,
 				27694EF82BD0D28200D90167 /* ChatBotViewController.swift */,
 				2739EA3F2BD241540054D455 /* CalendarViewController.swift */,
+				27A938FE2BD364E900BF4845 /* CalendarDateViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -628,6 +634,7 @@
 				27A462192BCBE27600503F3E /* UIColorHexCode.swift in Sources */,
 				27A462202BCBEAEA00503F3E /* JournalHomeTableViewCell.swift in Sources */,
 				2780026F2BD0B426007AD842 /* GooglePlacesResponse.swift in Sources */,
+				27A939012BD3680F00BF4845 /* CalendarEvents.swift in Sources */,
 				27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */,
 				27F004512BCD384400C87472 /* OpenAINetworkHelper.swift in Sources */,
 				27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */,
@@ -640,6 +647,7 @@
 				27694F502BD0F80F00D90167 /* MessageBubbleTableViewCell.swift in Sources */,
 				27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */,
 				278D20DB2BCF825600F80764 /* MapViewController.swift in Sources */,
+				27A938FF2BD364E900BF4845 /* CalendarDateViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
