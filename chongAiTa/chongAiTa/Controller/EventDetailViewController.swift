@@ -159,22 +159,24 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     // MARK: - Action
     @objc func doneButtonTapped() {
         if let activity = selectedActivity {
+            let title = titleTextField.text?.isEmpty ?? true ? activity.category.displayName : titleTextField.text!
             
-            // 收集使用者輸入的資料
             let event = CalendarEvents(
-                title: titleTextField.text ?? "",
+                title: title,
                 date: datePicker.date,
                 activity: activity,
                 content: noteTextView.text,
                 image: iconImageView.image
             )
             
-            NotificationCenter.default.post(name: .didCreateEvent, object: event)
+            EventsManager.shared.saveEvent(event)
             
             // 跳轉到 CalendarDateViewController
             if let navigationController = navigationController {
                 for controller in navigationController.viewControllers {
                     if let calendarDateVC = controller as? CalendarDateViewController {
+                        calendarDateVC.selectedDate = datePicker.date
+                        calendarDateVC.dataSource = EventsManager.shared.loadEvents(for: datePicker.date)
                         navigationController.popToViewController(calendarDateVC, animated: true)
                         return
                     }

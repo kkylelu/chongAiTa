@@ -16,12 +16,17 @@ class JournalHomeTableViewCell: UITableViewCell {
     @IBOutlet weak var JournalImageView: UIImageView!
     
     override func awakeFromNib() {
-        super.awakeFromNib()
-    }
+            super.awakeFromNib()
+        }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-    }
-    
+        override func setSelected(_ selected: Bool, animated: Bool) {
+            super.setSelected(selected, animated: animated)
+        }
+        
+        func configure(with event: CalendarEvents) {
+            timeLabel.text = DateFormatter.localizedString(from: event.date, dateStyle: .medium, timeStyle: .short)
+            journalTitleLabel.text = event.title
+            journalContentLabel.text = event.content
+            JournalImageView.image = event.image
+        }
 }

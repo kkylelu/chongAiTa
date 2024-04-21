@@ -38,6 +38,7 @@
 		27A939052BD3716300BF4845 /* CardTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A939042BD3716300BF4845 /* CardTableViewCell.swift */; };
 		27A939072BD3AC2200BF4845 /* EventDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A939062BD3AC2200BF4845 /* EventDetailViewController.swift */; };
 		27A9390B2BD4206E00BF4845 /* NewEventNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390A2BD4206E00BF4845 /* NewEventNotification.swift */; };
+		27A9390F2BD55D8B00BF4845 /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390E2BD55D8B00BF4845 /* EventsManager.swift */; };
 		27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004482BCCE0A100C87472 /* JournalContent.swift */; };
 		27F0044C2BCD33A500C87472 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 27F0044B2BCD33A500C87472 /* Alamofire */; };
 		27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */; };
@@ -104,6 +105,7 @@
 		27A939042BD3716300BF4845 /* CardTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTableViewCell.swift; sourceTree = "<group>"; };
 		27A939062BD3AC2200BF4845 /* EventDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailViewController.swift; sourceTree = "<group>"; };
 		27A9390A2BD4206E00BF4845 /* NewEventNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEventNotification.swift; sourceTree = "<group>"; };
+		27A9390E2BD55D8B00BF4845 /* EventsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsManager.swift; sourceTree = "<group>"; };
 		27F004482BCCE0A100C87472 /* JournalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalContent.swift; sourceTree = "<group>"; };
 		27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGenerationManager.swift; sourceTree = "<group>"; };
 		27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAINetworkHelper.swift; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				27F004522BCD386600C87472 /* NetworkManager.swift */,
 				270D97762BCD3E7A00AA8D79 /* APIKeys.swift */,
 				27694F4C2BD0F02F00D90167 /* ChatBotManager.swift */,
+				27A9390E2BD55D8B00BF4845 /* EventsManager.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -641,6 +644,7 @@
 				27A462162BCAD83D00503F3E /* JournalPickerData.swift in Sources */,
 				2739EA402BD241540054D455 /* CalendarViewController.swift in Sources */,
 				270D97772BCD3E7A00AA8D79 /* APIKeys.swift in Sources */,
+				27A9390F2BD55D8B00BF4845 /* EventsManager.swift in Sources */,
 				274CE0D72BC8275C00277222 /* JournalViewController.swift in Sources */,
 				2739EA432BD2424B0054D455 /* DateCell.swift in Sources */,
 				27F004532BCD386600C87472 /* NetworkManager.swift in Sources */,

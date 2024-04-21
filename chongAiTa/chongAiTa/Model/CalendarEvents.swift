@@ -32,7 +32,7 @@ struct DefaultActivity {
 enum ActivityCategory: Int {
     case food = 0
     case medication = 1
-    case exercise = 2
+    case walk = 2
     // 後續可增加更多類別
     
     var displayName: String {
@@ -41,8 +41,8 @@ enum ActivityCategory: Int {
             return "餵食"
         case .medication:
             return "看醫生"
-        case .exercise:
-            return "運動"
+        case .walk:
+            return "散步"
         }
     }
 }

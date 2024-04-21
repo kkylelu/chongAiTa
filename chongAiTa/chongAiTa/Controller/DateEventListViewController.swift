@@ -43,7 +43,7 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
             return UIImage(named: "foodIcon")!
         case .medication:
             return UIImage(named: "medicationIcon")!
-        case .exercise:
+        case .walk:
             return UIImage(named: "exerciseIcon")!
         }
     }
@@ -52,7 +52,7 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
         let calendar = Calendar.current
         defaultActivities = [
             DefaultActivity(category: .food, date: selectedDate),
-            DefaultActivity(category: .exercise, date: selectedDate),
+            DefaultActivity(category: .walk, date: selectedDate),
             DefaultActivity(category: .medication, date: selectedDate)
         ]
     }

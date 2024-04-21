@@ -14,22 +14,26 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     var selectedDate: Date = Date()
     var dataSource = [CalendarEvents]()
     
+    // MARK: - Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupFloatingButton()
         setupTableView()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNewEvent(_:)), name: .didCreateEvent, object: nil)
-        
         tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
         
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+            loadEvents()
+        }
     
     // MARK: - Setup UI
     
     func setupUI(){
         view.backgroundColor = .white
-        
     }
     
     func setupTableView() {
@@ -77,6 +81,11 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     
     // MARK: - Action
     
+    func loadEvents() {
+            dataSource = EventsManager.shared.loadEvents(for: selectedDate)
+            tableView.reloadData()
+        }
+    
     @objc func floatingButtonTapped() {
         let dateEventListVC = DateEventListViewController(date: selectedDate)
         navigationController?.pushViewController(dateEventListVC, animated: true)
@@ -97,16 +106,13 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "JournalHomeCell", for: indexPath) as? JournalHomeTableViewCell else {
-            fatalError("無法取得 JournalHomeTableViewCell 的實例。")
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "JournalHomeCell", for: indexPath) as? JournalHomeTableViewCell else {
+                fatalError("無法取得 JournalHomeTableViewCell 的實例。")
+            }
+            let event = dataSource[indexPath.row]
+            cell.configure(with: event)
+            return cell
         }
-        let event = dataSource[indexPath.row]
-        cell.timeLabel.text = DateFormatter.localizedString(from: event.date, dateStyle: .short, timeStyle: .short)
-        cell.journalTitleLabel.text = event.title.isEmpty ? event.activity.category.displayName : event.title
-        cell.journalContentLabel.text = event.content
-        cell.JournalImageView.image = event.image
-        return cell
-    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 165.0
