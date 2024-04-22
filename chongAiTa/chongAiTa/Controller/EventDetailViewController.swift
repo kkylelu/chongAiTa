@@ -164,6 +164,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         print("Selected Activity: \(selectedActivity)")
            print("Current Event ID: \(currentEventId)")
         
+        let cost = Double(costTextField.text ?? "") ?? 0.0
         if let activity = selectedActivity,
            let currentId = currentEventId {
             
@@ -186,7 +187,8 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
                 date: datePicker.date,
                 activity: activity,
                 content: noteTextView.text,
-                image: iconImageView.image
+                image: iconImageView.image,
+                cost: cost
             )
             
             

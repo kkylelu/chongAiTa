@@ -46,5 +46,15 @@ class EventsManager {
             eventsByDate[key] = events
         }
     }
+    
+    func getAllCosts() -> [(eventId: UUID, cost: Double)] {
+        var allCosts: [(eventId: UUID, cost: Double)] = []
+        for (_, events) in eventsByDate {
+            for event in events where event.cost != nil {
+                allCosts.append((event.id, event.cost!))
+            }
+        }
+        return allCosts
+    }
 
 }

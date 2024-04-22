@@ -116,6 +116,7 @@ class DateCell: UICollectionViewCell {
             moreEventsLabel.isHidden = false
         }
     }
+    
     func setupEventLabel(_ label: UILabel, below anchor: NSLayoutYAxisAnchor) {
         contentView.addSubview(label)
         label.font = UIFont.systemFont(ofSize: 12)

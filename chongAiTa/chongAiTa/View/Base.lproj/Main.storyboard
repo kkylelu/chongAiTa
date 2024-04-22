@@ -87,6 +87,22 @@
             </objects>
             <point key="canvasLocation" x="3700" y="1227"/>
         </scene>
+        <!--Cost Chart View Controller-->
+        <scene sceneID="EdU-Kd-egt">
+            <objects>
+                <viewController id="TRH-dX-nzx" customClass="CostChartViewController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qZQ-9l-641">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="yRj-Kr-vk5"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="ApL-iu-DRh"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Sjp-eR-S6C" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4647" y="1242"/>
+        </scene>
         <!--Calendar Date View Controller-->
         <scene sceneID="dqx-LZ-NOp">
             <objects>
@@ -182,11 +198,12 @@
                         <segue destination="756-Ex-WO4" kind="relationship" relationship="viewControllers" id="vFZ-PP-xph"/>
                         <segue destination="Kep-Mo-Ozq" kind="relationship" relationship="viewControllers" id="xgn-Em-mWw"/>
                         <segue destination="n5J-Eq-Kgo" kind="relationship" relationship="viewControllers" id="luH-E3-qcY"/>
+                        <segue destination="Dtn-22-k7z" kind="relationship" relationship="viewControllers" id="UtF-zI-vZi"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jX6-GP-P5m" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1834" y="-331"/>
+            <point key="canvasLocation" x="2856" y="-363"/>
         </scene>
         <!--地圖-->
         <scene sceneID="fD3-45-lqf">
@@ -245,9 +262,29 @@
             </objects>
             <point key="canvasLocation" x="3700" y="522"/>
         </scene>
+        <!--花費-->
+        <scene sceneID="UDA-Pw-FO8">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Dtn-22-k7z" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="花費" image="chart.pie" catalog="system" id="w4c-pN-0rA"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="BwA-8p-9SU">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="TRH-dX-nzx" kind="relationship" relationship="rootViewController" id="uMU-YT-fxw"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="axt-A3-xdp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4648" y="522"/>
+        </scene>
     </scenes>
     <resources>
         <image name="calendar" catalog="system" width="128" height="107"/>
+        <image name="chart.pie" catalog="system" width="128" height="123"/>
         <image name="map" catalog="system" width="128" height="112"/>
         <image name="message" catalog="system" width="128" height="116"/>
         <image name="square.and.pencil" catalog="system" width="128" height="121"/>
