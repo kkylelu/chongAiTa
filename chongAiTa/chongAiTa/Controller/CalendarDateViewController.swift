@@ -26,6 +26,7 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     
     override func viewWillAppear(_ animated: Bool) {
             super.viewWillAppear(animated)
+            print("viewWillAppear called")
             loadEvents()
         }
     
@@ -81,9 +82,9 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     // MARK: - Action
     
     func loadEvents() {
-            dataSource = EventsManager.shared.loadEvents(for: selectedDate)
-            tableView.reloadData()
-        }
+        dataSource = EventsManager.shared.loadEvents(for: selectedDate)
+        tableView.reloadData()
+    }
     
     @objc func floatingButtonTapped() {
         let dateEventListVC = DateEventListViewController(date: selectedDate)
@@ -117,6 +118,14 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 165.0
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let event = dataSource[indexPath.row]
+        let eventDetailVC = EventDetailViewController()
+        eventDetailVC.configure(event: event)
+        navigationController?.pushViewController(eventDetailVC, animated: true)
+    }
+
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { (action, view, completionHandler) in

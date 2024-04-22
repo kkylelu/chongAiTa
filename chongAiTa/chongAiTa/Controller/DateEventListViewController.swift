@@ -95,11 +95,21 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let defaultActivity = defaultActivities[indexPath.row]
-        let eventDetailVC = EventDetailViewController()
         let icon = getIconForCategory(defaultActivity.category)
         let displayName = defaultActivity.category.displayName
         let selectedTime = defaultActivity.date
-        eventDetailVC.configure(image: icon, title: displayName, date: selectedTime, activity: defaultActivity)
+        
+        let event = CalendarEvents(
+            title: displayName,
+            date: selectedTime,
+            activity: defaultActivity,
+            image: icon
+        )
+        
+        let eventDetailVC = EventDetailViewController()
+        eventDetailVC.configure(event: event)
         navigationController?.pushViewController(eventDetailVC, animated: true)
     }
+
+
 }

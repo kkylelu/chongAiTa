@@ -23,6 +23,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     var eventTitle: String?
     var eventDate: Date?
     var selectedActivity: DefaultActivity?
+    var currentEventId: UUID?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -142,13 +143,15 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     }
     
     
-    func configure(image: UIImage?, title: String?, date: Date?, activity: DefaultActivity) {
-        self.eventImage = image
-        self.eventTitle = title
-        self.eventDate = date
-        self.selectedActivity = activity
+    func configure(event: CalendarEvents) {
+        self.eventImage = event.image
+        self.eventTitle = event.title
+        self.eventDate = event.date
+        self.selectedActivity = event.activity
+        self.currentEventId = event.id
         displayEventDetails()
     }
+
     
     func displayEventDetails() {
         iconImageView.image = eventImage
@@ -158,10 +161,16 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     
     // MARK: - Action
     @objc func doneButtonTapped() {
-        if let activity = selectedActivity {
+        print("Selected Activity: \(selectedActivity)")
+           print("Current Event ID: \(currentEventId)")
+        
+        if let activity = selectedActivity,
+           let currentId = currentEventId {
+            
             let title = titleTextField.text?.isEmpty ?? true ? activity.category.displayName : titleTextField.text!
             
             let event = CalendarEvents(
+                id: currentId,
                 title: title,
                 date: datePicker.date,
                 activity: activity,
@@ -169,15 +178,23 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
                 image: iconImageView.image
             )
             
-            EventsManager.shared.saveEvent(event)
-            print("Event Saved: \(event.title), Date: \(event.date)")
             
-            // 跳轉到 CalendarDateViewController
+            if EventsManager.shared.loadEvents(for: event.date).contains(where: { $0.id == event.id }) {
+                EventsManager.shared.updateEvent(event)
+                print("Updating event: \(event)")
+            } else {
+                EventsManager.shared.saveEvent(event)
+                print("Saving new event: \(event)")
+            }
+
+            print("Event Saved/Updated: \(event.title), Date: \(event.date)")
+            
             if let navigationController = navigationController {
                 for controller in navigationController.viewControllers {
                     if let calendarDateVC = controller as? CalendarDateViewController {
                         calendarDateVC.selectedDate = datePicker.date
-                        calendarDateVC.dataSource = EventsManager.shared.loadEvents(for: datePicker.date)
+                        calendarDateVC.loadEvents()
+                        print("Data source for CalendarDateViewController should be updated now.")
                         navigationController.popToViewController(calendarDateVC, animated: true)
                         return
                     }
@@ -185,4 +202,6 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
             }
         }
     }
+
+
 }

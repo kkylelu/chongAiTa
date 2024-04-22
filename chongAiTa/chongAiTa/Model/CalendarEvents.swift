@@ -15,8 +15,8 @@ struct CalendarEvents {
     var content: String?
     var image: UIImage?
     
-    init(title: String, date: Date, activity: DefaultActivity, content: String? = nil, image: UIImage? = nil) {
-        self.id = UUID()
+    init(id: UUID = UUID(), title: String, date: Date, activity: DefaultActivity, content: String? = nil, image: UIImage? = nil) {
+        self.id = id
         self.title = title
         self.date = date
         self.activity = activity

@@ -25,4 +25,18 @@ class EventsManager {
         let key = Calendar.current.startOfDay(for: date)
         return eventsByDate[key] ?? []
     }
+    
+    func updateEvent(_ updatedEvent: CalendarEvents) {
+        let key = Calendar.current.startOfDay(for: updatedEvent.date)
+        if var events = eventsByDate[key] {
+            if let index = events.firstIndex(where: { $0.id == updatedEvent.id }) {
+                events[index] = updatedEvent
+                eventsByDate[key] = events
+                print("Event with ID \(updatedEvent.id) updated.")
+            } else {
+                print("No event found with ID \(updatedEvent.id) to update.")
+            }
+        }
+    }
+
 }
