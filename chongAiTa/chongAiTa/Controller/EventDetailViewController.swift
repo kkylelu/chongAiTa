@@ -167,7 +167,18 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         if let activity = selectedActivity,
            let currentId = currentEventId {
             
-            let title = titleTextField.text?.isEmpty ?? true ? activity.category.displayName : titleTextField.text!
+            var title: String
+                    
+                    if let titleText = titleTextField.text, !titleText.isEmpty {
+                        // 如果有編輯標題，則使用編輯後的標題
+                        title = titleText
+                    } else if let originalTitle = eventTitle {
+                        // 如果沒有編輯標題，原本的標題不是空值，則保留原本的標題
+                        title = originalTitle
+                    } else {
+                        // 如果沒有編輯標題，原本的標題為空值，則使用活動類別的顯示名稱
+                        title = activity.category.displayName
+                    }
             
             let event = CalendarEvents(
                 id: currentId,
