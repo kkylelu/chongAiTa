@@ -48,6 +48,14 @@ class DateCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        // 重用前確認清除所有 eventView
+        eventViews.forEach { $0.removeFromSuperview() }
+        eventViews = []
+        moreEventsLabel.isHidden = true
+    }
+    
     // MARK: Setup UI
     private func setupViews() {
         contentView.addSubview(dateLabel)
@@ -71,7 +79,7 @@ class DateCell: UICollectionViewCell {
         // 移除舊的事件視圖
         eventViews.forEach { $0.removeFromSuperview() }
         eventViews = []
-
+        
         if let date = date {
             let formatter = DateFormatter()
             formatter.dateFormat = "d"
@@ -93,47 +101,33 @@ class DateCell: UICollectionViewCell {
             dateLabel.heightAnchor.constraint(equalToConstant: dateLabelHeight)
         ])
         
+        // 根據活動數量決定是否顯示更多
+        moreEventsLabel.isHidden = events.count <= 3
         var lastBottomAnchor = dateLabel.bottomAnchor
-        for (index, event) in events.enumerated() {
-            // 只顯示前三個事件
-            if index < 3 {
-                let eventLabel = UILabel()
-                eventLabel.text = event.title
-                eventLabel.font = UIFont.systemFont(ofSize: 10)
-                eventLabel.textColor = .darkGray
-                eventLabel.textAlignment = .center
-                eventLabel.translatesAutoresizingMaskIntoConstraints = false
-                contentView.addSubview(eventLabel)
-
-                NSLayoutConstraint.activate([
-                    eventLabel.topAnchor.constraint(equalTo: lastBottomAnchor, constant: spacing),
-                    eventLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                    eventLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                    eventLabel.heightAnchor.constraint(equalToConstant: eventHeight)
-                ])
-                lastBottomAnchor = eventLabel.bottomAnchor
-                eventViews.append(eventLabel)
-                // 第四個位置顯示 "..."
-            } else if index == 3 {
-                let moreEventsLabel = UILabel()
-                moreEventsLabel.text = "···"
-                moreEventsLabel.font = UIFont.systemFont(ofSize: 10)
-                moreEventsLabel.textColor = .darkGray
-                moreEventsLabel.textAlignment = .center
-                moreEventsLabel.translatesAutoresizingMaskIntoConstraints = false
-                contentView.addSubview(moreEventsLabel)
-
-                NSLayoutConstraint.activate([
-                    moreEventsLabel.topAnchor.constraint(equalTo: lastBottomAnchor, constant: spacing),
-                    moreEventsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                    moreEventsLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                    moreEventsLabel.heightAnchor.constraint(equalToConstant: eventHeight)
-                ])
-                // 不再顯示更多事件
-                break
-            }
+        for (index, event) in events.prefix(3).enumerated() {
+            let eventLabel = UILabel()
+            eventLabel.text = event.title
+            setupEventLabel(eventLabel, below: lastBottomAnchor)
+            lastBottomAnchor = eventLabel.bottomAnchor
+        }
+        if events.count > 3 {
+            setupEventLabel(moreEventsLabel, below: lastBottomAnchor)
+            moreEventsLabel.text = "···"
+            moreEventsLabel.isHidden = false
         }
     }
-    
+    func setupEventLabel(_ label: UILabel, below anchor: NSLayoutYAxisAnchor) {
+        contentView.addSubview(label)
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textColor = .darkGray
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: anchor, constant: 2),
+            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            label.heightAnchor.constraint(equalToConstant: 14)
+        ])
+        eventViews.append(label)
+    }
 }
-
