@@ -128,16 +128,13 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
 
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { (action, view, completionHandler) in
-            // 移除資料庫中的活動
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] (action, view, completionHandler) in
+            guard let self = self else { return }
             let eventToDelete = self.dataSource[indexPath.row]
             self.dataSource.removeAll { $0.id == eventToDelete.id }
-            
+            EventsManager.shared.deleteEvent(eventToDelete)
             tableView.deleteRows(at: [indexPath], with: .automatic)
-
-            // 呼叫 completionHandler 來解除動作按鈕
             completionHandler(true)
-
         }
 
         deleteAction.backgroundColor = UIColor.B4
@@ -147,6 +144,4 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
 
         return configuration
     }
-
-
 }

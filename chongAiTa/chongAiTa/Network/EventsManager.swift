@@ -38,5 +38,13 @@ class EventsManager {
             }
         }
     }
+    
+    func deleteEvent(_ event: CalendarEvents) {
+        let key = Calendar.current.startOfDay(for: event.date)
+        if var events = eventsByDate[key] {
+            events.removeAll { $0.id == event.id }
+            eventsByDate[key] = events
+        }
+    }
 
 }
