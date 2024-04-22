@@ -22,7 +22,6 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         setupFloatingButton()
         setupTableView()
         tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -111,10 +110,34 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
             }
             let event = dataSource[indexPath.row]
             cell.configure(with: event)
+            cell.selectionStyle = .none
             return cell
         }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 165.0
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { (action, view, completionHandler) in
+            // 移除資料庫中的活動
+            let eventToDelete = self.dataSource[indexPath.row]
+            self.dataSource.removeAll { $0.id == eventToDelete.id }
+            
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+
+            // 呼叫 completionHandler 來解除動作按鈕
+            completionHandler(true)
+
+        }
+
+        deleteAction.backgroundColor = UIColor.B4
+
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        configuration.performsFirstActionWithFullSwipe = true
+
+        return configuration
+    }
+
+
 }

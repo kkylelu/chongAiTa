@@ -8,6 +8,7 @@
 import UIKit
 
 struct CalendarEvents {
+    var id: UUID
     var title: String
     var date: Date
     var activity: DefaultActivity
@@ -15,6 +16,7 @@ struct CalendarEvents {
     var image: UIImage?
     
     init(title: String, date: Date, activity: DefaultActivity, content: String? = nil, image: UIImage? = nil) {
+        self.id = UUID()
         self.title = title
         self.date = date
         self.activity = activity
