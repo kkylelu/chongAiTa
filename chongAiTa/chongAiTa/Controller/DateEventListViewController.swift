@@ -34,7 +34,7 @@ class DateEventListViewController: UIViewController, UITableViewDelegate, UITabl
     // MARK: - Setup UI
     
     func setupUI() {
-        view.backgroundColor = .yellow
+        view.backgroundColor = .white
     }
     
     func getIconForCategory(_ category: ActivityCategory) -> UIImage {

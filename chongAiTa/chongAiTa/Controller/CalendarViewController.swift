@@ -15,7 +15,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     var collectionView: UICollectionView!
     var currentMonthDate = Date()
     var calendarEventsArray: [CalendarEvents] = []
-    
+        
     // 目前月份的天數
     var daysInMonth: Int {
         let calendar = Calendar.current
@@ -47,6 +47,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         configureFlowLayout()
+        collectionView.reloadData()
     }
     
     // MARK: - Setup UI
@@ -188,25 +189,24 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         return formatter.string(from: currentMonthDate)
     }
     
-    
-    
     // MARK: - CollectionView Delegate
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 42
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DateCell", for: indexPath) as! DateCell
         
-        // 已經是從 0 開始，不用再減 1
         let firstDayIndex = firstWeekdayOfMonth
         let dateOffset = indexPath.item - firstDayIndex
         let calendar = Calendar.current
         
         if dateOffset >= 0 && dateOffset < daysInMonth {
             let dateForCell = calendar.date(byAdding: .day, value: dateOffset, to: firstOfMonth())
-            cell.configureCell(with: dateForCell, events: [])
+            let events = EventsManager.shared.loadEvents(for: dateForCell!)
+            print("Loading events for \(dateForCell!): \(events.map { $0.title })")
+            cell.configureCell(with: dateForCell, events: events.map { Event(title: $0.title) })
         } else {
             cell.configureCell(with: nil, events: [])
         }

@@ -170,6 +170,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
             )
             
             EventsManager.shared.saveEvent(event)
+            print("Event Saved: \(event.title), Date: \(event.date)")
             
             // 跳轉到 CalendarDateViewController
             if let navigationController = navigationController {

@@ -67,9 +67,11 @@ class DateCell: UICollectionViewCell {
     }
     
     func configureCell(with date: Date?, events: [Event]) {
+        dateLabel.text = date != nil ? DateFormatter.localizedString(from: date!, dateStyle: .medium, timeStyle: .none) : ""
+        // 移除舊的事件視圖
         eventViews.forEach { $0.removeFromSuperview() }
         eventViews = []
-        
+
         if let date = date {
             let formatter = DateFormatter()
             formatter.dateFormat = "d"
@@ -79,9 +81,11 @@ class DateCell: UICollectionViewCell {
         }
         
         let dateLabelHeight: CGFloat = 20
-        // (DateCell 總高度 - datalabel 高度 - 間隔數量) / (活動數量)
-        let eventHeight: CGFloat = (contentView.bounds.height - dateLabelHeight - CGFloat(events.count - 1) * 2) / CGFloat(events.count)
-        dateLabel.translatesAutoresizingMaskIntoConstraints = false
+        let spacing: CGFloat = 2
+        let totalEventsToShow = min(events.count, 4)
+        let availableHeight = contentView.bounds.height - dateLabelHeight - CGFloat(totalEventsToShow - 1) * spacing
+        let eventHeight: CGFloat = availableHeight / CGFloat(totalEventsToShow)
+        
         NSLayoutConstraint.activate([
             dateLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
             dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
@@ -91,25 +95,45 @@ class DateCell: UICollectionViewCell {
         
         var lastBottomAnchor = dateLabel.bottomAnchor
         for (index, event) in events.enumerated() {
-            if index < 4 {
-                let eventView = UIView()
-                eventView.backgroundColor = UIColor.B3
-                eventView.layer.cornerRadius = 5
-                eventView.translatesAutoresizingMaskIntoConstraints = false
-                contentView.addSubview(eventView)
-                
+            // 只顯示前三個事件
+            if index < 3 {
+                let eventLabel = UILabel()
+                eventLabel.text = event.title
+                eventLabel.font = UIFont.systemFont(ofSize: 10)
+                eventLabel.textColor = .darkGray
+                eventLabel.textAlignment = .center
+                eventLabel.translatesAutoresizingMaskIntoConstraints = false
+                contentView.addSubview(eventLabel)
+
                 NSLayoutConstraint.activate([
-                    eventView.topAnchor.constraint(equalTo: lastBottomAnchor, constant: 2),
-                    eventView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                    eventView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                    eventView.heightAnchor.constraint(equalToConstant: eventHeight)
+                    eventLabel.topAnchor.constraint(equalTo: lastBottomAnchor, constant: spacing),
+                    eventLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                    eventLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                    eventLabel.heightAnchor.constraint(equalToConstant: eventHeight)
                 ])
-                lastBottomAnchor = eventView.bottomAnchor
-                eventViews.append(eventView)
-            } else {
+                lastBottomAnchor = eventLabel.bottomAnchor
+                eventViews.append(eventLabel)
+                // 第四個位置顯示 "..."
+            } else if index == 3 {
+                let moreEventsLabel = UILabel()
+                moreEventsLabel.text = "···"
+                moreEventsLabel.font = UIFont.systemFont(ofSize: 10)
+                moreEventsLabel.textColor = .darkGray
+                moreEventsLabel.textAlignment = .center
+                moreEventsLabel.translatesAutoresizingMaskIntoConstraints = false
+                contentView.addSubview(moreEventsLabel)
+
+                NSLayoutConstraint.activate([
+                    moreEventsLabel.topAnchor.constraint(equalTo: lastBottomAnchor, constant: spacing),
+                    moreEventsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                    moreEventsLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                    moreEventsLabel.heightAnchor.constraint(equalToConstant: eventHeight)
+                ])
+                // 不再顯示更多事件
                 break
             }
         }
     }
+    
 }
 
