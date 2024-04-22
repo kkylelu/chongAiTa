@@ -21,6 +21,15 @@ class EventsManager {
         }
     }
 
+    func loadEvent(with id: UUID) -> CalendarEvents? {
+        for (_, events) in eventsByDate {
+            if let event = events.first(where: { $0.id == id }) {
+                return event
+            }
+        }
+        return nil
+    }
+    
     func loadEvents(for date: Date) -> [CalendarEvents] {
         let key = Calendar.current.startOfDay(for: date)
         return eventsByDate[key] ?? []

@@ -20,7 +20,6 @@ class CostChartViewController: UIViewController {
         view.addSubview(hostingController!.view)
         hostingController!.view.translatesAutoresizingMaskIntoConstraints = false
         
-        // 新增這些約束條件
         NSLayoutConstraint.activate([
             hostingController!.view.topAnchor.constraint(equalTo: view.topAnchor),
             hostingController!.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),

@@ -9,37 +9,43 @@ import Charts
 import SwiftUI
 
 struct CostChartView: View {
-    @State private var costs: [(name: String, amount: Double)] = [
-            ("Event A", 100.0),
-            ("Event B", 200.0),
-            ("Event C", 75.0)
-        ]
-
+    @State private var costs: [(name: String, amount: Double)] = []
+    @State private var totalCost: Double = 0
+    
     private func fetchData() {
         let allCosts = EventsManager.shared.getAllCosts()
-        print("Fetched costs: \(allCosts)") // 打印從 EventsManager 獲取的數據
+        totalCost = allCosts.map { $0.cost }.reduce(0, +)
 
-        // 轉換數據以適應圖表格式
         costs = allCosts.map { cost in
-            // 假設我們想以事件的標題作為名稱
-            let eventName = EventsManager.shared.loadEvents(for: Date()).first(where: { $0.id == cost.eventId })?.title ?? "Unknown Event"
-            return (name: eventName, amount: cost.cost)
+            if let event = EventsManager.shared.loadEvent(with: cost.eventId) {
+                let activityName = event.activity.category.displayName
+                return (name: activityName, amount: cost.cost)
+            } else {
+                return (name: "Unknown", amount: cost.cost)
+            }
         }
     }
-
+    
     var body: some View {
-        Chart(costs, id: \.name) { data in
-            BarMark(
-                x: .value("Cost", data.amount),
-                y: .value("Event", data.name)
-            )
+        Chart {
+            ForEach(costs, id: \.name) { data in
+                SectorMark(
+                    angle: .value("Cost", data.amount / totalCost),
+                    innerRadius: .ratio(0.618),
+                    angularInset: 1.5
+                )
+                .cornerRadius(5.0)
+                .foregroundStyle(by: .value("Activity", data.name))
+                .opacity(data.name == "Unknown" ? 0.3 : 1)
+            }
         }
+        .chartLegend(alignment: .center, spacing: 18)
+        .scaledToFit()
         .onAppear {
             fetchData()
         }
     }
 }
-
 
 #Preview {
     CostChartView()
