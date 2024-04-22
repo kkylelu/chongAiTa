@@ -76,7 +76,7 @@ class DateCell: UICollectionViewCell {
     
     func configureCell(with date: Date?, events: [Event]) {
         dateLabel.text = date != nil ? DateFormatter.localizedString(from: date!, dateStyle: .medium, timeStyle: .none) : ""
-        // 移除舊的事件視圖
+
         eventViews.forEach { $0.removeFromSuperview() }
         eventViews = []
         
@@ -118,7 +118,7 @@ class DateCell: UICollectionViewCell {
     }
     func setupEventLabel(_ label: UILabel, below anchor: NSLayoutYAxisAnchor) {
         contentView.addSubview(label)
-        label.font = UIFont.systemFont(ofSize: 10)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = .darkGray
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
