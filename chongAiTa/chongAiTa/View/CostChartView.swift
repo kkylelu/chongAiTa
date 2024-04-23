@@ -33,20 +33,26 @@ struct CostChartView: View {
 
     private func fetchData() {
         let allCosts: [(eventId: UUID, cost: Double)]
-            switch selectedTimeRange {
-            case .lastWeek:
-                allCosts = EventsManager.shared.getCostsForLastWeek()
-            case .currentMonth:
-                allCosts = EventsManager.shared.getCostsForCurrentMonth()
-            }
-        costs = allCosts.map { cost in
+        switch selectedTimeRange {
+        case .lastWeek:
+            allCosts = EventsManager.shared.getCostsForLastWeek()
+        case .currentMonth:
+            allCosts = EventsManager.shared.getCostsForCurrentMonth()
+        }
+
+        var categoryTotalCosts: [String: Double] = [:]
+
+        for cost in allCosts {
             if let event = EventsManager.shared.loadEvent(with: cost.eventId) {
-                let activityName = event.activity.category.displayName
-                return (name: activityName, amount: cost.cost)
+                let categoryName = event.activity.category.displayName
+                categoryTotalCosts[categoryName, default: 0] += cost.cost
             } else {
-                return (name: "未分類", amount: cost.cost)
+                categoryTotalCosts["未分類", default: 0] += cost.cost
             }
         }
+
+        totalCost = categoryTotalCosts.values.reduce(0, +)
+        costs = categoryTotalCosts.map { (name, amount) in (name, amount) }
     }
 
     var body: some View {
@@ -77,9 +83,11 @@ struct CostChartView: View {
                     HStack {
                         Text(cost.name)
                         Spacer()
-                        Text("\((cost.amount / totalCost) * 100, specifier: "%.2f%%")").frame(alignment: .trailing)
+                        Text("\(Int((cost.amount / totalCost) * 100))%")
+                            .frame(alignment: .trailing)
                         Spacer().frame(width: 20)
-                        Text("\(cost.amount, specifier: "$%.2f")").frame(alignment: .trailing)
+                        Text("$\(cost.amount, specifier: "%.2f")")
+                            .frame(alignment: .trailing)
                     }
                 }
             }
