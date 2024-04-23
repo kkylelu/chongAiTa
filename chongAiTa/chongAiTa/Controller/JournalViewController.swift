@@ -265,6 +265,10 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     //MARK: - Action
     
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+            view.endEditing(true)
+        }
+    
     @objc func dateChanged(_ datePicker: UIDatePicker) {
         selectedDate = datePicker.date
     }

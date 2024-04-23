@@ -88,6 +88,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         
         costTextField.placeholder = "輸入金額"
         costTextField.borderStyle = .roundedRect
+        costTextField.keyboardType = .numberPad
         costTextField.translatesAutoresizingMaskIntoConstraints = false
         
         timeLabel.text = "紀錄時間"
@@ -160,6 +161,11 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     }
     
     // MARK: - Action
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+            view.endEditing(true)
+        }
+    
     @objc func doneButtonTapped() {
         print("Selected Activity: \(selectedActivity)")
            print("Current Event ID: \(currentEventId)")

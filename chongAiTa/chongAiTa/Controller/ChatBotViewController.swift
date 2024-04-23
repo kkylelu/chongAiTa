@@ -255,7 +255,8 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         let message = messages[indexPath.row]
         // 偶數行是 user 的對話
         cell.configure(with: message, isFromCurrentUser: indexPath.row % 2 == 0)
+        cell.selectionStyle = .none
         return cell
     }
-    
+
 }

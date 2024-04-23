@@ -25,6 +25,7 @@ struct CalendarEvents {
         self.image = image
         self.cost = cost
     }
+    
 }
 
 struct DefaultActivity {
@@ -36,7 +37,7 @@ struct DefaultActivity {
 enum ActivityCategory: Int {
     case food = 0
     case medication = 1
-    case walk = 2
+    case shower = 2
     // 後續可增加更多類別
     
     var displayName: String {
@@ -45,8 +46,19 @@ enum ActivityCategory: Int {
             return "餵食"
         case .medication:
             return "看醫生"
-        case .walk:
-            return "散步"
+        case .shower:
+            return "美容洗澡"
+        }
+    }
+    
+    var icon: UIImage? {
+        switch self {
+        case .food:
+            return UIImage(named: "foodIcon")
+        case .medication:
+            return UIImage(named: "medicationIcon")
+        case .shower:
+            return UIImage(named: "exerciseIcon")
         }
     }
 }
