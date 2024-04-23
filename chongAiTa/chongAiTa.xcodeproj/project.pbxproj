@@ -10,6 +10,7 @@
 		270D97772BCD3E7A00AA8D79 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270D97762BCD3E7A00AA8D79 /* APIKeys.swift */; };
 		2739EA402BD241540054D455 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2739EA3F2BD241540054D455 /* CalendarViewController.swift */; };
 		2739EA432BD2424B0054D455 /* DateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2739EA422BD2424B0054D455 /* DateCell.swift */; };
+		274A49FD2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274A49FC2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift */; };
 		274CE0D72BC8275C00277222 /* JournalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE0D62BC8275C00277222 /* JournalViewController.swift */; };
 		275CC35B2BC7BF3D0062C75C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC35A2BC7BF3D0062C75C /* FirebaseAnalytics */; };
 		275CC35D2BC7BF3D0062C75C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC35C2BC7BF3D0062C75C /* FirebaseFirestore */; };
@@ -82,6 +83,7 @@
 		270D97762BCD3E7A00AA8D79 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
 		2739EA3F2BD241540054D455 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
 		2739EA422BD2424B0054D455 /* DateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateCell.swift; sourceTree = "<group>"; };
+		274A49FC2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrenceSettingsView.swift; sourceTree = "<group>"; };
 		274CE0D62BC8275C00277222 /* JournalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalViewController.swift; sourceTree = "<group>"; };
 		275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		275CC3642BC7D00D0062C75C /* chongAiTa.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = chongAiTa.entitlements; sourceTree = "<group>"; };
@@ -218,6 +220,7 @@
 				27F9759E2BC6B01300B2A041 /* LaunchScreen.storyboard */,
 				27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */,
 				277092582BD67B93004F2553 /* CostChartView.swift */,
+				274A49FC2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -664,6 +667,7 @@
 				27F004512BCD384400C87472 /* OpenAINetworkHelper.swift in Sources */,
 				27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */,
 				27694EF92BD0D28200D90167 /* ChatBotViewController.swift in Sources */,
+				274A49FD2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift in Sources */,
 				27A4621B2BCBE89D00503F3E /* JournalHomeViewController.swift in Sources */,
 				27694F4D2BD0F02F00D90167 /* ChatBotManager.swift in Sources */,
 				27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */,

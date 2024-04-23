@@ -158,7 +158,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         updateTitleButton()
     }
     
-    
     func updateTitleButton() {
         if let titleButton = navigationItem.titleView as? UIButton {
             titleButton.setTitle(titleForCurrentMonth(), for: .normal)
@@ -181,7 +180,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         updateTitleButton()
     }
     
-    
     func titleForCurrentMonth() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy 年 MM 月"
@@ -202,9 +200,10 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         let calendar = Calendar.current
         
         if dateOffset >= 0 && dateOffset < daysInMonth {
-            let dateForCell = calendar.date(byAdding: .day, value: dateOffset, to: firstOfMonth())
-            let events = EventsManager.shared.loadEvents(for: dateForCell!)
-            print("Loading events for \(dateForCell!): \(events.map { $0.title })")
+            let dateForCell = calendar.date(byAdding: .day, value: dateOffset, to: firstOfMonth())!
+            let startOfDay = calendar.startOfDay(for: dateForCell)
+            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+            let events = EventsManager.shared.loadEvents(from: startOfDay, to: endOfDay)
             cell.configureCell(with: dateForCell, events: events.map { Event(title: $0.title) })
         } else {
             cell.configureCell(with: nil, events: [])

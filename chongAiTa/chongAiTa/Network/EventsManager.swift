@@ -6,11 +6,16 @@
 //
 
 import UIKit
+import Dispatch
+
 class EventsManager {
     static let shared = EventsManager()
     private var eventsByDate = [Date: [CalendarEvents]]()
+    private var scheduledRecurrenceTimers: [UUID: DispatchSourceTimer] = [:]
 
     private init() {}
+
+    // MARK: - Events
 
     func saveEvent(_ event: CalendarEvents) {
         let key = Calendar.current.startOfDay(for: event.date)
@@ -18,6 +23,96 @@ class EventsManager {
             eventsByDate[key]?.append(event)
         } else {
             eventsByDate[key] = [event]
+        }
+
+        // 只有在事件日期是今天或之後，才設定重複規則
+        let today = Calendar.current.startOfDay(for: Date())
+        if let recurrence = event.recurrence, event.date >= today {
+            scheduleRecurrenceTimer(for: event, with: recurrence)
+        }
+    }
+
+
+    private func scheduleRecurrenceTimer(for event: CalendarEvents, with recurrence: Recurrence) {
+        let eventId = event.id
+        if let existingTimer = scheduledRecurrenceTimers[eventId] {
+            existingTimer.cancel()
+            scheduledRecurrenceTimers[eventId] = nil
+        }
+
+        let interval: TimeInterval
+        switch recurrence {
+        case .daily:
+            interval = 86400.0 // 每天
+        case .weekly:
+            interval = 604800.0 // 每週
+        case .monthly:
+            interval = 2629800.0 // 每月
+        case .yearly:
+            interval = 31557600.0 // 每年
+        }
+
+        let timer = DispatchSource.makeTimerSource(queue: .main)
+        let nextInterval = getNextInterval(start: event.date, interval: interval)
+        timer.schedule(deadline: .now() + nextInterval, repeating: interval)
+        timer.setEventHandler { [weak self] in
+            self?.createRecurringEvent(event)
+        }
+        scheduledRecurrenceTimers[eventId] = timer
+        timer.resume()
+    }
+
+    func createRecurringEvent(_ event: CalendarEvents) {
+        guard let recurrence = event.recurrence else {
+            return
+        }
+
+        var nextDate = event.date
+
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: nextDate)
+
+        switch recurrence {
+        case .daily:
+            components.day = (components.day ?? 0) + 1
+        case .weekly:
+            components.day = (components.day ?? 0) + 7
+        case .monthly:
+            components.month = (components.month ?? 0) + 1
+        case .yearly:
+            components.year = (components.year ?? 0) + 1
+        }
+
+        nextDate = calendar.date(from: components) ?? nextDate
+
+        let newEvent = CalendarEvents(
+            id: UUID(),
+            title: event.title,
+            date: nextDate,
+            activity: event.activity,
+            content: event.content,
+            image: event.image,
+            cost: event.cost,
+            recurrence: event.recurrence
+        )
+
+        let key = Calendar.current.startOfDay(for: nextDate)
+        if eventsByDate[key] != nil {
+            eventsByDate[key]?.append(newEvent)
+        } else {
+            eventsByDate[key] = [newEvent]
+        }
+    }
+    
+    // 計算下一次事件的間隔
+    private func getNextInterval(start: Date, interval: TimeInterval) -> TimeInterval {
+        let now = Date()
+        if start < now {
+            let elapsed = now.timeIntervalSince(start)
+            let next = ceil(elapsed / interval) * interval
+            return next - elapsed
+        } else {
+            return start.timeIntervalSince(now)
         }
     }
 
@@ -30,10 +125,51 @@ class EventsManager {
         return nil
     }
     
-    func loadEvents(for date: Date) -> [CalendarEvents] {
-        let key = Calendar.current.startOfDay(for: date)
-        return eventsByDate[key] ?? []
+    func loadEvents(from startDate: Date, to endDate: Date) -> [CalendarEvents] {
+        var allEvents: [CalendarEvents] = []
+        
+        for (_, events) in eventsByDate {
+            for event in events {
+                if event.date >= startDate && event.date <= endDate {
+                    allEvents.append(event)
+                }
+                
+                if let recurrence = event.recurrence {
+                    var nextDate = event.date
+                    
+                    while nextDate <= endDate {
+                        switch recurrence {
+                        case .daily:
+                            nextDate = Calendar.current.date(byAdding: .day, value: 1, to: nextDate)!
+                        case .weekly:
+                            nextDate = Calendar.current.date(byAdding: .day, value: 7, to: nextDate)!
+                        case .monthly:
+                            nextDate = Calendar.current.date(byAdding: .month, value: 1, to: nextDate)!
+                        case .yearly:
+                            nextDate = Calendar.current.date(byAdding: .year, value: 1, to: nextDate)!
+                        }
+                        
+                        if nextDate > startDate && nextDate <= endDate {
+                            let newEvent = CalendarEvents(
+                                id: event.id,
+                                title: event.title,
+                                date: nextDate,
+                                activity: event.activity,
+                                content: event.content,
+                                image: event.image,
+                                cost: event.cost,
+                                recurrence: event.recurrence
+                            )
+                            allEvents.append(newEvent)
+                        }
+                    }
+                }
+            }
+        }
+        
+        return allEvents
     }
+
     
     func updateEvent(_ updatedEvent: CalendarEvents) {
         let key = Calendar.current.startOfDay(for: updatedEvent.date)
@@ -55,6 +191,8 @@ class EventsManager {
             eventsByDate[key] = events
         }
     }
+    
+    // MARK: - Costs
     
     func getAllCosts() -> [(eventId: UUID, cost: Double)] {
         var allCosts: [(eventId: UUID, cost: Double)] = []

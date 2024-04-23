@@ -15,8 +15,9 @@ struct CalendarEvents {
     var content: String?
     var image: UIImage?
     var cost: Double?
+    var recurrence: Recurrence?
     
-    init(id: UUID = UUID(), title: String, date: Date, activity: DefaultActivity, content: String? = nil, image: UIImage? = nil, cost: Double? = nil) {
+    init(id: UUID = UUID(), title: String, date: Date, activity: DefaultActivity, content: String? = nil, image: UIImage? = nil, cost: Double? = nil, recurrence: Recurrence? = nil) {
         self.id = id
         self.title = title
         self.date = date
@@ -24,8 +25,16 @@ struct CalendarEvents {
         self.content = content
         self.image = image
         self.cost = cost
+        self.recurrence = recurrence
     }
     
+}
+
+enum Recurrence {
+    case daily
+    case weekly
+    case monthly
+    case yearly
 }
 
 struct DefaultActivity {

@@ -25,10 +25,16 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-            print("viewWillAppear called")
-            loadEvents()
-        }
+        super.viewWillAppear(animated)
+        print("viewWillAppear called")
+        
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: selectedDate)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        loadEvents(from: startOfDay, to: endOfDay)
+    }
+
     
     // MARK: - Setup UI
     
@@ -81,10 +87,11 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     
     // MARK: - Action
     
-    func loadEvents() {
-        dataSource = EventsManager.shared.loadEvents(for: selectedDate)
+    func loadEvents(from startDate: Date, to endDate: Date) {
+        dataSource = EventsManager.shared.loadEvents(from: startDate, to: endDate)
         tableView.reloadData()
     }
+
     
     @objc func floatingButtonTapped() {
         let dateEventListVC = DateEventListViewController(date: selectedDate)
@@ -125,7 +132,6 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         eventDetailVC.configure(event: event)
         navigationController?.pushViewController(eventDetailVC, animated: true)
     }
-
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] (action, view, completionHandler) in
