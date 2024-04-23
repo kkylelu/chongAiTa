@@ -8,13 +8,37 @@
 import Charts
 import SwiftUI
 
+enum TimeRange: String, CaseIterable {
+    case lastWeek = "上週"
+    case currentMonth = "本月"
+}
+
+struct TimeRangePicker: View {
+    @Binding var selectedTimeRange: TimeRange
+    
+    var body: some View {
+        Picker("時間範圍", selection: $selectedTimeRange) {
+            ForEach(TimeRange.allCases, id: \.self) { timeRange in
+                Text(timeRange.rawValue)
+            }
+        }
+        .pickerStyle(SegmentedPickerStyle())
+    }
+}
+
 struct CostChartView: View {
     @State private var costs: [(name: String, amount: Double)] = []
     @State private var totalCost: Double = 0
+    @State private var selectedTimeRange: TimeRange = .lastWeek
 
     private func fetchData() {
-        let allCosts = EventsManager.shared.getAllCosts()
-        totalCost = allCosts.map { $0.cost }.reduce(0, +)
+        let allCosts: [(eventId: UUID, cost: Double)]
+            switch selectedTimeRange {
+            case .lastWeek:
+                allCosts = EventsManager.shared.getCostsForLastWeek()
+            case .currentMonth:
+                allCosts = EventsManager.shared.getCostsForCurrentMonth()
+            }
         costs = allCosts.map { cost in
             if let event = EventsManager.shared.loadEvent(with: cost.eventId) {
                 let activityName = event.activity.category.displayName
@@ -26,6 +50,12 @@ struct CostChartView: View {
     }
 
     var body: some View {
+        VStack {
+                TimeRangePicker(selectedTimeRange: $selectedTimeRange)
+            }
+            .onChange(of: selectedTimeRange) { _ in
+                fetchData()
+            }
         List {
             Chart(costs, id: \.name) { element in
                 SectorMark(

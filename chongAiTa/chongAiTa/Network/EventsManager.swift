@@ -65,5 +65,38 @@ class EventsManager {
         }
         return allCosts
     }
+    
+    func getCostsForLastWeek() -> [(eventId: UUID, cost: Double)] {
+        var costsForLastWeek: [(eventId: UUID, cost: Double)] = []
+        
+        let calendar = Calendar.current
+        let today = Date()
+        let lastWeekStart = calendar.date(byAdding: .day, value: -7, to: today)!
+        
+        for (_, events) in eventsByDate {
+            for event in events where event.date >= lastWeekStart && event.date < today && event.cost != nil {
+                costsForLastWeek.append((event.id, event.cost!))
+            }
+        }
+        
+        return costsForLastWeek
+    }
+
+    func getCostsForCurrentMonth() -> [(eventId: UUID, cost: Double)] {
+        var costsForCurrentMonth: [(eventId: UUID, cost: Double)] = []
+        
+        let calendar = Calendar.current
+        let today = Date()
+        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
+        let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth)!
+        
+        for (_, events) in eventsByDate {
+            for event in events where event.date >= startOfMonth && event.date < endOfMonth && event.cost != nil {
+                costsForCurrentMonth.append((event.id, event.cost!))
+            }
+        }
+        
+        return costsForCurrentMonth
+    }
 
 }
