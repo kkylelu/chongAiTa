@@ -121,7 +121,8 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         navigationItem.leftBarButtonItem = previousMonthButton
         navigationItem.rightBarButtonItem = nextMonthButton
-        navigationItem.titleView = titleButton // 將 UIButton 設置為 titleView
+        // 將 UIButton 設置為 titleView
+        navigationItem.titleView = titleButton
     }
     
     @objc func presentDatePicker() {

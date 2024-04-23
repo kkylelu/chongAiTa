@@ -157,7 +157,6 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         ])
     }
     
-    
     func configure(event: CalendarEvents) {
         self.eventImage = event.image
         self.eventTitle = event.title
@@ -167,11 +166,25 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         displayEventDetails()
     }
     
-    
     func displayEventDetails() {
         iconImageView.image = eventImage
         titleLabel.text = eventTitle
-        datePicker.date = eventDate ?? Date()
+        
+        // 檢查是否有傳來的 eventDate
+        if let eventDate = eventDate {
+            // 使用傳來的日期，但設定時間為上午 9:00
+            var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: eventDate)
+            dateComponents.hour = 9
+            dateComponents.minute = 0
+            datePicker.date = Calendar.current.date(from: dateComponents) ?? eventDate
+        } else {
+            // 如果沒有傳遞日期，則使用當天日期並設為上午 9:00
+            let now = Date()
+            var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: now)
+            dateComponents.hour = 9
+            dateComponents.minute = 0
+            datePicker.date = Calendar.current.date(from: dateComponents) ?? now
+        }
     }
     
     // MARK: - Action
@@ -206,7 +219,6 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
             recurrenceButton.setTitle("設定重複活動", for: .normal)
         }
     }
-    
     
     @objc func doneButtonTapped() {
         print("Selected Activity: \(selectedActivity)")
