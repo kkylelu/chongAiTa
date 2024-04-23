@@ -57,42 +57,48 @@ struct CostChartView: View {
 
     var body: some View {
         VStack {
+            if costs.isEmpty {
+                Text("先新增活動支出，就能查看圖表")
+                    .padding()
+            } else {
                 TimeRangePicker(selectedTimeRange: $selectedTimeRange)
-            }
-            .onChange(of: selectedTimeRange) { _ in
-                fetchData()
-            }
-        List {
-            Chart(costs, id: \.name) { element in
-                SectorMark(
-                    angle: .value("Cost", element.amount),
-                    innerRadius: .ratio(0.618),
-                    angularInset: 1.5
-                )
-                .cornerRadius(5.0)
-                .foregroundStyle(by: .value("Activity", element.name))
-            }
-            .chartLegend(alignment: .center)
-            .scaledToFit()
-            .frame(maxWidth: .infinity)
-            .listRowSeparator(.hidden)
-            .frame(height: 300)
+                    .onChange(of: selectedTimeRange) { _ in
+                        fetchData()
+                    }
 
-            Section(header: Text("花費項目")) {
-                ForEach(costs, id: \.name) { cost in
-                    HStack {
-                        Text(cost.name)
-                        Spacer()
-                        Text("\(Int((cost.amount / totalCost) * 100))%")
-                            .frame(alignment: .trailing)
-                        Spacer().frame(width: 20)
-                        Text("$\(cost.amount, specifier: "%.2f")")
-                            .frame(alignment: .trailing)
+                List {
+                    Chart(costs, id: \.name) { element in
+                        SectorMark(
+                            angle: .value("Cost", element.amount),
+                            innerRadius: .ratio(0.618),
+                            angularInset: 1.5
+                        )
+                        .cornerRadius(5.0)
+                        .foregroundStyle(by: .value("Activity", element.name))
+                    }
+                    .chartLegend(alignment: .center)
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity)
+                    .listRowSeparator(.hidden)
+                    .frame(height: 300)
+
+                    Section(header: Text("花費項目")) {
+                        ForEach(costs, id: \.name) { cost in
+                            HStack {
+                                Text(cost.name)
+                                Spacer()
+                                Text("\(Int((cost.amount / totalCost) * 100))%")
+                                    .frame(alignment: .trailing)
+                                Spacer().frame(width: 20)
+                                Text("$\(cost.amount, specifier: "%.2f")")
+                                    .frame(alignment: .trailing)
+                            }
+                        }
                     }
                 }
+                .listStyle(.plain)
             }
         }
-        .listStyle(.plain)
         .onAppear {
             fetchData()
         }
@@ -102,3 +108,4 @@ struct CostChartView: View {
 #Preview {
     CostChartView()
 }
+
