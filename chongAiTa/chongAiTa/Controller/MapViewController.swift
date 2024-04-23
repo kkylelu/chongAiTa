@@ -91,7 +91,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     }
     
     func setupCurrentLocButton() {
-        let currentLocButton = view.subviews.compactMap({ $0 as? UIButton }).first(where: { $0.currentImage == UIImage(systemName: "location.fill") })
+        let currentLocButton = view.subviews.compactMap({ $0 as? UIButton }).first(where: { $0.currentImage == UIImage(systemName: "mappin.and.ellipse") }) //"location.fill"
         currentLocButton?.addTarget(self, action: #selector(goToCurrentLocation), for: .touchUpInside)
     }
     
