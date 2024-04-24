@@ -133,20 +133,33 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
             self?.navigationItem.rightBarButtonItem?.isEnabled = true
         }
         
-        activityIndicator.startAnimating()
-        TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.activityIndicator.stopAnimating()
-                
-                switch result {
-                case .success(let summary):
-                    self?.displaySummaryAlert(summary)
-                case .failure(let error):
-                    print("Error generating summary: \(error)")
+        // 檢查日記內容是否超過 50 個中文字
+        let totalChineseCharacters = journalsArray.reduce(0) { count, journal in
+            return count + journal.body.count
+        }
+        
+        if totalChineseCharacters >= 50 {
+            activityIndicator.startAnimating()
+            TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.activityIndicator.stopAnimating()
+                    
+                    switch result {
+                    case .success(let summary):
+                        self?.displaySummaryAlert(summary)
+                    case .failure(let error):
+                        print("Error generating summary: \(error)")
+                    }
                 }
             }
+        } else {
+            // 顯示提示訊息
+            let alert = UIAlertController(title: "缺少日記內容", message: "日記內容需要超過 50 個中文字，才能使用 AI 回顧功能哦🐾", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "確定", style: .default))
+            self.present(alert, animated: true)
         }
     }
+
 
     
     func displaySummaryAlert(_ summary: String) {
