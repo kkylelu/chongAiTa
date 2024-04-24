@@ -112,9 +112,10 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         let journal = journalsArray[indexPath.row]
-        print("Location: \(journal.place ?? "未知地點"), \(journal.city ?? "未知地區")")
             cell.journalTitleLabel.text = journal.title
-            cell.journalContentLabel.text = "\(journal.place ?? "未知地點"), \(journal.city ?? "未知地區")"
+        
+        let previewText = journal.body.prefix(12)
+            cell.journalContentLabel.text = String(previewText) + "..."
         
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
