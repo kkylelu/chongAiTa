@@ -121,6 +121,7 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     func loadEvents(from startDate: Date, to endDate: Date) {
         dataSource = EventsManager.shared.loadEvents(from: startDate, to: endDate)
         tableView.reloadData()
+        updateUI()
     }
 
     
@@ -133,6 +134,7 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         if let event = notification.object as? CalendarEvents {
             dataSource.append(event)
             tableView.reloadData()
+            updateUI()
         }
     }
     
@@ -172,6 +174,8 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
             EventsManager.shared.deleteEvent(eventToDelete)
             tableView.deleteRows(at: [indexPath], with: .automatic)
             completionHandler(true)
+            
+            self.updateUI()
         }
 
         deleteAction.backgroundColor = UIColor.B4

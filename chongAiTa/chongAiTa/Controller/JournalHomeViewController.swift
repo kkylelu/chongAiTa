@@ -215,6 +215,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
             tableView.deleteRows(at: [indexPath], with: .automatic)
 
             completionHandler(true)
+            self?.updateUI()
         }
 
         deleteAction.backgroundColor = UIColor.B4
