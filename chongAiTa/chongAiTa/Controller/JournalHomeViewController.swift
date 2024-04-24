@@ -13,8 +13,9 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     @IBOutlet weak var tableView: UITableView!
     var floatingButton: UIButton!
     var journalsArray: [Journal] = []
-    
     var emptyPlaceholderLabel: UILabel!
+    var activityIndicator: UIActivityIndicatorView!
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,11 +31,23 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         NotificationCenter.default.addObserver(self, selector: #selector(handleNewJournalEntry(_:)), name: .newJournalEntrySaved, object: nil)
         
         setupEmptyPlaceholderLabel()
+        setupActivityIndicator()
         updateUI()
         
         }
     
     // MARK: - Setup UI
+    
+    func setupActivityIndicator(){
+        activityIndicator = UIActivityIndicatorView(style: .large)
+            activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(activityIndicator)
+
+            NSLayoutConstraint.activate([
+                activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            ])
+    }
     
     func setupFloatingButton(){
         floatingButton = UIButton(type: .custom)
@@ -106,15 +119,25 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
             }
             DispatchQueue.main.async {
                 self.tableView.reloadData()
+                self.updateUI()
             }
         }
     }
-
     
     // AI 日記回顧
     @objc func generateSummary() {
+        navigationItem.rightBarButtonItem?.isEnabled = false // 禁用按鈕
+        
+        // 延遲 1 秒後重新啟用按鈕，避免連續點擊
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.navigationItem.rightBarButtonItem?.isEnabled = true
+        }
+        
+        activityIndicator.startAnimating()
         TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
             DispatchQueue.main.async {
+                self?.activityIndicator.stopAnimating()
+                
                 switch result {
                 case .success(let summary):
                     self?.displaySummaryAlert(summary)
@@ -124,6 +147,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
             }
         }
     }
+
     
     func displaySummaryAlert(_ summary: String) {
         let alert = UIAlertController(title: "AI 日記回顧", message: summary, preferredStyle: .alert)
