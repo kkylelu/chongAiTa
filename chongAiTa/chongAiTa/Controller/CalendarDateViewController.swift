@@ -13,6 +13,7 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     var floatingButton: UIButton!
     var selectedDate: Date = Date()
     var dataSource = [CalendarEvents]()
+    var emptyPlaceholderLabel: UILabel!
     
     // MARK: - Life Cycle
     
@@ -22,6 +23,9 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         setupFloatingButton()
         setupTableView()
         tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
+        
+        setupEmptyPlaceholderLabel()
+        updateUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,6 +62,25 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         ])
     }
     
+    func setupEmptyPlaceholderLabel() {
+            emptyPlaceholderLabel = UILabel()
+            emptyPlaceholderLabel.text = "點擊下方「加號圖示➕」新增活動"
+            emptyPlaceholderLabel.textColor = UIColor.gray
+            emptyPlaceholderLabel.textAlignment = .center
+            emptyPlaceholderLabel.font = UIFont.systemFont(ofSize: 20)
+            emptyPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(emptyPlaceholderLabel)
+            
+            NSLayoutConstraint.activate([
+                emptyPlaceholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                emptyPlaceholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                emptyPlaceholderLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+                emptyPlaceholderLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            ])
+            
+            emptyPlaceholderLabel.isHidden = true
+        }
+    
     
     func setupFloatingButton(){
         floatingButton = UIButton(type: .custom)
@@ -84,6 +107,14 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         ])
         
     }
+    
+    // MARK: - UpdateUI
+    
+    func updateUI() {
+            emptyPlaceholderLabel.isHidden = !dataSource.isEmpty
+            tableView.isHidden = dataSource.isEmpty
+            tableView.reloadData()
+        }
     
     // MARK: - Action
     

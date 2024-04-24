@@ -58,7 +58,10 @@ struct CostChartView: View {
     var body: some View {
         VStack {
             if costs.isEmpty {
-                Text("先新增活動支出，就能查看圖表")
+                Text("到「日曆」新增活動「花費金額」即可查看圖表🐾")
+                    .font(.system(size: 20))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.gray)
                     .padding()
             } else {
                 TimeRangePicker(selectedTimeRange: $selectedTimeRange)
@@ -105,7 +108,7 @@ struct CostChartView: View {
     }
 }
 
-#Preview {
-    CostChartView()
-}
+//#Preview {
+//    CostChartView()
+//}
 
