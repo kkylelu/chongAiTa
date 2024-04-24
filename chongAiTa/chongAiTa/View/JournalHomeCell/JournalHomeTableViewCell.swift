@@ -26,6 +26,8 @@ class JournalHomeTableViewCell: UITableViewCell {
         func configure(with event: CalendarEvents) {
             timeLabel.text = DateFormatter.localizedString(from: event.date, dateStyle: .medium, timeStyle: .short)
             journalTitleLabel.text = event.title
+            journalTitleLabel.baselineAdjustment = .alignCenters
+
             journalContentLabel.text = event.content
             JournalImageView.image = event.image
         }

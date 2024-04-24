@@ -14,6 +14,8 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     var floatingButton: UIButton!
     var journalsArray: [Journal] = []
     
+    var emptyPlaceholderLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,10 +29,12 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         setupFloatingButton()
         NotificationCenter.default.addObserver(self, selector: #selector(handleNewJournalEntry(_:)), name: .newJournalEntrySaved, object: nil)
         
+        setupEmptyPlaceholderLabel()
+        updateUI()
+        
         }
     
     // MARK: - Setup UI
-    
     
     func setupFloatingButton(){
         floatingButton = UIButton(type: .custom)
@@ -62,6 +66,33 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         let journalVC = JournalViewController()
         navigationController?.pushViewController(journalVC, animated: true)
     }
+    
+    func setupEmptyPlaceholderLabel() {
+            emptyPlaceholderLabel = UILabel()
+            emptyPlaceholderLabel.text = "點擊下方「加號圖示➕」新增日記"
+            emptyPlaceholderLabel.textColor = UIColor.gray
+            emptyPlaceholderLabel.textAlignment = .center
+            emptyPlaceholderLabel.font = UIFont.systemFont(ofSize: 20)
+            emptyPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(emptyPlaceholderLabel)
+            
+            NSLayoutConstraint.activate([
+                emptyPlaceholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                emptyPlaceholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                emptyPlaceholderLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+                emptyPlaceholderLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            ])
+            
+            emptyPlaceholderLabel.isHidden = true
+        }
+    
+    // MARK: - UpdateUI
+    
+    private func updateUI() {
+            emptyPlaceholderLabel.isHidden = !journalsArray.isEmpty
+            tableView.isHidden = journalsArray.isEmpty
+            tableView.reloadData()
+        }
     
     
     // MARK: - Action

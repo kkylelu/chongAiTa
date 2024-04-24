@@ -25,8 +25,8 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="這裡可自由輸入想要呈現的日記標題" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Taj-NR-Eg9">
-                        <rect key="frame" x="16" y="61" width="233" height="48"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="這裡可自由輸入想要呈現的日記標題" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Taj-NR-Eg9">
+                        <rect key="frame" x="16" y="58" width="233" height="48"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="233" id="5cb-W4-B4n"/>
                         </constraints>
@@ -35,7 +35,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="內容預覽" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RGG-zd-xhO" userLabel="Journal Description Label">
-                        <rect key="frame" x="16" y="125" width="233" height="21"/>
+                        <rect key="frame" x="16" y="122" width="233" height="24"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="233" id="kQX-jd-s90"/>
                         </constraints>
@@ -59,7 +59,7 @@
                     <constraint firstItem="tup-Va-jQc" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="8qh-zk-Wk6"/>
                     <constraint firstItem="NVe-BT-gHT" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="BXL-nL-hDi"/>
                     <constraint firstItem="RGG-zd-xhO" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="FbU-Je-R6x"/>
-                    <constraint firstItem="Taj-NR-Eg9" firstAttribute="top" secondItem="NVe-BT-gHT" secondAttribute="bottom" priority="250" constant="10" id="GYO-gF-8Ln"/>
+                    <constraint firstItem="Taj-NR-Eg9" firstAttribute="top" secondItem="NVe-BT-gHT" secondAttribute="bottom" constant="16" id="GYO-gF-8Ln"/>
                     <constraint firstAttribute="trailing" secondItem="tup-Va-jQc" secondAttribute="trailing" constant="16" id="GZ7-Kk-8Aj"/>
                     <constraint firstItem="NVe-BT-gHT" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="Nvn-Nx-Dnz"/>
                     <constraint firstItem="tup-Va-jQc" firstAttribute="leading" secondItem="Taj-NR-Eg9" secondAttribute="trailing" constant="16" id="aBo-1I-KXI"/>
