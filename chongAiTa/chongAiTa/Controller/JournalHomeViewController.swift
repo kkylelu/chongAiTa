@@ -88,7 +88,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     // MARK: - UpdateUI
     
-    private func updateUI() {
+    func updateUI() {
             emptyPlaceholderLabel.isHidden = !journalsArray.isEmpty
             tableView.isHidden = journalsArray.isEmpty
             tableView.reloadData()
