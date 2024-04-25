@@ -6,13 +6,15 @@
 //
 
 import UIKit
+import MobileCoreServices
 
-class PetDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource {
+class PetDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
     var pet: Pet?
     var pickerView = UIPickerView()
     var currentPickerType: PickerType?
     var pickerData: [String] = ["選項1", "選項2", "選項3"]
+    var imagePickerController = UIImagePickerController()
     
     enum PickerType {
         case gender, type, neutered
@@ -81,6 +83,11 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     // MARK: - Setup UI
     func setupUI() {
         view.backgroundColor = .white
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
+        petImageView.isUserInteractionEnabled = true
+        petImageView.addGestureRecognizer(tapGesture)
+
     }
     
     func loadFakeData() {
@@ -105,6 +112,10 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     // MARK: - Action
+    
+    @objc func imageTapped(_ sender: UITapGestureRecognizer) {
+        presentImagePicker()
+    }
     
     func showPicker(for type: PickerType) {
         currentPickerType = type
@@ -280,6 +291,14 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         present(alertController, animated: true, completion: nil)
     }
     
+    func presentImagePicker() {
+        imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
+        imagePickerController.sourceType = .photoLibrary
+
+        present(imagePickerController, animated: true, completion: nil)
+    }
+    
     // MARK: - TableView Delegate
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
@@ -356,5 +375,16 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         case .neutered:
             pet?.isNeutered = (row == 0)
         }
+    }
+    
+    // MARK: - ImagePicker Delegate
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let editedImage = info[.editedImage] as? UIImage {
+            petImageView.image = editedImage
+        } else if let originalImage = info[.originalImage] as? UIImage {
+            petImageView.image = originalImage
+        }
+        
+        dismiss(animated: true, completion: nil)
     }
 }
