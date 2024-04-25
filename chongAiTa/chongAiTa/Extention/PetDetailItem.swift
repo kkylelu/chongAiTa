@@ -19,9 +19,9 @@ enum PetDetailItem {
     var icon: UIImage? {
         switch self {
         case .name:
-            return UIImage(systemName: "abc")
-        case .gender:
             return UIImage(systemName: "person.circle")
+        case .gender:
+            return UIImage(systemName: "tag")
         case .type:
             return UIImage(systemName: "pawprint.circle")
         case .breed:
