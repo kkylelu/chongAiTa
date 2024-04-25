@@ -7,9 +7,16 @@
 
 import UIKit
 
-class PetDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class PetDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource {
     
     var pet: Pet?
+    var pickerView = UIPickerView()
+    var currentPickerType: PickerType?
+    var pickerData: [String] = ["選項1", "選項2", "選項3"]
+    
+    enum PickerType {
+        case gender, type, neutered
+    }
     
     let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -38,6 +45,9 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .white
+        
+        pickerView.delegate = self
+        pickerView.dataSource = self
         
         view.addSubview(tableView)
         view.addSubview(backgroundView)
@@ -68,7 +78,6 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         loadFakeData()
     }
     
-    
     // MARK: - Setup UI
     func setupUI() {
         view.backgroundColor = .white
@@ -78,12 +87,12 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let fakePet = Pet(photo: "mydog",
-                          name: "Buddy",
+                          name: "熊熊",
                           gender: .male,
                           type: .dog,
                           breed: "米克斯",
-                          birthday: dateFormatter.date(from: "2018-03-01"),
-                          joinDate: dateFormatter.date(from: "2020-05-20"),
+                          birthday: dateFormatter.date(from: "2016-07-10"),
+                          joinDate: dateFormatter.date(from: "2020-03-10"),
                           weight: 15.0,
                           isNeutered: true)
         setPet(fakePet)
@@ -93,6 +102,182 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         self.pet = pet
         petImageView.image = UIImage(named: pet.photo ?? "ShibaInuIcon")
         tableView.reloadData()
+    }
+    
+    // MARK: - Action
+    
+    func showPicker(for type: PickerType) {
+        currentPickerType = type
+
+        switch type {
+        case .gender:
+            pickerData = Pet.Gender.allCases.map { $0.rawValue }
+        case .type:
+            pickerData = Pet.PetType.allCases.map { $0.displayName }
+        case .neutered:
+            pickerData = ["已結紮", "未結紮"]
+        }
+
+        let pickerViewController = UIViewController()
+        pickerViewController.preferredContentSize = CGSize(width: UIScreen.main.bounds.width, height: 260)
+        pickerViewController.view.addSubview(pickerView)
+
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        pickerView.reloadAllComponents()
+
+        pickerView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pickerView.leadingAnchor.constraint(equalTo: pickerViewController.view.leadingAnchor),
+            pickerView.trailingAnchor.constraint(equalTo: pickerViewController.view.trailingAnchor),
+            pickerView.topAnchor.constraint(equalTo: pickerViewController.view.topAnchor),
+            pickerView.bottomAnchor.constraint(equalTo: pickerViewController.view.bottomAnchor)
+        ])
+
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alertController.setValue(pickerViewController, forKey: "contentViewController")
+
+        let doneAction = UIAlertAction(title: "確定", style: .default) { [unowned self] _ in
+            let selectedRow = pickerView.selectedRow(inComponent: 0)
+            self.pickerView(pickerView, didSelectRow: selectedRow, inComponent: 0)
+            dismiss(animated: true, completion: nil)
+            tableView.reloadData()
+        }
+        
+        alertController.addAction(doneAction)
+        alertController.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+
+        if let popoverController = alertController.popoverPresentationController {
+            popoverController.sourceView = self.view
+            popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+            popoverController.permittedArrowDirections = []
+        }
+
+        present(alertController, animated: true)
+    }
+
+    
+    @objc func pickerDoneButtonTapped() {
+        dismissPicker()
+        tableView.reloadData()
+    }
+    
+    @objc func pickerCancelButtonTapped() {
+        dismissPicker()
+    }
+    
+    func dismissPicker() {
+        guard let pickerContainer = view.subviews.last else { return }
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            pickerContainer.frame.origin.y = self.view.bounds.height
+        }, completion: { _ in
+            pickerContainer.removeFromSuperview()
+        })
+    }
+    
+    func showTextFieldAlert(for item: PetDetailItem) {
+        let alertController = UIAlertController(title: "輸入\(item.title)", message: nil, preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.placeholder = "請輸入\(item.title)"
+            if item == .name {
+                textField.text = self.pet?.name
+            } else if item == .breed {
+                textField.text = self.pet?.breed
+            }
+        }
+        
+        let saveAction = UIAlertAction(title: "確定", style: .default) { _ in
+            if let textField = alertController.textFields?.first,
+               let text = textField.text {
+                switch item {
+                case .name:
+                    self.pet?.name = text
+                case .breed:
+                    self.pet?.breed = text
+                default:
+                    break
+                }
+                self.tableView.reloadData()
+            }
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        
+        alertController.addAction(saveAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func showDatePicker(for item: PetDetailItem) {
+        let datePickerViewController = UIViewController()
+        datePickerViewController.preferredContentSize = CGSize(width: UIScreen.main.bounds.width, height: 260)
+        
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .wheels
+        datePickerViewController.view.addSubview(datePicker)
+        
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            datePicker.leadingAnchor.constraint(equalTo: datePickerViewController.view.leadingAnchor),
+            datePicker.trailingAnchor.constraint(equalTo: datePickerViewController.view.trailingAnchor),
+            datePicker.topAnchor.constraint(equalTo: datePickerViewController.view.topAnchor),
+            datePicker.bottomAnchor.constraint(equalTo: datePickerViewController.view.bottomAnchor)
+        ])
+        
+        let alertController = UIAlertController(title: "選擇\(item.title)", message: nil, preferredStyle: .actionSheet)
+        alertController.setValue(datePickerViewController, forKey: "contentViewController")
+        
+        let saveAction = UIAlertAction(title: "確定", style: .default) { _ in
+            switch item {
+            case .birthday:
+                self.pet?.birthday = datePicker.date
+            case .joinDate:
+                self.pet?.joinDate = datePicker.date
+            default:
+                break
+            }
+            self.tableView.reloadData()
+        }
+        
+        alertController.addAction(saveAction)
+        alertController.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        
+        // iPad support
+        if let popoverController = alertController.popoverPresentationController {
+            popoverController.sourceView = self.view
+            popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+            popoverController.permittedArrowDirections = []
+        }
+        
+        present(alertController, animated: true)
+    }
+    
+    func showNumberPadAlert(for item: PetDetailItem) {
+        let alertController = UIAlertController(title: "輸入\(item.title)", message: nil, preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.placeholder = "請輸入\(item.title)"
+            textField.keyboardType = .decimalPad
+            if item == .weight, let weight = self.pet?.weight {
+                textField.text = "\(weight)"
+            }
+        }
+        
+        let saveAction = UIAlertAction(title: "確定", style: .default) { _ in
+            if let textField = alertController.textFields?.first,
+               let text = textField.text,
+               let weight = Double(text) {
+                self.pet?.weight = weight
+                self.tableView.reloadData()
+            }
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        
+        alertController.addAction(saveAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
     
     // MARK: - TableView Delegate
@@ -116,7 +301,6 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             fatalError("Unexpected Table View Cell")
         }
         
-//        cell.delegate = self
         let item = PetDetailItem.forIndexPath(indexPath)
         if let pet = pet {
             cell.configure(with: item, pet: pet)
@@ -124,24 +308,53 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         
         return cell
     }
-
     
-    // MARK: - PetDetailTableViewCellDelegate
-//    func didTapButton(_ sender: PetDetailTableViewCell) {
-//        guard let indexPath = tableView.indexPath(for: sender) else { return }
-//        showDetailMenu(for: indexPath)
-//    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = PetDetailItem.forIndexPath(indexPath)
+        switch item {
+        case .gender:
+            showPicker(for: .gender)
+        case .type:
+            showPicker(for: .type)
+        case .isNeutered:
+            showPicker(for: .neutered)
+        case .name, .breed:
+            showTextFieldAlert(for: item)
+        case .birthday, .joinDate:
+            showDatePicker(for: item)
+        case .weight:
+            showNumberPadAlert(for: item)
+        default:
+            break
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
     
-//    // MARK: - Show Detail Menu
-//    func showDetailMenu(for indexPath: IndexPath) {
-//        let detailMenuVC = DetailMenuViewController()
-//        detailMenuVC.modalPresentationStyle = .overFullScreen
-//        detailMenuVC.modalTransitionStyle = .crossDissolve
-//        
-//        let item = PetDetailItem.forIndexPath(indexPath)
-//        detailMenuVC.item = item
-//        detailMenuVC.pet = pet
-//        
-//        present(detailMenuVC, animated: true)
-//    }
+    // MARK: - PickerView Delegate
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return pickerData.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return pickerData[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        guard let currentPickerType = currentPickerType else { return }
+        
+        switch currentPickerType {
+        case .gender:
+            pet?.gender = Pet.Gender.allCases[row]
+        case .type:
+            pet?.type = Pet.PetType.allCases[row]
+        case .neutered:
+            pet?.isNeutered = (row == 0)
+        }
+    }
 }

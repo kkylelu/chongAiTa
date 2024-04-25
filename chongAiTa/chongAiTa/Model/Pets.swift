@@ -22,13 +22,13 @@ struct Pet {
     var weight: Double?
     var isNeutered: Bool
     
-    enum Gender: String {
+    enum Gender: String, CaseIterable {
         case male = "男孩"
         case female = "女孩"
         case none = "不公開"
     }
-    
-    enum PetType: Int {
+
+    enum PetType: Int, CaseIterable {
         case dog = 0
         case cat = 1
         
