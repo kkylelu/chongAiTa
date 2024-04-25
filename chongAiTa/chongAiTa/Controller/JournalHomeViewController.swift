@@ -25,7 +25,8 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         
         tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatBot))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
         
         setupFloatingButton()
         NotificationCenter.default.addObserver(self, selector: #selector(handleNewJournalEntry(_:)), name: .newJournalEntrySaved, object: nil)
@@ -124,13 +125,18 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
     }
     
+    @objc func navigateToChatBot() {
+        let chatVC = ChatBotViewController()
+        navigationController?.pushViewController(chatVC, animated: true)
+    }
+    
     // AI 日記回顧
     @objc func generateSummary() {
-        navigationItem.rightBarButtonItem?.isEnabled = false // 禁用按鈕
+        navigationItem.leftBarButtonItem?.isEnabled = false // 禁用按鈕
         
         // 延遲 1 秒後重新啟用按鈕，避免連續點擊
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            self?.navigationItem.rightBarButtonItem?.isEnabled = true
+            self?.navigationItem.leftBarButtonItem?.isEnabled = true
         }
         
         // 檢查日記內容是否超過 50 個中文字
