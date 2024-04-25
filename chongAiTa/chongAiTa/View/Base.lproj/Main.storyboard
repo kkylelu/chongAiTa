@@ -87,10 +87,10 @@
             </objects>
             <point key="canvasLocation" x="3700" y="1227"/>
         </scene>
-        <!--Pet List View Controller-->
+        <!--Pet Detail View Controller-->
         <scene sceneID="QzN-O0-eos">
             <objects>
-                <viewController id="8Gv-Wm-gdT" customClass="PetListViewController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="8Gv-Wm-gdT" customClass="PetDetailViewController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="iPu-es-Rpq">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
