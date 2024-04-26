@@ -214,4 +214,19 @@ class FirestoreService {
     func performRequest<T: Codable>(url: String, method: HTTPMethod, parameters: Parameters?, headers: HTTPHeaders, completion: @escaping ((Result<T, Error>) -> Void)) {
         NetworkManager.shared.request(url: url, method: method, parameters: parameters, headers: headers, completion: completion)
     }
+    
+    // MARK: - Delete Event
+    
+    func deleteEvent(_ event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
+        let eventRef = db.collection("events").document(event.id.uuidString)
+        eventRef.delete() { error in
+            if let error = error {
+                print("Error deleting event from Firestore: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Event successfully deleted from Firestore")
+                completion(.success(()))
+            }
+        }
+    }
 }

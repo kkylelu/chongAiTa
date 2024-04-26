@@ -44,14 +44,12 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         setupUI()
         configureCollectionView()
         setupNavigationBar()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         calendarEventsArray.removeAll()
         loadEventsForCurrentMonth()
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {

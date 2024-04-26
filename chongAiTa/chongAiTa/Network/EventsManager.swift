@@ -201,6 +201,14 @@ class EventsManager {
             events.removeAll { $0.id == event.id }
             eventsByDate[key] = events
         }
+        FirestoreService.shared.deleteEvent(event) { result in
+            switch result {
+            case .success():
+                print("成功刪除本機和 firebase 資料")
+            case .failure(let error):
+                print("無法刪除 firebase 資料: \(error)")
+            }
+        }
     }
     
     // MARK: - Costs
