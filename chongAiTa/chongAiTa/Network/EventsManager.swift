@@ -249,3 +249,13 @@ class EventsManager {
     }
 
 }
+
+extension CalendarEvents: Hashable {
+    static func == (lhs: CalendarEvents, rhs: CalendarEvents) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

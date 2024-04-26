@@ -44,25 +44,14 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         setupUI()
         configureCollectionView()
         setupNavigationBar()
-        startListeningForEvents()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        calendarEventsArray.removeAll()
         loadEventsForCurrentMonth()
         
-        let startOfMonth = firstOfMonth()
-        let endOfMonth = Calendar.current.date(byAdding: .month, value: 1, to: startOfMonth)!
-        
-        FirestoreService.shared.fetchEvents(from: startOfMonth, to: endOfMonth) { [weak self] result in
-            switch result {
-            case .success(let events):
-                EventsManager.shared.saveEvents(events)
-                self?.collectionView.reloadData()
-            case .failure(let error):
-                print("Error fetching events from Firestore: \(error)")
-            }
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -216,67 +205,19 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         FirestoreService.shared.fetchEvents(from: startOfMonth, to: endOfMonth) { [weak self] result in
             switch result {
             case .success(let events):
-                EventsManager.shared.saveEvents(events)
                 DispatchQueue.main.async {
+                    events.forEach { event in
+                        if !EventsManager.shared.hasEvent(event) { // 檢查活動是否已存在
+                            EventsManager.shared.saveEvents([event])  // 保存不存在的活動
+                        }
+                    }
                     self?.collectionView.reloadData()
                 }
             case .failure(let error):
-                print("從 Firestore 獲取事件時出錯：\(error)")
+                print("從 Firestore 獲取活動時出錯：\(error)")
             }
         }
     }
-    
-    func startListeningForEvents() {
-        let startOfMonth = firstOfMonth()
-        let endOfMonth = Calendar.current.date(byAdding: .month, value: 1, to: startOfMonth)!
-        
-        eventsListener = FirestoreService.shared.db.collection("events")
-            .whereField("date", isGreaterThanOrEqualTo: startOfMonth)
-            .whereField("date", isLessThanOrEqualTo: endOfMonth)
-            .addSnapshotListener { [weak self] snapshot, error in
-                if let error = error {
-                    print("Error listening for events changes: \(error)")
-                } else if let snapshot = snapshot, !snapshot.metadata.hasPendingWrites {
-                    let events = snapshot.documents.compactMap { document -> CalendarEvents? in
-                        let data = document.data()
-                        guard let id = data["id"] as? String,
-                              let title = data["title"] as? String,
-                              let date = (data["date"] as? Timestamp)?.dateValue(),
-                              let activityData = data["activity"] as? [String: Any],
-                              let categoryRawValue = activityData["category"] as? Int,
-                              let category = ActivityCategory(rawValue: categoryRawValue),
-                              let activityDate = (activityData["date"] as? Timestamp)?.dateValue() else {
-                            return nil
-                        }
-                        
-                        let content = data["content"] as? String
-                        let cost = data["cost"] as? Double
-                        let recurrenceRawValue = data["recurrence"] as? String
-                        let recurrence = Recurrence(rawValue: recurrenceRawValue ?? "")
-                        
-                        let activity = DefaultActivity(category: category, date: activityDate)
-                        
-                        return CalendarEvents(
-                            id: UUID(uuidString: id)!,
-                            title: title,
-                            date: date,
-                            activity: activity,
-                            content: content,
-                            cost: cost,
-                            recurrence: recurrence
-                        )
-                    }
-                    // 檢查是否已存在，避免重複儲存
-                    events.forEach { event in
-                        if !EventsManager.shared.hasEvent(event) {
-                            EventsManager.shared.saveEvents([event])
-                        }
-                    }
-                    self?.collectionView.reloadData()
-                }
-            }
-    }
-
     
     // MARK: - CollectionView Delegate
     
