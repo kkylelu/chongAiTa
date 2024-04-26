@@ -19,6 +19,7 @@ class FirestoreService {
     
     let db = Firestore.firestore()
     
+    // MARK: - Upload and Fetch FAQs
     func uploadFAQCategory(_ faqCategory: FAQCategory, completion: @escaping (Result<Void, Error>) -> Void) {
         let faqCategoryRef = db.collection("faqs").document(faqCategory.id ?? "")
         
@@ -79,7 +80,6 @@ class FirestoreService {
             }
         }
     }
-
     
     func fetchFAQCategory(completion: @escaping (Result<FAQCategory, Error>) -> Void) {
         db.collection("faqs").getDocuments { snapshot, error in
@@ -138,6 +138,75 @@ class FirestoreService {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    // MARK: - Upload and Fetch Events
+    
+    func uploadEvent(_ event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
+        let eventRef = db.collection("events").document(event.id.uuidString)
+        
+        let eventData: [String: Any] = [
+            "id": event.id.uuidString,
+            "title": event.title,
+            "date": event.date,
+            "activity": [
+                "category": event.activity.category.rawValue,
+                "date": event.activity.date
+            ],
+            "content": event.content ?? "",
+            "cost": event.cost ?? 0.0,
+            "recurrence": event.recurrence?.rawValue ?? ""
+        ]
+        print("Uploading event to Firestore: \(event)")
+        
+        completion(.success(()))
+        // completion(.failure(()))
+        eventRef.setData(eventData) { error in
+            if let error = error {
+                print("Error uploading event to Firestore: \(error)")
+            } else {
+                print("Event successfully uploaded to Firestore: \(event)")
+            }
+        }
+    }
+    
+    
+    func fetchEvents(from startDate: Date, to endDate: Date, completion: @escaping (Result<[CalendarEvents], Error>) -> Void) {
+        let eventsCollection = db.collection("events")
+        let query = eventsCollection
+            .whereField("date", isGreaterThanOrEqualTo: startDate)
+            .whereField("date", isLessThan: endDate)
+        
+        query.getDocuments { snapshot, error in
+            if let error = error {
+                completion(.failure(error))
+            } else if let documents = snapshot?.documents {
+                let events = documents.compactMap { document -> CalendarEvents? in
+                    let data = document.data()
+                    guard let id = data["id"] as? String,
+                          let title = data["title"] as? String,
+                          let date = data["date"] as? Timestamp,
+                          let activityData = data["activity"] as? [String: Any],
+                          let categoryRawValue = activityData["category"] as? Int,
+                          let category = ActivityCategory(rawValue: categoryRawValue),
+                          let activityDate = activityData["date"] as? Timestamp else {
+                        return nil
+                    }
+                    
+                    let content = data["content"] as? String
+                    let cost = data["cost"] as? Double
+                    let recurrenceRawValue = data["recurrence"] as? String
+                    let recurrence = Recurrence(rawValue: recurrenceRawValue ?? "")
+                    
+                    let activity = DefaultActivity(category: category, date: activityDate.dateValue())
+                    
+                    return CalendarEvents(id: UUID(uuidString: id)!, title: title, date: date.dateValue(), activity: activity, content: content, cost: cost, recurrence: recurrence)
+                }
+                completion(.success(events))
+            } else {
+                completion(.success([]))
             }
         }
     }

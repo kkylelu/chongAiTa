@@ -219,7 +219,6 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         processMessage(message, callAPIIfNotFound: true)
     }
 
-
     func searchFAQ(for question: String, in data: FAQCategory) -> String? {
         // 關鍵字分割
         let keywords = question.components(separatedBy: " ")

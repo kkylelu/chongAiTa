@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 class EventDetailViewController: UIViewController,UINavigationControllerDelegate {
     let containerView = UIView()
@@ -221,26 +222,10 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     }
     
     @objc func doneButtonTapped() {
-        print("Selected Activity: \(selectedActivity)")
-        print("Current Event ID: \(currentEventId)")
-        
         let cost = Double(costTextField.text ?? "") ?? 0.0
-        if let activity = selectedActivity,
-           let currentId = currentEventId {
-            
-            var title: String
-            
-            if let titleText = titleTextField.text, !titleText.isEmpty {
-                // 如果有編輯標題,則使用編輯後的標題
-                title = titleText
-            } else if let originalTitle = eventTitle {
-                // 如果沒有編輯標題,原本的標題不是空值,則保留原本的標題
-                title = originalTitle
-            } else {
-                // 如果沒有編輯標題,原本的標題為空值,則使用活動類別的顯示名稱
-                title = activity.category.displayName
-            }
-            
+        if let activity = selectedActivity, let currentId = currentEventId {
+            let title = titleTextField.text?.isEmpty ?? true ? (eventTitle ?? activity.category.displayName) : titleTextField.text!
+
             let event = CalendarEvents(
                 id: currentId,
                 title: title,
@@ -251,32 +236,26 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
                 cost: cost,
                 recurrence: selectedRecurrence
             )
+
+            // 先儲存到本地
+            EventsManager.shared.saveEvents([event])
             
-            let startOfDay = Calendar.current.startOfDay(for: event.date)
-            let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
-            
-            if EventsManager.shared.loadEvents(from: startOfDay, to: endOfDay).contains(where: { $0.id == event.id }) {
-                EventsManager.shared.updateEvent(event)
-                print("Updating event: \(event)")
-            } else {
-                EventsManager.shared.saveEvent(event)
-                print("Saving new event: \(event)")
-            }
-            
-            print("Event Saved/Updated: \(event.title), Date: \(event.date)")
-            
-            if let navigationController = navigationController {
-                for controller in navigationController.viewControllers {
-                    if let calendarDateVC = controller as? CalendarDateViewController {
-                        calendarDateVC.selectedDate = datePicker.date
-                        calendarDateVC.loadEvents(from: startOfDay, to: endOfDay)
-                        print("Data source for CalendarDateViewController should be updated now.")
-                        navigationController.popToViewController(calendarDateVC, animated: true)
-                        return
+            // 再上傳事件到 Firestore
+            FirestoreService.shared.uploadEvent(event) { [weak self] result in
+                print(result)
+                
+                switch result {
+                case .success():
+                    print("活動成功上傳到 Firestore。")
+                    DispatchQueue.main.async {
+                        self?.navigationController?.popViewController(animated: true)
                     }
+                case .failure(let error):
+                    print("上傳到 Firestore 時出現錯誤：\(error)")
                 }
             }
         }
     }
-    
+
+
 }

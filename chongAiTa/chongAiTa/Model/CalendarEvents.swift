@@ -30,11 +30,11 @@ struct CalendarEvents {
     
 }
 
-enum Recurrence {
-    case daily
-    case weekly
-    case monthly
-    case yearly
+enum Recurrence: String {
+    case daily = "daily"
+    case weekly = "weekly"
+    case monthly = "monthly"
+    case yearly = "yearly"
 }
 
 struct DefaultActivity {

@@ -17,23 +17,34 @@ class EventsManager {
 
     // MARK: - Events
 
-    func saveEvent(_ event: CalendarEvents) {
-        let key = Calendar.current.startOfDay(for: event.date)
-        if eventsByDate[key] != nil {
-            eventsByDate[key]?.append(event)
-        } else {
-            eventsByDate[key] = [event]
+    // 檢查活動是否已存在避免重複新增
+        func hasEvent(_ event: CalendarEvents) -> Bool {
+            for (_, events) in eventsByDate {
+                if events.contains(where: { $0.id == event.id }) {
+                    return true
+                }
+            }
+            return false
         }
+    
+    func saveEvents(_ events: [CalendarEvents]) {
+        for event in events {
+            let key = Calendar.current.startOfDay(for: event.date)
+            if eventsByDate[key] != nil {
+                eventsByDate[key]?.append(event)
+            } else {
+                eventsByDate[key] = [event]
+            }
 
-        // 只有在事件日期是今天或之後，才設定重複規則
-        let today = Calendar.current.startOfDay(for: Date())
-        if let recurrence = event.recurrence, event.date >= today {
-            scheduleRecurrenceTimer(for: event, with: recurrence)
+            // 只有在事件日期是今天或之後,才設定重複規則
+            let today = Calendar.current.startOfDay(for: Date())
+            if let recurrence = event.recurrence, event.date >= today {
+                scheduleRecurrenceTimer(for: event, with: recurrence)
+            }
         }
     }
 
-
-    private func scheduleRecurrenceTimer(for event: CalendarEvents, with recurrence: Recurrence) {
+    func scheduleRecurrenceTimer(for event: CalendarEvents, with recurrence: Recurrence) {
         let eventId = event.id
         if let existingTimer = scheduledRecurrenceTimers[eventId] {
             existingTimer.cancel()
