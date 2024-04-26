@@ -20,6 +20,9 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        uploadTestFAQs()
+        
         downloadFAQs()
         
         setupUI()
@@ -56,6 +59,8 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func setupUI() {
+        view.backgroundColor = .white
+        
         tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "messageCell")
@@ -105,6 +110,25 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    // TODO: - test
+    func uploadTestFAQs() {
+        let healthEntries = [
+            FAQEntry(question: "幼犬為什麼要打多次預防針？", answer: "幼犬需要多次疫苗來刺激產生抗體,預防病毒感染。通常 6 周大就可開始施打,建議跟獸醫討論一下最適合的疫苗計畫喔!🐶")
+        ]
+        
+        let faqCategory = FAQCategory(id: "test_faq", health: healthEntries, nutrition: [], care: [])
+        
+        FirestoreService.shared.uploadFAQCategory(faqCategory) { result in
+            switch result {
+            case .success:
+                print("Successfully uploaded test FAQ data")
+            case .failure(let error):
+                print("Failed to upload test FAQ data: \(error)")
+            }
+        }
+    }
+
+    
     // MARK: - Action
     
     @objc func quickReplyTapped(_ sender: UIButton) {
@@ -137,81 +161,66 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func downloadFAQs() {
-        let db = Firestore.firestore()
-        let categories = ["health", "nutrition", "care"]
-        var allFAQs: [String: [FAQEntry]] = [:]
-        let dispatchGroup = DispatchGroup()
-
-        for category in categories {
-            dispatchGroup.enter()
-            db.collection("faqs").document("id").collection(category).getDocuments { (snapshot, error) in
-                if let error = error {
-                    print("下載 \(category) 分類的文件出錯: \(error)")
-                } else if let snapshot = snapshot {
-                    var categoryFAQs: [FAQEntry] = []
-                    for document in snapshot.documents {
-                        let question = document.data()["question"] as? String ?? "No question"
-                        let answer = document.data()["answer"] as? String ?? "No answer"
-                        categoryFAQs.append(FAQEntry(question: question, answer: answer))
-                    }
-                    allFAQs[category] = categoryFAQs
-                    
-                    // 確保在所有類別的FAQ都已經讀取之後再更新 local 檔案
-                    if allFAQs.keys.count == categories.count {
-                        self.updateLocalFAQs(allFAQs)
+    func downloadFAQs(){
+        if let localFAQData = loadFAQData() {
+                FirestoreService.shared.fetchFAQCategory { [weak self] result in
+                    switch result {
+                    case .success(let cloudFAQData):
+                        if localFAQData.id != cloudFAQData.id {
+                            // 本地資料和雲端資料不一致,更新本地資料
+                            self?.saveFAQData(cloudFAQData)
+                        }
+                    case .failure(let error):
+                        if let firestoreError = error as? FirestoreError, firestoreError == .noData {
+                            // 雲端沒有資料,上傳本地資料到雲端
+                            FirestoreService.shared.uploadFAQCategory(localFAQData) { result in
+                                switch result {
+                                case .success:
+                                    print("Successfully uploaded FAQ data")
+                                case .failure(let error):
+                                    print("Failed to upload FAQ data: \(error)")
+                                }
+                            }
+                        } else {
+                            print("Failed to fetch FAQ data: \(error)")
+                        }
                     }
                 }
-                dispatchGroup.notify(queue: .main) {
-                        self.updateLocalFAQs(allFAQs)
-                    }
             }
-        }
     }
-
-    func updateLocalFAQs(_ faqs: [String: [FAQEntry]]) {
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(faqs) {
-            let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-            let fileURL = urls[0].appendingPathComponent("petsfaq.json")
-            do {
-                try encoded.write(to: fileURL)
-                print("成功更新預設 FAQ")
-
-                // 驗證資料是否被寫入
-                let data = try Data(contentsOf: fileURL)
-                let decoder = JSONDecoder()
-                if let decodedFAQs = try? decoder.decode([String: [FAQEntry]].self, from: data) {
-                    print("驗證成功，資料已被寫入且可以正確讀取。")
-                    print(decodedFAQs)
-                } else {
-                    print("資料寫入後無法解碼，請檢查資料結構和JSON格式。")
-                }
-            } catch {
-                print("更新預設 FAQ 失敗: \(error)")
-            }
-        }
-    }
-
+    
     func loadFAQData() -> FAQCategory? {
-        let fileManager = FileManager.default
-        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        let fileURL = urls[0].appendingPathComponent("petsfaq.json")
-
-        if fileManager.fileExists(atPath: fileURL.path) {
+        if let url = Bundle.main.url(forResource: "petsfaq", withExtension: "json") {
             do {
-                let data = try Data(contentsOf: fileURL)
+                let data = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
-                let jsonData = try decoder.decode(FAQCategory.self, from: data)
-                return jsonData
+                let faqCategory = try decoder.decode(FAQCategory.self, from: data)
+                return faqCategory
             } catch {
-                print("Failed to load or parse FAQ data: \(error)")
+                print("Failed to load FAQ data: \(error)")
             }
-        } else {
-            print("FAQ file does not exist at path: \(fileURL.path)")
         }
         return nil
     }
+
+    func saveFAQData(_ faqCategory: FAQCategory) {
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(faqCategory),
+           let url = getDocumentsDirectory()?.appendingPathComponent("petsfaq.json") {
+            do {
+                try data.write(to: url)
+                print("Successfully saved FAQ data")
+            } catch {
+                print("Failed to save FAQ data: \(error)")
+            }
+        }
+    }
+
+    func getDocumentsDirectory() -> URL? {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths.first
+    }
+
 
     func searchFAQ(for question: String, in data: FAQCategory) -> String? {
         // 關鍵字分割

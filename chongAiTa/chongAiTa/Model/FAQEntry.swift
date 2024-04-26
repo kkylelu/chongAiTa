@@ -8,9 +8,17 @@
 import Foundation
 
 struct FAQCategory: Codable {
+    let id: String?
     let health: [FAQEntry]
     let nutrition: [FAQEntry]
     let care: [FAQEntry]
+    
+    init(id: String? = nil, health: [FAQEntry], nutrition: [FAQEntry], care: [FAQEntry]) {
+        self.id = id
+        self.health = health
+        self.nutrition = nutrition
+        self.care = care
+    }
 }
 
 struct FAQEntry: Codable {

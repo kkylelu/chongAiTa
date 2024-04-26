@@ -54,6 +54,7 @@
 		27F004512BCD384400C87472 /* OpenAINetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */; };
 		27F004532BCD386600C87472 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004522BCD386600C87472 /* NetworkManager.swift */; };
 		27F004552BCD3D5900C87472 /* API-Keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27F004542BCD3D5900C87472 /* API-Keys.plist */; };
+		27F841F62BDB5A7E0062EC4B /* FirestoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F841F52BDB5A7E0062EC4B /* FirestoreService.swift */; };
 		27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F975932BC6B01100B2A041 /* AppDelegate.swift */; };
 		27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F975952BC6B01100B2A041 /* SceneDelegate.swift */; };
 		27F9759B2BC6B01100B2A041 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 27F9759A2BC6B01100B2A041 /* Base */; };
@@ -129,6 +130,7 @@
 		27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAINetworkHelper.swift; sourceTree = "<group>"; };
 		27F004522BCD386600C87472 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		27F004542BCD3D5900C87472 /* API-Keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "API-Keys.plist"; sourceTree = "<group>"; };
+		27F841F52BDB5A7E0062EC4B /* FirestoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreService.swift; sourceTree = "<group>"; };
 		27F975902BC6B01100B2A041 /* chongAiTa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chongAiTa.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27F975932BC6B01100B2A041 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		27F975952BC6B01100B2A041 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -309,6 +311,7 @@
 				270D97762BCD3E7A00AA8D79 /* APIKeys.swift */,
 				27694F4C2BD0F02F00D90167 /* ChatBotManager.swift */,
 				27A9390E2BD55D8B00BF4845 /* EventsManager.swift */,
+				27F841F52BDB5A7E0062EC4B /* FirestoreService.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -694,6 +697,7 @@
 				27F004512BCD384400C87472 /* OpenAINetworkHelper.swift in Sources */,
 				27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */,
 				27694EF92BD0D28200D90167 /* ChatBotViewController.swift in Sources */,
+				27F841F62BDB5A7E0062EC4B /* FirestoreService.swift in Sources */,
 				2732C77A2BDA385B004170C6 /* Pets.swift in Sources */,
 				2732C7782BDA1BA5004170C6 /* PetDetailViewController.swift in Sources */,
 				274A49FD2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift in Sources */,
