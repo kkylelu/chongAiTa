@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 import JournalingSuggestions
+import FirebaseFirestore
 
 class JournalViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
     

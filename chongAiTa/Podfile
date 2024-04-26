@@ -10,6 +10,7 @@ target 'chongAiTa' do
 	pod 'IQKeyboardManagerSwift'
 	pod 'GoogleMaps'
 	pod 'GooglePlaces'
+	pod 'Kingfisher'
 
 
   target 'chongAiTaTests' do
