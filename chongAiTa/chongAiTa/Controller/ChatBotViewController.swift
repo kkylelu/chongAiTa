@@ -188,21 +188,12 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         return paths.first
     }
     
-    @objc func quickReplyTapped(_ sender: UIButton) {
-        guard let message = sender.titleLabel?.text else { return }
-        sendMessage(message: message)
-        
-        quickReplyButtons.forEach { $0.isHidden = true }
-    }
-
-    
-    @objc func sendMessage(message: String) {
-        // 快速回覆
+    func processMessage(_ message: String, callAPIIfNotFound: Bool) {
         appendMessageAndReload(message)
         
         if let faqData = loadFAQData(), let response = searchFAQ(for: message, in: faqData) {
             self.appendMessageAndReload(response)
-        } else {
+        } else if callAPIIfNotFound {
             // 超出 faq 題庫範圍時 call API
             ChatBotManager.shared.sendChatMessage(message: message) { [weak self] result in
                 DispatchQueue.main.async {
@@ -216,6 +207,16 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
             }
         }
+    }
+
+    @objc func quickReplyTapped(_ sender: UIButton) {
+        guard let message = sender.titleLabel?.text else { return }
+        processMessage(message, callAPIIfNotFound: false)
+        quickReplyButtons.forEach { $0.isHidden = true }
+    }
+
+    @objc func sendMessage(message: String) {
+        processMessage(message, callAPIIfNotFound: true)
     }
 
 

@@ -142,8 +142,6 @@ class FirestoreService {
         }
     }
     
-    
-    
     func performRequest<T: Codable>(url: String, method: HTTPMethod, parameters: Parameters?, headers: HTTPHeaders, completion: @escaping ((Result<T, Error>) -> Void)) {
         NetworkManager.shared.request(url: url, method: method, parameters: parameters, headers: headers, completion: completion)
     }

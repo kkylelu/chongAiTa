@@ -17,7 +17,6 @@ class APIKeys {
         }
         dictionary = plist
         
-        // Check if OPENAI_AUTHORIZATION is nil or empty
         if let openAiAPIKey = dictionary["OPENAI_AUTHORIZATION"] as? String, openAiAPIKey.isEmpty {
             fatalError("OPENAI_AUTHORIZATION is empty. Please follow these steps to generate API Keys: https://github.com/SonmezYigithan/GameListingApp-iOS#create-api-keys")
         }
