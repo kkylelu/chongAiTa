@@ -21,8 +21,7 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        uploadTestFAQs()
-        
+        uploadLocalFAQs()
         downloadFAQs()
         
         setupUI()
@@ -110,54 +109,22 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    // TODO: - test
-    func uploadTestFAQs() {
-        let healthEntries = [
-            FAQEntry(question: "幼犬為什麼要打多次預防針？", answer: "幼犬需要多次疫苗來刺激產生抗體,預防病毒感染。通常 6 周大就可開始施打,建議跟獸醫討論一下最適合的疫苗計畫喔!🐶")
-        ]
-        
-        let faqCategory = FAQCategory(id: "test_faq", health: healthEntries, nutrition: [], care: [])
-        
-        FirestoreService.shared.uploadFAQCategory(faqCategory) { result in
-            switch result {
-            case .success:
-                print("Successfully uploaded test FAQ data")
-            case .failure(let error):
-                print("Failed to upload test FAQ data: \(error)")
-            }
-        }
-    }
-
-    
     // MARK: - Action
     
-    @objc func quickReplyTapped(_ sender: UIButton) {
-        guard let message = sender.titleLabel?.text else { return }
-        sendMessage(message: message)
-        
-        quickReplyButtons.forEach { $0.isHidden = true }
-    }
-
-    
-    @objc func sendMessage(message: String) {
-        // 快速回覆
-        appendMessageAndReload(message)
-        
-        if let faqData = loadFAQData(), let response = searchFAQ(for: message, in: faqData) {
-            self.appendMessageAndReload(response)
-        } else {
-            // 超出 faq 題庫範圍時 call API
-            ChatBotManager.shared.sendChatMessage(message: message) { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let response):
-                        self?.appendMessageAndReload("\(response)")
-                    case .failure(let error):
-                        self?.messages.append("Error: \(error.localizedDescription)")
-                        self?.appendMessageAndReload("Error: \(error.localizedDescription)")
-                    }
+    func uploadLocalFAQs() {
+        if let faqData = loadFAQData() {
+            let faqCategory = FAQCategory(id: faqData.id ?? UUID().uuidString, health: faqData.health, nutrition: faqData.nutrition, care: faqData.care)
+            
+            FirestoreService.shared.uploadFAQCategory(faqCategory) { result in
+                switch result {
+                case .success:
+                    print("Successfully uploaded FAQ data")
+                case .failure(let error):
+                    print("Failed to upload FAQ data: \(error)")
                 }
             }
+        } else {
+            print("Failed to load FAQ data from local file")
         }
     }
     
@@ -219,6 +186,36 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     func getDocumentsDirectory() -> URL? {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths.first
+    }
+    
+    @objc func quickReplyTapped(_ sender: UIButton) {
+        guard let message = sender.titleLabel?.text else { return }
+        sendMessage(message: message)
+        
+        quickReplyButtons.forEach { $0.isHidden = true }
+    }
+
+    
+    @objc func sendMessage(message: String) {
+        // 快速回覆
+        appendMessageAndReload(message)
+        
+        if let faqData = loadFAQData(), let response = searchFAQ(for: message, in: faqData) {
+            self.appendMessageAndReload(response)
+        } else {
+            // 超出 faq 題庫範圍時 call API
+            ChatBotManager.shared.sendChatMessage(message: message) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let response):
+                        self?.appendMessageAndReload("\(response)")
+                    case .failure(let error):
+                        self?.messages.append("Error: \(error.localizedDescription)")
+                        self?.appendMessageAndReload("Error: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
     }
 
 
