@@ -7,6 +7,7 @@
 
 import UIKit
 import JournalingSuggestions
+import Kingfisher
 
 class JournalHomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     

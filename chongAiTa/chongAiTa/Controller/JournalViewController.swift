@@ -281,15 +281,22 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         let dispatchGroup = DispatchGroup()
         for image in selectedImages {
-            dispatchGroup.enter()
-            uploadImage(image) { result in
-                switch result {
-                case .success(let url):
-                    imageUrls.append(url.absoluteString)
-                case .failure(let error):
-                    print("Failed to upload image: \(error)")
+            if let existingUrl = journal?.imageUrls.first(where: { url in
+                url == image.accessibilityIdentifier
+            }) {
+                imageUrls.append(existingUrl)
+            } else {
+                dispatchGroup.enter()
+                uploadImage(image) { result in
+                    switch result {
+                    case .success(let url):
+                        imageUrls.append(url.absoluteString)
+                        image.accessibilityIdentifier = url.absoluteString
+                    case .failure(let error):
+                        print("Failed to upload image: \(error)")
+                    }
+                    dispatchGroup.leave()
                 }
-                dispatchGroup.leave()
             }
         }
         
@@ -297,6 +304,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             completion(imageUrls)
         }
     }
+
 
     func uploadImage(_ image: UIImage, completion: @escaping (Result<URL, Error>) -> Void) {
         let storageRef = Storage.storage().reference().child("journal_images").child(UUID().uuidString + ".jpg")
@@ -330,9 +338,10 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
 
     @objc func doneButtonTapped() {
         if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
-            uploadImagesToStorage { [weak self] imageUrls in
-                guard let self = self else { return }
-                let newJournal = Journal(id: self.journal?.id ?? UUID(), title: title, body: body, date: date, images: self.selectedImages, place: self.selectedPlace, city: self.selectedCity, imageUrls: imageUrls)
+                activityIndicator.startAnimating()
+                uploadImagesToStorage { [weak self] imageUrls in
+                    guard let self = self else { return }
+                    let newJournal = Journal(id: self.journal?.id ?? UUID(), title: title, body: body, date: date, images: self.selectedImages, place: self.selectedPlace, city: self.selectedCity, imageUrls: imageUrls)
                 
                 FirestoreService.shared.uploadJournal(newJournal) { result in
                     switch result {
