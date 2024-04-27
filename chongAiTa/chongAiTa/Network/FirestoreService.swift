@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import Alamofire
+import FirebaseStorage
 
 enum FirestoreError: Error {
     case noData
@@ -258,6 +259,36 @@ class FirestoreService {
         }
     }
     
+    func deleteJournal(_ journal: Journal, completion: @escaping (Result<Void, Error>) -> Void) {
+        let journalRef = db.collection("journals").document(journal.id.uuidString)
+        
+        // 刪除 Firestore 資料
+        journalRef.delete { error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            // 刪除與日記相關的所有圖片
+            let storageRef = Storage.storage().reference()
+            let deleteGroup = DispatchGroup()
+            
+            for imageUrl in journal.imageUrls {
+                deleteGroup.enter()
+                let imageRef = storageRef.child(imageUrl)
+                imageRef.delete { error in
+                    if let error = error {
+                        print("Error deleting image: \(error.localizedDescription)")
+                    }
+                    deleteGroup.leave()
+                }
+            }
+            
+            deleteGroup.notify(queue: .main) {
+                completion(.success(()))
+            }
+        }
+    }
     
     func performRequest<T: Codable>(url: String, method: HTTPMethod, parameters: Parameters?, headers: HTTPHeaders, completion: @escaping ((Result<T, Error>) -> Void)) {
         NetworkManager.shared.request(url: url, method: method, parameters: parameters, headers: headers, completion: completion)

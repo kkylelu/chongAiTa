@@ -16,7 +16,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     var journalsArray: [Journal] = []
     var emptyPlaceholderLabel: UILabel!
     var activityIndicator: UIActivityIndicatorView!
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,19 +38,19 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         setupActivityIndicator()
         updateUI()
         
-        }
+    }
     
     // MARK: - Setup UI
     
     func setupActivityIndicator(){
         activityIndicator = UIActivityIndicatorView(style: .large)
-            activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(activityIndicator)
-
-            NSLayoutConstraint.activate([
-                activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-            ])
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+        
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
     
     func setupFloatingButton(){
@@ -85,31 +85,31 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func setupEmptyPlaceholderLabel() {
-            emptyPlaceholderLabel = UILabel()
-            emptyPlaceholderLabel.text = "點擊下方「加號圖示➕」新增日記"
-            emptyPlaceholderLabel.textColor = UIColor.gray
-            emptyPlaceholderLabel.textAlignment = .center
-            emptyPlaceholderLabel.font = UIFont.systemFont(ofSize: 20)
-            emptyPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(emptyPlaceholderLabel)
-            
-            NSLayoutConstraint.activate([
-                emptyPlaceholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                emptyPlaceholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-                emptyPlaceholderLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-                emptyPlaceholderLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-            ])
-            
-            emptyPlaceholderLabel.isHidden = true
-        }
+        emptyPlaceholderLabel = UILabel()
+        emptyPlaceholderLabel.text = "點擊下方「加號圖示➕」新增日記"
+        emptyPlaceholderLabel.textColor = UIColor.gray
+        emptyPlaceholderLabel.textAlignment = .center
+        emptyPlaceholderLabel.font = UIFont.systemFont(ofSize: 20)
+        emptyPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyPlaceholderLabel)
+        
+        NSLayoutConstraint.activate([
+            emptyPlaceholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyPlaceholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyPlaceholderLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            emptyPlaceholderLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+        
+        emptyPlaceholderLabel.isHidden = true
+    }
     
     // MARK: - UpdateUI
     
     func updateUI() {
-            emptyPlaceholderLabel.isHidden = !journalsArray.isEmpty
-            tableView.isHidden = journalsArray.isEmpty
-            tableView.reloadData()
-        }
+        emptyPlaceholderLabel.isHidden = !journalsArray.isEmpty
+        tableView.isHidden = journalsArray.isEmpty
+        tableView.reloadData()
+    }
     
     
     // MARK: - Action
@@ -178,7 +178,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
             self.present(alert, animated: true)
         }
     }
-
+    
     func displaySummaryAlert(_ summary: String) {
         let alert = UIAlertController(title: "AI 日記回顧", message: summary, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "關閉", style: .default))
@@ -202,16 +202,16 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         let journal = journalsArray[indexPath.row]
-            cell.journalTitleLabel.text = journal.title
+        cell.journalTitleLabel.text = journal.title
         
         let previewText = journal.body.prefix(12)
-            cell.journalContentLabel.text = String(previewText) + "..."
+        cell.journalContentLabel.text = String(previewText) + "..."
         
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
         dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
         cell.timeLabel.text = dateFormatter.string(from: journal.date)
-
+        
         if !journal.images.isEmpty {
             cell.JournalImageView.contentMode = .scaleAspectFill
             cell.JournalImageView.clipsToBounds = true
@@ -223,10 +223,10 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         if let imageURL = URL(string: journal.imageUrls.first ?? "") {
-                cell.JournalImageView.kf.setImage(with: imageURL, placeholder: nil, options: [.transition(.fade(0.3))])
-            } else {
-                cell.JournalImageView.image = nil
-            }
+            cell.JournalImageView.kf.setImage(with: imageURL, placeholder: nil, options: [.transition(.fade(0.3))])
+        } else {
+            cell.JournalImageView.image = nil
+        }
         
         return cell
     }
@@ -248,23 +248,32 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
                 completionHandler(false)
                 return
             }
-
-            // 刪除資料
-            strongSelf.journalsArray.remove(at: indexPath.row)
-
-            // 從 tableView 中刪除對應的 cell
-            tableView.deleteRows(at: [indexPath], with: .automatic)
-
-            completionHandler(true)
-            self?.updateUI()
+            
+            let journalToDelete = strongSelf.journalsArray[indexPath.row]
+            
+            // 從 Firestore 和 Firebase Storage 刪除日記資料和相關圖片
+            FirestoreService.shared.deleteJournal(journalToDelete) { result in
+                switch result {
+                case .success:
+                    // 刪除資料
+                    strongSelf.journalsArray.remove(at: indexPath.row)
+                    
+                    // 從 tableView 中刪除對應的 cell
+                    tableView.deleteRows(at: [indexPath], with: .automatic)
+                    
+                    completionHandler(true)
+                    strongSelf.updateUI()
+                case .failure(let error):
+                    print("Error deleting journal: \(error)")
+                    completionHandler(false)
+                }
+            }
         }
-
+        
         deleteAction.backgroundColor = UIColor.B4
-
+        
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         configuration.performsFirstActionWithFullSwipe = true
         return configuration
     }
-
-    
 }
