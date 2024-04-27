@@ -57,14 +57,12 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
 
         selectedDate = Date()
 
-        // 如果從 JournalHomeViewController 傳遞了 journal 對象，就使用它來更新界面
         if let journal = journal {
             updateUI(with: journal)
         } else {
-            titleTextView.becomeFirstResponder() // 沒有現有日記就聚焦到標題輸入框
+            titleTextView.becomeFirstResponder()
         }
     }
-
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -235,11 +233,9 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         titleTextView.text = journal.title
         bodyTextView.text = journal.body
         
-        // 判斷是否需要設定非 placeholder 文本顏色
         titleTextView.textColor = journal.title.isEmpty ? .lightGray : .black
         bodyTextView.textColor = journal.body.isEmpty ? .lightGray : .black
 
-        // 如果日記內容與 placeholder 相同，則仍顯示為 lightGray
         if titleTextView.text == titlePlaceholder {
             titleTextView.textColor = .lightGray
         }
@@ -280,34 +276,9 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         selectedDate = datePicker.date
     }
     
-    @objc func doneButtonTapped() {
-        if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
-            uploadImagesToStorage { [weak self] imageUrls in
-                guard let self = self else { return }
-                let newJournal = Journal(id: self.journal?.id ?? UUID(), title: title, body: body, date: date, images: self.selectedImages, place: self.selectedPlace, city: self.selectedCity, imageUrls: imageUrls)
-                
-                // 上傳日記到 Firestore
-                FirestoreService.shared.uploadJournal(newJournal) { result in
-                    switch result {
-                    case .success():
-                        print("日記上傳成功")
-                        NotificationCenter.default.post(name: .newJournalEntrySaved, object: nil, userInfo: ["journal": newJournal])
-                        self.navigationController?.popViewController(animated: true)
-                    case .failure(let error):
-                        print("日記上傳失敗: \(error)")
-                    }
-                }
-            }
-        } else {
-            print("Error: Missing information")
-        }
-    }
-    
-    // 上傳圖片,並取得圖片網址
     func uploadImagesToStorage(completion: @escaping ([String]) -> Void) {
         var imageUrls: [String] = []
         
-        // 使用 Kingfisher 將圖片上傳到雲端儲存服務
         let dispatchGroup = DispatchGroup()
         for image in selectedImages {
             dispatchGroup.enter()
@@ -326,24 +297,28 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             completion(imageUrls)
         }
     }
-    
-    // 使用 Kingfisher 上傳單張圖片
+
     func uploadImage(_ image: UIImage, completion: @escaping (Result<URL, Error>) -> Void) {
         let storageRef = Storage.storage().reference().child("journal_images").child(UUID().uuidString + ".jpg")
         
-        // 上傳圖片至 Firebase Storage
+        print("開始上傳圖片...")
+        
         if let uploadData = image.jpegData(compressionQuality: 0.8) {
             let metadata = StorageMetadata()
             metadata.contentType = "image/jpeg"
             
             storageRef.putData(uploadData, metadata: metadata) { (metadata, error) in
                 if let error = error {
+                    print("上傳圖片失敗: \(error)")
                     completion(.failure(error))
                 } else {
+                    print("圖片上傳成功，正在獲取下載 URL...")
                     storageRef.downloadURL { (url, error) in
                         if let error = error {
+                            print("獲取下載 URL 失敗: \(error)")
                             completion(.failure(error))
                         } else if let url = url {
+                            print("獲取下載 URL 成功: \(url)")
                             completion(.success(url))
                         }
                     }
@@ -351,6 +326,30 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             }
         }
     }
+
+
+    @objc func doneButtonTapped() {
+        if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
+            uploadImagesToStorage { [weak self] imageUrls in
+                guard let self = self else { return }
+                let newJournal = Journal(id: self.journal?.id ?? UUID(), title: title, body: body, date: date, images: self.selectedImages, place: self.selectedPlace, city: self.selectedCity, imageUrls: imageUrls)
+                
+                FirestoreService.shared.uploadJournal(newJournal) { result in
+                    switch result {
+                    case .success():
+                        print("日記上傳成功")
+                        NotificationCenter.default.post(name: .newJournalEntrySaved, object: nil, userInfo: ["journal": newJournal])
+                        self.navigationController?.popViewController(animated: true)
+                    case .failure(let error):
+                        print("日記上傳失敗: \(error)")
+                    }
+                }
+            }
+        } else {
+            print("Error: Missing information")
+        }
+    }
+
     
     // 讓鍵盤把 bottomConstraint 往上推
     @objc func keyboardWillShow(notification: Notification) {
@@ -367,7 +366,6 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             }
         }
     }
-
     
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0
