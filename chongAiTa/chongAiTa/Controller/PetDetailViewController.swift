@@ -54,10 +54,13 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.delegate = self
         tableView.dataSource = self
         setupUI()
-        
+       
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         fetchPetDataFromFirebase { hasData in
                 if !hasData {
-                    // 如果 Firebase 中沒有資料，則加載假資料
+                    // 如果Firebase中沒有資料，則加載假資料
                     self.loadFakeData()
                 }
             }
@@ -257,33 +260,28 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func showDatePicker(for item: PetDetailItem) {
         let datePickerViewController = UIViewController()
-        datePickerViewController.preferredContentSize = CGSize(width: UIScreen.main.bounds.width, height: 260)
-        
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .wheels
         datePickerViewController.view.addSubview(datePicker)
         
-        datePicker.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            datePicker.leadingAnchor.constraint(equalTo: datePickerViewController.view.leadingAnchor),
-            datePicker.trailingAnchor.constraint(equalTo: datePickerViewController.view.trailingAnchor),
-            datePicker.topAnchor.constraint(equalTo: datePickerViewController.view.topAnchor),
-            datePicker.bottomAnchor.constraint(equalTo: datePickerViewController.view.bottomAnchor)
-        ])
-        
+        // 設置初始日期
+        if let date = (item == .birthday ? pet?.birthday : pet?.joinDate) {
+            datePicker.date = date
+        }
+
         let alertController = UIAlertController(title: "選擇\(item.title)", message: nil, preferredStyle: .actionSheet)
         alertController.setValue(datePickerViewController, forKey: "contentViewController")
-        
-        let saveAction = UIAlertAction(title: "確定", style: .default) { _ in
-            switch item {
-            case .birthday:
-                self.pet?.birthday = datePicker.date
-            case .joinDate:
-                self.pet?.joinDate = datePicker.date
-            default:
-                break
+
+        let saveAction = UIAlertAction(title: "確定", style: .default) { [unowned self] _ in
+            let selectedDate = datePicker.date
+            
+            if item == .birthday {
+                self.pet?.birthday = selectedDate
+            } else if item == .joinDate {
+                self.pet?.joinDate = selectedDate
             }
+            
             self.tableView.reloadData()
             self.isPetDataChanged = true
         }
@@ -291,15 +289,9 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         alertController.addAction(saveAction)
         alertController.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         
-        // iPad support
-        if let popoverController = alertController.popoverPresentationController {
-            popoverController.sourceView = self.view
-            popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-            popoverController.permittedArrowDirections = []
-        }
-        
         present(alertController, animated: true)
     }
+
     
     func showNumberPadAlert(for item: PetDetailItem) {
         let alertController = UIAlertController(title: "輸入\(item.title)", message: nil, preferredStyle: .alert)

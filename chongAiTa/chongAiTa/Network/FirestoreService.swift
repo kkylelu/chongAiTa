@@ -306,6 +306,12 @@ class FirestoreService {
     // MARK: - Upload and Fetch Pet
     func uploadPet(pet: Pet, completion: @escaping (Error?) -> Void) {
         let petRef = db.collection("pets").document(pet.id.uuidString)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let birthdayString = pet.birthday.map { dateFormatter.string(from: $0) } ?? ""
+        let joinDateString = pet.joinDate.map { dateFormatter.string(from: $0) } ?? ""
+        
         let petData: [String: Any] = [
             "id": pet.id.uuidString,
             "imageUrl": pet.imageUrl,
@@ -313,8 +319,8 @@ class FirestoreService {
             "gender": pet.gender.rawValue,
             "type": pet.type.displayName,
             "breed": pet.breed ?? "",
-            "birthday": pet.birthday?.timeIntervalSince1970 ?? 0,
-            "joinDate": pet.joinDate?.timeIntervalSince1970 ?? 0,
+            "birthday": birthdayString,
+            "joinDate": joinDateString,
             "weight": pet.weight ?? 0,
             "isNeutered": pet.isNeutered
         ]
@@ -330,6 +336,7 @@ class FirestoreService {
     }
 
 
+
     func fetchPet(petId: UUID, completion: @escaping (Result<Pet, Error>) -> Void) {
         let docRef = db.collection("pets").document(petId.uuidString)
         docRef.getDocument { (document, error) in
@@ -337,8 +344,10 @@ class FirestoreService {
                 do {
                     let pet = try document.data(as: Pet.self)
                     completion(.success(pet))
+                    print("下載寵物資料成功")
                 } catch {
                     completion(.failure(error))
+                    print("下載寵物資料失敗")
                 }
             } else {
                 completion(.failure(error ?? NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)))
