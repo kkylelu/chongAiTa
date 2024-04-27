@@ -222,6 +222,12 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
             print("No image to display for row \(indexPath.row)")
         }
         
+        if let imageURL = URL(string: journal.imageUrls.first ?? "") {
+                cell.JournalImageView.kf.setImage(with: imageURL, placeholder: nil, options: [.transition(.fade(0.3))])
+            } else {
+                cell.JournalImageView.image = nil
+            }
+        
         return cell
     }
     

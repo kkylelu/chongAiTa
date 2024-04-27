@@ -28,6 +28,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     var selectedDate: Date?
     var selectedImages = [UIImage]()
+    var selectedImageURLs = [String]()
     var selectedLocation: String?
     var selectedPlace: String?
     var selectedCity: String?
@@ -38,25 +39,25 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     let bodyPlaceholder = "輸入內容"
     
     var journal: Journal?
-        
+    
     
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-
+        
         imagePicker.delegate = self
         imagePicker.allowsEditing = false
-
+        
         activityIndicator.center = view.center
         activityIndicator.hidesWhenStopped = true
         view.addSubview(activityIndicator)
-
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-
+        
         selectedDate = Date()
-
+        
         if let journal = journal {
             updateUI(with: journal)
         } else {
@@ -66,17 +67,17 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-            if journal == nil {
-                titleTextView.becomeFirstResponder()
-            } else {
-                bodyTextView.becomeFirstResponder()
-            }
+        if journal == nil {
+            titleTextView.becomeFirstResponder()
+        } else {
+            bodyTextView.becomeFirstResponder()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         titleTextView.resignFirstResponder()
-            bodyTextView.resignFirstResponder()
+        bodyTextView.resignFirstResponder()
     }
     
     
@@ -228,31 +229,32 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     
-    // MARK: - UpdateUI
+    // MARK: - Update UI
     func updateUI(with journal: Journal) {
         titleTextView.text = journal.title
         bodyTextView.text = journal.body
         
         titleTextView.textColor = journal.title.isEmpty ? .lightGray : .black
         bodyTextView.textColor = journal.body.isEmpty ? .lightGray : .black
-
+        
         if titleTextView.text == titlePlaceholder {
             titleTextView.textColor = .lightGray
         }
         if bodyTextView.text == bodyPlaceholder {
             bodyTextView.textColor = .lightGray
         }
-
+        
         let attributedString = NSMutableAttributedString(string: journal.body)
         let textViewFont = bodyTextView.font ?? UIFont.systemFont(ofSize: 24)
         let range = NSRange(location: 0, length: attributedString.length)
         attributedString.addAttribute(.font, value: textViewFont, range: range)
-
+        
         bodyTextView.attributedText = attributedString
         selectedImages = journal.images
+        selectedImageURLs = journal.imageUrls
         insertImagesIntoTextView()
     }
-
+    
     
     func updateTextViews(title: String, body: String) {
         let titleFont = UIFont.boldSystemFont(ofSize: 30)
@@ -269,8 +271,8 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     //MARK: - Action
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-            view.endEditing(true)
-        }
+        view.endEditing(true)
+    }
     
     @objc func dateChanged(_ datePicker: UIDatePicker) {
         selectedDate = datePicker.date
@@ -304,8 +306,8 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             completion(imageUrls)
         }
     }
-
-
+    
+    
     func uploadImage(_ image: UIImage, completion: @escaping (Result<URL, Error>) -> Void) {
         let storageRef = Storage.storage().reference().child("journal_images").child(UUID().uuidString + ".jpg")
         
@@ -334,14 +336,14 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             }
         }
     }
-
-
+    
+    
     @objc func doneButtonTapped() {
         if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
-                activityIndicator.startAnimating()
-                uploadImagesToStorage { [weak self] imageUrls in
-                    guard let self = self else { return }
-                    let newJournal = Journal(id: self.journal?.id ?? UUID(), title: title, body: body, date: date, images: self.selectedImages, place: self.selectedPlace, city: self.selectedCity, imageUrls: imageUrls)
+            activityIndicator.startAnimating()
+            uploadImagesToStorage { [weak self] imageUrls in
+                guard let self = self else { return }
+                let newJournal = Journal(id: self.journal?.id ?? UUID(), title: title, body: body, date: date, images: self.selectedImages, place: self.selectedPlace, city: self.selectedCity, imageUrls: imageUrls)
                 
                 FirestoreService.shared.uploadJournal(newJournal) { result in
                     switch result {
@@ -358,7 +360,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             print("Error: Missing information")
         }
     }
-
+    
     
     // 讓鍵盤把 bottomConstraint 往上推
     @objc func keyboardWillShow(notification: Notification) {
@@ -395,11 +397,11 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
                 self?.dismiss(animated: true, completion: nil)
             }
         }
-
+        
         let hostingController = UIHostingController(rootView: contentView.environmentObject(journalData))
         present(hostingController, animated: true)
     }
-
+    
     
     @objc func didTapImageButton() {
         let alertController = UIAlertController(title: "選擇圖片來源", message: nil, preferredStyle: .actionSheet)
@@ -446,23 +448,30 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         for image in images {
             showActivityIndicator()
             resizeImage(image, targetWidth: bodyTextView.bounds.width / 2) { [weak self] resizedImage in
-                DispatchQueue.main.async {
-                    if let resizedImage = resizedImage {
-                        self?.selectedImages.append(resizedImage)
+                if let resizedImage = resizedImage {
+                    self?.selectedImages.append(resizedImage)
+                    self?.insertImage(resizedImage)
+                    self?.uploadImage(resizedImage) { result in
+                        switch result {
+                        case .success(let url):
+                            self?.selectedImageURLs.append(url.absoluteString)
+                        case .failure(let error):
+                            print("Failed to upload image: \(error)")
+                        }
                         processedImagesCount += 1
                         print("Processed \(processedImagesCount) of \(totalImages) images")
-                    }
-                    self?.hideActivityIndicator()
-                    if processedImagesCount == totalImages {
-                        print("All images processed.")
-                        self?.imagesReadyToSave = true
-                        // 在處理完所有圖片後，將圖片插入到 textView 中
-                        self?.insertImagesIntoTextView()
+                        self?.hideActivityIndicator()
+                        if processedImagesCount == totalImages {
+                            print("All images processed.")
+                            self?.imagesReadyToSave = true
+                            self?.insertImagesIntoTextView()
+                        }
                     }
                 }
             }
         }
     }
+    
     
     func insertImagesIntoTextView() {
         let attributedString = NSMutableAttributedString(attributedString: bodyTextView.attributedText)
@@ -472,18 +481,30 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             .font: textViewFont
         ]
         
-        for image in selectedImages {
-            let attachment = NSTextAttachment()
-            attachment.image = image
-            
-            let attachmentString = NSAttributedString(attachment: attachment)
-            
-            if attributedString.length > 0 {
+        for imageURL in selectedImageURLs {
+            if let url = URL(string: imageURL) {
+                let attachment = NSTextAttachment()
+                //                let placeholderImage = UIImage(named: "Placeholder picture")
+                //                            attachment.image = placeholderImage
+                let attachmentString = NSAttributedString(attachment: attachment)
+                
+                if attributedString.length > 0 {
+                    attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
+                }
+                
+                attributedString.append(attachmentString)
                 attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
+                
+                KingfisherManager.shared.retrieveImage(with: url, options: [.transition(.fade(0.3))], progressBlock: nil) { result in
+                    switch result {
+                    case .success(let value):
+                        attachment.image = value.image
+                        self.bodyTextView.attributedText = attributedString
+                    case .failure(let error):
+                        print("Error downloading image: \(error)")
+                    }
+                }
             }
-            
-            attributedString.append(attachmentString)
-            attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
         }
         
         bodyTextView.attributedText = attributedString
