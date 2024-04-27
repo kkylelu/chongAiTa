@@ -90,7 +90,7 @@ struct CostChartView: View {
                             HStack {
                                 Text(cost.name)
                                 Spacer()
-                                Text("\(Int((cost.amount / totalCost) * 100))%")
+                                Text("\(Int((cost.amount / totalCost) * 100))%") 
                                     .frame(alignment: .trailing)
                                 Spacer().frame(width: 20)
                                 Text("$\(cost.amount, specifier: "%.2f")")

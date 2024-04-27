@@ -212,6 +212,19 @@ class FirestoreService {
         }
     }
     
+    func deleteEvent(_ event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
+        let eventRef = db.collection("events").document(event.id.uuidString)
+        eventRef.delete() { error in
+            if let error = error {
+                print("Error deleting event from Firestore: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Event successfully deleted from Firestore")
+                completion(.success(()))
+            }
+        }
+    }
+    
     // MARK: - Upload and Fetch Journals
     
     func uploadJournal(_ journal: Journal, completion: @escaping (Result<Void, Error>) -> Void) {
@@ -290,22 +303,52 @@ class FirestoreService {
         }
     }
     
+    // MARK: - Upload and Fetch Pet
+    func uploadPet(pet: Pet, completion: @escaping (Error?) -> Void) {
+        let petRef = db.collection("pets").document(pet.id.uuidString)
+        let petData: [String: Any] = [
+            "id": pet.id.uuidString,
+            "imageUrl": pet.imageUrl,
+            "name": pet.name,
+            "gender": pet.gender.rawValue,
+            "type": pet.type.displayName,
+            "breed": pet.breed ?? "",
+            "birthday": pet.birthday?.timeIntervalSince1970 ?? 0,
+            "joinDate": pet.joinDate?.timeIntervalSince1970 ?? 0,
+            "weight": pet.weight ?? 0,
+            "isNeutered": pet.isNeutered
+        ]
+        
+        petRef.setData(petData) { error in
+            if let error = error {
+                print("上傳寵物資料失敗: \(error.localizedDescription)")
+            } else {
+                print("寵物資料成功上傳至雲端。")
+            }
+            completion(error)
+        }
+    }
+
+
+    func fetchPet(petId: UUID, completion: @escaping (Result<Pet, Error>) -> Void) {
+        let docRef = db.collection("pets").document(petId.uuidString)
+        docRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                do {
+                    let pet = try document.data(as: Pet.self)
+                    completion(.success(pet))
+                } catch {
+                    completion(.failure(error))
+                }
+            } else {
+                completion(.failure(error ?? NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)))
+            }
+        }
+    }
+
+    // MARK: - PerformRequest
     func performRequest<T: Codable>(url: String, method: HTTPMethod, parameters: Parameters?, headers: HTTPHeaders, completion: @escaping ((Result<T, Error>) -> Void)) {
         NetworkManager.shared.request(url: url, method: method, parameters: parameters, headers: headers, completion: completion)
     }
     
-    // MARK: - Delete Event
-    
-    func deleteEvent(_ event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
-        let eventRef = db.collection("events").document(event.id.uuidString)
-        eventRef.delete() { error in
-            if let error = error {
-                print("Error deleting event from Firestore: \(error)")
-                completion(.failure(error))
-            } else {
-                print("Event successfully deleted from Firestore")
-                completion(.success(()))
-            }
-        }
-    }
 }

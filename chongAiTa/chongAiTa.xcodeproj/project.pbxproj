@@ -48,6 +48,7 @@
 		27A939072BD3AC2200BF4845 /* EventDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A939062BD3AC2200BF4845 /* EventDetailViewController.swift */; };
 		27A9390B2BD4206E00BF4845 /* NewEventNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390A2BD4206E00BF4845 /* NewEventNotification.swift */; };
 		27A9390F2BD55D8B00BF4845 /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390E2BD55D8B00BF4845 /* EventsManager.swift */; };
+		27BC7D472BDCFAB5007B73BF /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BC7D462BDCFAB5007B73BF /* MainTabBarController.swift */; };
 		27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004482BCCE0A100C87472 /* JournalContent.swift */; };
 		27F0044C2BCD33A500C87472 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 27F0044B2BCD33A500C87472 /* Alamofire */; };
 		27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */; };
@@ -125,6 +126,7 @@
 		27A939062BD3AC2200BF4845 /* EventDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailViewController.swift; sourceTree = "<group>"; };
 		27A9390A2BD4206E00BF4845 /* NewEventNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEventNotification.swift; sourceTree = "<group>"; };
 		27A9390E2BD55D8B00BF4845 /* EventsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsManager.swift; sourceTree = "<group>"; };
+		27BC7D462BDCFAB5007B73BF /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		27F004482BCCE0A100C87472 /* JournalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalContent.swift; sourceTree = "<group>"; };
 		27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGenerationManager.swift; sourceTree = "<group>"; };
 		27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAINetworkHelper.swift; sourceTree = "<group>"; };
@@ -246,6 +248,7 @@
 				27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */,
 				277092582BD67B93004F2553 /* CostChartView.swift */,
 				274A49FC2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift */,
+				27BC7D462BDCFAB5007B73BF /* MainTabBarController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -707,6 +710,7 @@
 				27694F552BD124AB00D90167 /* FAQEntry.swift in Sources */,
 				2732C7852BDA542D004170C6 /* PetDetailTableViewCell.swift in Sources */,
 				277092592BD67B93004F2553 /* CostChartView.swift in Sources */,
+				27BC7D472BDCFAB5007B73BF /* MainTabBarController.swift in Sources */,
 				2732C7872BDA5EA1004170C6 /* DateFormatter.swift in Sources */,
 				27A939072BD3AC2200BF4845 /* EventDetailViewController.swift in Sources */,
 				27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */,

@@ -7,14 +7,20 @@
 
 import UIKit
 import MobileCoreServices
+import FirebaseStorage
+import FirebaseFirestore
+import Kingfisher
 
 class PetDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
     var pet: Pet?
+    var pets: [Pet] = []
     var pickerView = UIPickerView()
     var currentPickerType: PickerType?
+    var currentPetIndex: Int?
     var pickerData: [String] = ["選項1", "選項2", "選項3"]
     var imagePickerController = UIImagePickerController()
+    var isPetDataChanged = false
     
     enum PickerType {
         case gender, type, neutered
@@ -41,11 +47,49 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         return view
     }()
     
+    // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.delegate = self
         tableView.dataSource = self
+        setupUI()
+        
+        fetchPetDataFromFirebase { hasData in
+                if !hasData {
+                    // 如果 Firebase 中沒有資料，則加載假資料
+                    self.loadFakeData()
+                }
+            }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if isPetDataChanged, let currentPet = pet {
+            FirestoreService.shared.uploadPet(pet: currentPet) { error in
+                if let error = error {
+                    print("Error uploading pet data: \(error.localizedDescription)")
+                } else {
+                    print("Pet data uploaded successfully")
+                    self.isPetDataChanged = false
+                    DispatchQueue.main.async {
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+        }
+
+    }
+    
+    // MARK: - Setup UI
+    func setupUI() {
+        view.backgroundColor = .white
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
+        petImageView.isUserInteractionEnabled = true
+        petImageView.addGestureRecognizer(tapGesture)
+        
         tableView.backgroundColor = .white
         
         pickerView.delegate = self
@@ -75,41 +119,31 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             backgroundView.widthAnchor.constraint(equalToConstant: 450),
             backgroundView.heightAnchor.constraint(equalToConstant: 450)
         ])
-        
-        setupUI()
-        loadFakeData()
-    }
-    
-    // MARK: - Setup UI
-    func setupUI() {
-        view.backgroundColor = .white
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
-        petImageView.isUserInteractionEnabled = true
-        petImageView.addGestureRecognizer(tapGesture)
 
     }
     
     func loadFakeData() {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        let fakePet = Pet(photo: "mydog",
+        let fakePet = Pet(image: "mydog",
+                          imageUrl: [],
                           name: "熊熊",
                           gender: .male,
                           type: .dog,
                           breed: "米克斯",
                           birthday: dateFormatter.date(from: "2016-07-10"),
                           joinDate: dateFormatter.date(from: "2020-03-10"),
-                          weight: 15.0,
+                          weight: 13.0,
                           isNeutered: true)
         setPet(fakePet)
     }
     
     func setPet(_ pet: Pet) {
         self.pet = pet
-        petImageView.image = UIImage(named: pet.photo ?? "ShibaInuIcon")
+        petImageView.image = UIImage(named: pet.image ?? "ShibaInuIcon")
         tableView.reloadData()
     }
+
     
     // MARK: - Action
     
@@ -210,6 +244,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
                     break
                 }
                 self.tableView.reloadData()
+                self.isPetDataChanged = true
             }
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
@@ -250,6 +285,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
             }
             self.tableView.reloadData()
+            self.isPetDataChanged = true
         }
         
         alertController.addAction(saveAction)
@@ -281,6 +317,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
                let weight = Double(text) {
                 self.pet?.weight = weight
                 self.tableView.reloadData()
+                self.isPetDataChanged = true
             }
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
@@ -299,6 +336,51 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         present(imagePickerController, animated: true, completion: nil)
     }
     
+    func savePetData() {
+        guard let currentPet = pet else {
+            print("目前沒有寵物資料可以儲存。")
+            return
+        }
+        
+        print("正在嘗試上傳寵物資料: \(currentPet)")
+        FirestoreService.shared.uploadPet(pet: currentPet) { error in
+            if let error = error {
+                print("上傳寵物資料失敗: \(error.localizedDescription)")
+            } else {
+                print("寵物資料成功上傳至雲端。")
+                self.isPetDataChanged = false
+                // 重新載入 tableView
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    func fetchPetDataFromFirebase(completion: @escaping (Bool) -> Void) {
+        guard let petUUID = pet?.id else {
+            print("No pet UUID available")
+            loadFakeData()
+            completion(false)
+            return
+        }
+
+        FirestoreService.shared.fetchPet(petId: petUUID) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let fetchedPet):
+                    self.setPet(fetchedPet)
+                    completion(true)
+                case .failure(let error):
+                    print("Error fetching pet: \(error.localizedDescription)")
+                    self.loadFakeData()  // Load fake data if fetch fails
+                    completion(false)
+                }
+            }
+        }
+    }
+
+
     // MARK: - TableView Delegate
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
@@ -348,6 +430,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
+        isPetDataChanged = true
     }
     
     // MARK: - PickerView Delegate
@@ -384,7 +467,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         } else if let originalImage = info[.originalImage] as? UIImage {
             petImageView.image = originalImage
         }
-        
+        isPetDataChanged = true
         dismiss(animated: true, completion: nil)
     }
 }

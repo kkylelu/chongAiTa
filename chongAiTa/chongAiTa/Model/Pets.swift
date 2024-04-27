@@ -11,8 +11,10 @@ struct Pets {
     var petsArray: [Pet]
 }
 
-struct Pet {
-    var photo: String?
+struct Pet: Codable {
+    var id: UUID = UUID()
+    var image: String?
+    var imageUrl: [String]
     var name: String
     var gender: Gender
     var type: PetType
@@ -22,13 +24,13 @@ struct Pet {
     var weight: Double?
     var isNeutered: Bool
     
-    enum Gender: String, CaseIterable {
+    enum Gender: String, CaseIterable, Codable {
         case male = "男孩"
         case female = "女孩"
         case none = "不公開"
     }
 
-    enum PetType: Int, CaseIterable {
+    enum PetType: Int, CaseIterable, Codable {
         case dog = 0
         case cat = 1
         

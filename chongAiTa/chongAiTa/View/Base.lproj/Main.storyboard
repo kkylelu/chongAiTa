@@ -199,10 +199,10 @@
             </objects>
             <point key="canvasLocation" x="2879" y="513"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Main Tab Bar Controller-->
         <scene sceneID="99d-E2-gyO">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="KUh-zi-7Sf" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="KUh-zi-7Sf" customClass="MainTabBarController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="EG1-OJ-5p4">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
@@ -301,9 +301,9 @@
     <resources>
         <image name="calendar" catalog="system" width="128" height="107"/>
         <image name="chart.pie" catalog="system" width="128" height="123"/>
-        <image name="map" catalog="system" width="32" height="32"/>
+        <image name="map" catalog="system" width="128" height="112"/>
         <image name="pawprint" catalog="system" width="128" height="114"/>
-        <image name="square.and.pencil" catalog="system" width="32" height="32"/>
+        <image name="square.and.pencil" catalog="system" width="128" height="121"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
