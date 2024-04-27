@@ -20,6 +20,8 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        fetchJournalsFromFirebase()
+        
         tableView.dataSource = self
         tableView.delegate = self
         
@@ -125,9 +127,19 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
     }
     
-    @objc func navigateToChatBot() {
-        let chatVC = ChatBotViewController()
-        navigationController?.pushViewController(chatVC, animated: true)
+    func fetchJournalsFromFirebase() {
+        FirestoreService.shared.fetchJournals { [weak self] result in
+            switch result {
+            case .success(let journals):
+                self?.journalsArray = journals
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                    self?.updateUI()
+                }
+            case .failure(let error):
+                print("Failed to fetch journals from Firebase: \(error)")
+            }
+        }
     }
     
     // AI 日記回顧
@@ -166,12 +178,15 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
     }
 
-
-    
     func displaySummaryAlert(_ summary: String) {
         let alert = UIAlertController(title: "AI 日記回顧", message: summary, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "關閉", style: .default))
         self.present(alert, animated: true)
+    }
+    
+    @objc func navigateToChatBot() {
+        let chatVC = ChatBotViewController()
+        navigationController?.pushViewController(chatVC, animated: true)
     }
     
     

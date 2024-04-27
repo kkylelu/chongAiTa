@@ -211,6 +211,54 @@ class FirestoreService {
         }
     }
     
+    // MARK: - Upload and Fetch Journals
+    
+    func uploadJournal(_ journal: Journal, completion: @escaping (Result<Void, Error>) -> Void) {
+        let journalRef = db.collection("journals").document(journal.id.uuidString)
+        
+        let journalData: [String: Any] = [
+            "id": journal.id.uuidString,
+            "title": journal.title,
+            "body": journal.body,
+            "date": journal.date,
+            "imageUrls": journal.imageUrls
+        ]
+        
+        journalRef.setData(journalData) { error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+    
+    func fetchJournals(completion: @escaping (Result<[Journal], Error>) -> Void) {
+        let journalsCollection = db.collection("journals")
+        journalsCollection.getDocuments { snapshot, error in
+            if let error = error {
+                completion(.failure(error))
+            } else if let documents = snapshot?.documents {
+                let journals = documents.compactMap { document -> Journal? in
+                    let data = document.data()
+                    guard let id = data["id"] as? String,
+                          let title = data["title"] as? String,
+                          let body = data["body"] as? String,
+                          let date = data["date"] as? Timestamp,
+                          let imageUrls = data["imageUrls"] as? [String] else {
+                        return nil
+                    }
+                    
+                    return Journal(id: UUID(uuidString: id)!, title: title, body: body, date: date.dateValue(), images: [], place: nil, city: nil, imageUrls: imageUrls)
+                }
+                completion(.success(journals))
+            } else {
+                completion(.success([]))
+            }
+        }
+    }
+    
+    
     func performRequest<T: Codable>(url: String, method: HTTPMethod, parameters: Parameters?, headers: HTTPHeaders, completion: @escaping ((Result<T, Error>) -> Void)) {
         NetworkManager.shared.request(url: url, method: method, parameters: parameters, headers: headers, completion: completion)
     }

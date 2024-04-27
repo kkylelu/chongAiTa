@@ -9,6 +9,8 @@ import UIKit
 import SwiftUI
 import JournalingSuggestions
 import FirebaseFirestore
+import Kingfisher
+import FirebaseStorage
 
 class JournalViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
     
@@ -42,23 +44,27 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        
+
         imagePicker.delegate = self
         imagePicker.allowsEditing = false
-        
+
         activityIndicator.center = view.center
         activityIndicator.hidesWhenStopped = true
         view.addSubview(activityIndicator)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
+
         selectedDate = Date()
-        
+
+        // 如果從 JournalHomeViewController 傳遞了 journal 對象，就使用它來更新界面
         if let journal = journal {
             updateUI(with: journal)
+        } else {
+            titleTextView.becomeFirstResponder() // 沒有現有日記就聚焦到標題輸入框
         }
     }
+
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -276,12 +282,73 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     @objc func doneButtonTapped() {
         if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
-            let newJournal = Journal(id: journal?.id ?? UUID(), title: title, body: body, date: date, images: selectedImages, place: selectedPlace, city: selectedCity)
-            
-            NotificationCenter.default.post(name: .newJournalEntrySaved, object: nil, userInfo: ["journal": newJournal])
-            navigationController?.popViewController(animated: true)
+            uploadImagesToStorage { [weak self] imageUrls in
+                guard let self = self else { return }
+                let newJournal = Journal(id: self.journal?.id ?? UUID(), title: title, body: body, date: date, images: self.selectedImages, place: self.selectedPlace, city: self.selectedCity, imageUrls: imageUrls)
+                
+                // 上傳日記到 Firestore
+                FirestoreService.shared.uploadJournal(newJournal) { result in
+                    switch result {
+                    case .success():
+                        print("日記上傳成功")
+                        NotificationCenter.default.post(name: .newJournalEntrySaved, object: nil, userInfo: ["journal": newJournal])
+                        self.navigationController?.popViewController(animated: true)
+                    case .failure(let error):
+                        print("日記上傳失敗: \(error)")
+                    }
+                }
+            }
         } else {
             print("Error: Missing information")
+        }
+    }
+    
+    // 上傳圖片,並取得圖片網址
+    func uploadImagesToStorage(completion: @escaping ([String]) -> Void) {
+        var imageUrls: [String] = []
+        
+        // 使用 Kingfisher 將圖片上傳到雲端儲存服務
+        let dispatchGroup = DispatchGroup()
+        for image in selectedImages {
+            dispatchGroup.enter()
+            uploadImage(image) { result in
+                switch result {
+                case .success(let url):
+                    imageUrls.append(url.absoluteString)
+                case .failure(let error):
+                    print("Failed to upload image: \(error)")
+                }
+                dispatchGroup.leave()
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            completion(imageUrls)
+        }
+    }
+    
+    // 使用 Kingfisher 上傳單張圖片
+    func uploadImage(_ image: UIImage, completion: @escaping (Result<URL, Error>) -> Void) {
+        let storageRef = Storage.storage().reference().child("journal_images").child(UUID().uuidString + ".jpg")
+        
+        // 上傳圖片至 Firebase Storage
+        if let uploadData = image.jpegData(compressionQuality: 0.8) {
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            
+            storageRef.putData(uploadData, metadata: metadata) { (metadata, error) in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    storageRef.downloadURL { (url, error) in
+                        if let error = error {
+                            completion(.failure(error))
+                        } else if let url = url {
+                            completion(.success(url))
+                        }
+                    }
+                }
+            }
         }
     }
     
