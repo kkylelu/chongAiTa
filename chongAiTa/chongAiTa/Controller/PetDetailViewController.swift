@@ -58,13 +58,19 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        fetchPetDataFromFirebase { hasData in
+        super.viewWillAppear(animated)
+        
+        if pet == nil {
+            fetchPetDataFromFirebase { [weak self] hasData in
                 if !hasData {
-                    // 如果Firebase中沒有資料，則加載假資料
-                    self.loadFakeData()
+                    // 如果 Firebase 中沒有資料，則加載假資料
+                    self?.loadFakeData()
                 }
             }
+        }
     }
+
+
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -143,9 +149,14 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func setPet(_ pet: Pet) {
         self.pet = pet
-        petImageView.image = UIImage(named: pet.image ?? "ShibaInuIcon")
+        if let imageUrl = pet.imageUrl.first {
+            petImageView.kf.setImage(with: URL(string: imageUrl))
+        } else {
+            petImageView.image = UIImage(named: pet.image ?? "ShibaInuIcon")
+        }
         tableView.reloadData()
     }
+
 
     
     // MARK: - Action
@@ -153,6 +164,63 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     @objc func imageTapped(_ sender: UITapGestureRecognizer) {
         presentImagePicker()
     }
+    
+    func uploadImageToFirebaseStorage(image: UIImage) {
+        resizeImage(image, targetWidth: 800) { resizedImage in
+            guard let resizedImage = resizedImage,
+                  let imageData = resizedImage.jpegData(compressionQuality: 0.8) else {
+                return
+            }
+            
+            // 使用壓縮後的圖片數據進行上傳
+            let storageRef = Storage.storage().reference().child("petImages/\(UUID().uuidString).jpg")
+            
+            // 設置圖片的 metadata
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            
+            storageRef.putData(imageData, metadata: metadata) { (metadata, error) in
+                if let error = error {
+                    print("上傳圖片失敗: \(error.localizedDescription)")
+                    return
+                }
+                
+                storageRef.downloadURL { (url, error) in
+                    if let error = error {
+                        print("取得圖片 URL 失敗: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let imageUrl = url?.absoluteString else {
+                        return
+                    }
+                    
+                    self.pet?.imageUrl = [imageUrl]
+                    self.isPetDataChanged = true
+                }
+
+            }
+        }
+    }
+
+    
+    func resizeImage(_ image: UIImage, targetWidth: CGFloat, completion: @escaping (UIImage?) -> Void) {
+            DispatchQueue.global().async {
+                let size = image.size
+                let scaleFactor = targetWidth / size.width
+                let newHeight = size.height * scaleFactor
+                let newSize = CGSize(width: targetWidth, height: newHeight)
+                
+                UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+                image.draw(in: CGRect(origin: .zero, size: newSize))
+                let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+                UIGraphicsEndImageContext()
+                
+                DispatchQueue.main.async {
+                    completion(resizedImage)
+                }
+            }
+        }
     
     func showPicker(for type: PickerType) {
         currentPickerType = type
@@ -391,15 +459,17 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PetDetailTableViewCell.reuseIdentifier, for: indexPath) as? PetDetailTableViewCell else {
-            fatalError("Unexpected Table View Cell")
-        }
-        
-        let item = PetDetailItem.forIndexPath(indexPath)
-        if let pet = pet {
-            cell.configure(with: item, pet: pet)
-        }
-        
-        return cell
+                fatalError("Unexpected Table View Cell")
+            }
+            
+            let item = PetDetailItem.forIndexPath(indexPath)
+            if let pet = pet {
+                cell.configure(with: item, pet: pet)
+            } else {
+                print("No pet data available for row \(indexPath.row)")
+            }
+            
+            return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -454,12 +524,14 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // MARK: - ImagePicker Delegate
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let editedImage = info[.editedImage] as? UIImage {
-            petImageView.image = editedImage
-        } else if let originalImage = info[.originalImage] as? UIImage {
-            petImageView.image = originalImage
+            if let editedImage = info[.editedImage] as? UIImage {
+                petImageView.image = editedImage
+                uploadImageToFirebaseStorage(image: editedImage)
+            } else if let originalImage = info[.originalImage] as? UIImage {
+                petImageView.image = originalImage
+                uploadImageToFirebaseStorage(image: originalImage)
+            }
+            isPetDataChanged = true
+            dismiss(animated: true, completion: nil)
         }
-        isPetDataChanged = true
-        dismiss(animated: true, completion: nil)
-    }
 }

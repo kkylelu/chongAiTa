@@ -543,6 +543,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func resizeImage(_ image: UIImage, targetWidth: CGFloat, completion: @escaping (UIImage?) -> Void) {
+        
         let size = image.size
         let scaleFactor = targetWidth / size.width
         let newHeight = size.height * scaleFactor

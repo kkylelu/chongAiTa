@@ -305,68 +305,67 @@ class FirestoreService {
     
     // MARK: - Upload and Fetch Pet
     func uploadPet(pet: Pet, completion: @escaping (Error?) -> Void) {
-        let petRef = db.collection("pets").document(pet.id.uuidString)
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        
-        let birthdayString = pet.birthday.map { dateFormatter.string(from: $0) } ?? ""
-        let joinDateString = pet.joinDate.map { dateFormatter.string(from: $0) } ?? ""
-        
-        let petData: [String: Any] = [
-            "id": pet.id.uuidString,
-            "imageUrl": pet.imageUrl,
-            "name": pet.name,
-            "gender": pet.gender.rawValue,
-            "type": pet.type.rawValue,
-            "breed": pet.breed ?? "",
-            "birthday": birthdayString,
-            "joinDate": joinDateString,
-            "weight": pet.weight ?? 0,
-            "isNeutered": pet.isNeutered
-        ]
-        
-        petRef.setData(petData) { error in
-            if let error = error {
-                print("上傳寵物資料失敗: \(error.localizedDescription)")
-            } else {
-                print("寵物資料成功上傳至雲端。")
+            let petRef = db.collection("pets").document(pet.id.uuidString)
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            
+            let birthdayString = pet.birthday.map { dateFormatter.string(from: $0) } ?? ""
+            let joinDateString = pet.joinDate.map { dateFormatter.string(from: $0) } ?? ""
+            
+            let petData: [String: Any] = [
+                "id": pet.id.uuidString,
+                "imageUrl": pet.imageUrl,
+                "name": pet.name,
+                "gender": pet.gender.rawValue,
+                "type": pet.type.rawValue,
+                "breed": pet.breed ?? "",
+                "birthday": birthdayString,
+                "joinDate": joinDateString,
+                "weight": pet.weight ?? 0,
+                "isNeutered": pet.isNeutered
+            ]
+            
+            petRef.setData(petData) { error in
+                if let error = error {
+                    print("上傳寵物資料失敗: \(error.localizedDescription)")
+                } else {
+                    print("寵物資料成功上傳至雲端。")
+                }
+                completion(error)
             }
-            completion(error)
         }
-    }
 
     func fetchPet(petId: UUID, completion: @escaping (Result<Pet, Error>) -> Void) {
-        let docRef = db.collection("pets").document(petId.uuidString)
-        docRef.getDocument { (document, error) in
-            if let document = document, document.exists {
-                let data = document.data()!
-                guard let id = UUID(uuidString: data["id"] as? String ?? ""),
-                      let name = data["name"] as? String,
-                      let imageUrl = data["imageUrl"] as? [String],
-                      let genderRaw = data["gender"] as? String,
-                      let gender = Pet.Gender(rawValue: genderRaw),
-                      let typeRaw = data["type"] as? Int,
-                      let type = Pet.PetType(rawValue: typeRaw),
-                      let birthdayString = data["birthday"] as? String,
-                      let joinDateString = data["joinDate"] as? String else {
-                    completion(.failure(NSError(domain: "DataFormatError", code: 1001, userInfo: nil)))
-                    return
+            let docRef = db.collection("pets").document(petId.uuidString)
+            docRef.getDocument { (document, error) in
+                if let document = document, document.exists {
+                    let data = document.data()!
+                    guard let id = UUID(uuidString: data["id"] as? String ?? ""),
+                          let name = data["name"] as? String,
+                          let imageUrl = data["imageUrl"] as? [String],
+                          let genderRaw = data["gender"] as? String,
+                          let gender = Pet.Gender(rawValue: genderRaw),
+                          let typeRaw = data["type"] as? Int,
+                          let type = Pet.PetType(rawValue: typeRaw),
+                          let birthdayString = data["birthday"] as? String,
+                          let joinDateString = data["joinDate"] as? String else {
+                        completion(.failure(NSError(domain: "DataFormatError", code: 1001, userInfo: nil)))
+                        return
+                    }
+                    
+                    let birthday = DateFormatter.date(from: birthdayString)
+                    let joinDate = DateFormatter.date(from: joinDateString)
+                    let breed = data["breed"] as? String
+                    let weight = data["weight"] as? Double
+                    let isNeutered = data["isNeutered"] as? Bool ?? false
+                    
+                    let pet = Pet(id: id, image: nil, imageUrl: imageUrl, name: name, gender: gender, type: type, breed: breed, birthday: birthday, joinDate: joinDate, weight: weight, isNeutered: isNeutered)
+                    completion(.success(pet))
+                } else {
+                    completion(.failure(error ?? NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)))
                 }
-
-                let birthday = DateFormatter.date(from: birthdayString)
-                let joinDate = DateFormatter.date(from: joinDateString)
-                let breed = data["breed"] as? String
-                let weight = data["weight"] as? Double
-                let isNeutered = data["isNeutered"] as? Bool ?? false
-
-                let pet = Pet(id: id, image: nil, imageUrl: imageUrl, name: name, gender: gender, type: type, breed: breed, birthday: birthday, joinDate: joinDate, weight: weight, isNeutered: isNeutered)
-                completion(.success(pet))
-            } else {
-                completion(.failure(error ?? NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)))
             }
         }
-    }
-
 
     // MARK: - PerformRequest
     func performRequest<T: Codable>(url: String, method: HTTPMethod, parameters: Parameters?, headers: HTTPHeaders, completion: @escaping ((Result<T, Error>) -> Void)) {
