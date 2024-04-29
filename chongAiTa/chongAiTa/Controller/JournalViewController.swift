@@ -95,9 +95,15 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         datePicker.date = Date()
         datePicker.datePickerMode = .date
         datePicker.backgroundColor = UIColor.clear
-        datePicker.tintColor = UIColor.white
+        datePicker.tintColor = UIColor.B1
         datePicker.setValue(UIColor.white, forKey: "textColor")
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+        datePicker.locale = Locale(identifier: "zh_Hant_TW")
+        let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "zh_Hant_TW")
+            formatter.dateFormat = "yyyy 年 M 月 d 日 EEEE" 
+            datePicker.addTarget(self, action: #selector(updateDateDisplay), for: .valueChanged)
+        
         let leftBarButtonItem = UIBarButtonItem(customView: datePicker)
         navigationItem.leftBarButtonItem = leftBarButtonItem
         
@@ -276,6 +282,14 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     @objc func dateChanged(_ datePicker: UIDatePicker) {
         selectedDate = datePicker.date
+    }
+    
+    @objc func updateDateDisplay(_ datePicker: UIDatePicker) {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "zh_Hant_TW")
+        formatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
+        let formattedDate = formatter.string(from: datePicker.date)
+        print("Formatted Date: \(formattedDate)")
     }
     
     func uploadImagesToStorage(completion: @escaping ([String]) -> Void) {
