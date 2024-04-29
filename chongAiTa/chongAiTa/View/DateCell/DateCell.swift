@@ -13,11 +13,24 @@ struct Event {
 
 class DateCell: UICollectionViewCell {
     
+    let circleBackgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.B1
+        view.isHidden = true
+        return view
+    }()
+    
+    var isCurrentDate: Bool = false {
+        didSet {
+            updateDateLabelAppearance()
+        }
+    }
+    
     var dateLabel: UILabel = {
         let label = UILabel()
-        label.textAlignment = .left
+        label.textAlignment = .center
         label.textColor = .black
-        label.backgroundColor = .white
+        label.backgroundColor = .clear
         return label
     }()
     
@@ -37,7 +50,10 @@ class DateCell: UICollectionViewCell {
         
         layer.borderColor = UIColor.lightGray.cgColor
         layer.borderWidth = 0.5
+        
+        circleBackgroundView.layer.cornerRadius = min(circleBackgroundView.frame.width, circleBackgroundView.frame.height) / 2
     }
+
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -57,26 +73,36 @@ class DateCell: UICollectionViewCell {
     }
     
     // MARK: Setup UI
-    private func setupViews() {
+    func setupViews() {
+        contentView.addSubview(circleBackgroundView)
         contentView.addSubview(dateLabel)
         contentView.addSubview(moreEventsLabel)
         
+        circleBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
         moreEventsLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            dateLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-            dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-            dateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
+            circleBackgroundView.topAnchor.constraint(equalTo: dateLabel.topAnchor),
+            circleBackgroundView.bottomAnchor.constraint(equalTo: dateLabel.bottomAnchor),
+            circleBackgroundView.leadingAnchor.constraint(equalTo: dateLabel.leadingAnchor),
+            circleBackgroundView.trailingAnchor.constraint(equalTo: dateLabel.trailingAnchor),
+            circleBackgroundView.widthAnchor.constraint(equalTo: circleBackgroundView.heightAnchor),
+            
+            dateLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            dateLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 2),
             
             moreEventsLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             moreEventsLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5)
         ])
+        
+        updateDateLabelAppearance()
     }
     
     func configureCell(with date: Date?, events: [Event]) {
+        
         dateLabel.text = date != nil ? DateFormatter.localizedString(from: date!, dateStyle: .medium, timeStyle: .none) : ""
-
+        
         eventViews.forEach { $0.removeFromSuperview() }
         eventViews = []
         
@@ -84,11 +110,13 @@ class DateCell: UICollectionViewCell {
             let formatter = DateFormatter()
             formatter.dateFormat = "d"
             dateLabel.text = formatter.string(from: date)
+            isCurrentDate = Calendar.current.isDateInToday(date)
         } else {
             dateLabel.text = nil
+            isCurrentDate = false
         }
         
-        let dateLabelHeight: CGFloat = 20
+        let dateLabelHeight: CGFloat = 10
         let spacing: CGFloat = 2
         let totalEventsToShow = min(events.count, 4)
         let availableHeight = contentView.bounds.height - dateLabelHeight - CGFloat(totalEventsToShow - 1) * spacing
@@ -96,8 +124,8 @@ class DateCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             dateLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
-            dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-            dateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
+            dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            dateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             dateLabel.heightAnchor.constraint(equalToConstant: dateLabelHeight)
         ])
         
@@ -131,4 +159,15 @@ class DateCell: UICollectionViewCell {
         ])
         eventViews.append(label)
     }
+    
+    func updateDateLabelAppearance() {
+        if isCurrentDate {
+            dateLabel.textColor = .white
+            circleBackgroundView.isHidden = false
+        } else {
+            dateLabel.textColor = .black
+            circleBackgroundView.isHidden = true
+        }
+    }
+    
 }
