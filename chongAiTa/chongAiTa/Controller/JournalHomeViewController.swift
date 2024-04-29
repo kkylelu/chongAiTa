@@ -41,11 +41,17 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         setupUI()
         updateUI()
         
+        generateFakeDataAndUpdateUI()
     }
     
     // MARK: - Setup UI
+    func generateFakeDataAndUpdateUI() {
+        // 產生 3 篇假日記資料
+        journalsArray = FakeDataGenerator.generateFakeJournals(count: 3)
+        updateUI()
+    }
+    
     func setupUI(){
-        
         
         tableView.separatorStyle = .none
         
@@ -120,6 +126,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         emptyPlaceholderLabel.isHidden = true
     }
     
+    
     // MARK: - UpdateUI
     
     func updateUI() {
@@ -147,22 +154,26 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     func fetchJournalsFromFirebase() {
         FirestoreService.shared.fetchJournals { [weak self] result in
-            switch result {
-            case .success(let journals):
-                self?.journalsArray = journals
-                DispatchQueue.main.async {
-                    self?.tableView.reloadData()
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let journals):
+                    // 加入假資料和從 Firebase 下載資料
+                    self?.journalsArray = journals + FakeDataGenerator.generateFakeJournals(count: 2)
+                    self?.updateUI()
+                case .failure(let error):
+                    print("Failed to fetch journals from Firebase: \(error)")
+                    // 當從 Firebase 下載失敗時，還是可以顯示假資料
+                    self?.journalsArray = FakeDataGenerator.generateFakeJournals(count: 2)
                     self?.updateUI()
                 }
-            case .failure(let error):
-                print("Failed to fetch journals from Firebase: \(error)")
             }
         }
     }
+
     
     // AI 日記回顧
     @objc func generateSummary() {
-        navigationItem.leftBarButtonItem?.isEnabled = false // 禁用按鈕
+        navigationItem.leftBarButtonItem?.isEnabled = false
         
         // 延遲 1 秒後重新啟用按鈕，避免連續點擊
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
@@ -175,11 +186,10 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         if totalChineseCharacters >= 50 {
-            activityIndicator.startAnimating()
+            view.showLoadingAnimation()
             TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
                 DispatchQueue.main.async {
-                    self?.activityIndicator.stopAnimating()
-                    
+                    self?.view.hideLoadingAnimation()
                     switch result {
                     case .success(let summary):
                         self?.displaySummaryAlert(summary)

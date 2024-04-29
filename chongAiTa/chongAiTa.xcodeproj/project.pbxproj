@@ -32,6 +32,10 @@
 		277092592BD67B93004F2553 /* CostChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277092582BD67B93004F2553 /* CostChartView.swift */; };
 		277FE39B2BCD7C0400F63F6A /* OpenAIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */; };
 		2780026F2BD0B426007AD842 /* GooglePlacesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */; };
+		2786C49B2BDF84B900481C6F /* WaitIndicatorFootPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2786C49A2BDF84B900481C6F /* WaitIndicatorFootPrint.swift */; };
+		2786C4EA2BDF989A00481C6F /* FootPrint.json in Resources */ = {isa = PBXBuildFile; fileRef = 2786C4E92BDF989A00481C6F /* FootPrint.json */; };
+		2786C4EE2BDF9D4100481C6F /* FakeDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2786C4ED2BDF9D4100481C6F /* FakeDataGenerator.swift */; };
+		2786C4F22BDFA73800481C6F /* GetSummary.json in Resources */ = {isa = PBXBuildFile; fileRef = 2786C4F12BDFA73700481C6F /* GetSummary.json */; };
 		278D20DB2BCF825600F80764 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278D20DA2BCF825600F80764 /* MapViewController.swift */; };
 		278D46552BCFCD0300C4F677 /* NewJournalNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278D46542BCFCD0300C4F677 /* NewJournalNotification.swift */; };
 		27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */; };
@@ -110,6 +114,10 @@
 		277092582BD67B93004F2553 /* CostChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostChartView.swift; sourceTree = "<group>"; };
 		277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIResponse.swift; sourceTree = "<group>"; };
 		2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GooglePlacesResponse.swift; sourceTree = "<group>"; };
+		2786C49A2BDF84B900481C6F /* WaitIndicatorFootPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitIndicatorFootPrint.swift; sourceTree = "<group>"; };
+		2786C4E92BDF989A00481C6F /* FootPrint.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = FootPrint.json; sourceTree = "<group>"; };
+		2786C4ED2BDF9D4100481C6F /* FakeDataGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeDataGenerator.swift; sourceTree = "<group>"; };
+		2786C4F12BDFA73700481C6F /* GetSummary.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = GetSummary.json; sourceTree = "<group>"; };
 		278D20DA2BCF825600F80764 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		278D46542BCFCD0300C4F677 /* NewJournalNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewJournalNotification.swift; sourceTree = "<group>"; };
 		27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingSuggestionsView.swift; sourceTree = "<group>"; };
@@ -232,6 +240,7 @@
 				27A939002BD3680F00BF4845 /* CalendarEvents.swift */,
 				27A9390A2BD4206E00BF4845 /* NewEventNotification.swift */,
 				2732C7792BDA385B004170C6 /* Pets.swift */,
+				2786C4ED2BDF9D4100481C6F /* FakeDataGenerator.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -282,6 +291,8 @@
 			isa = PBXGroup;
 			children = (
 				27694F522BD1232E00D90167 /* petsfaq.json */,
+				2786C4E92BDF989A00481C6F /* FootPrint.json */,
+				2786C4F12BDFA73700481C6F /* GetSummary.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -292,6 +303,7 @@
 				27A462182BCBE27600503F3E /* UIColorHexCode.swift */,
 				2732C77E2BDA4CC1004170C6 /* PetDetailItem.swift */,
 				2732C7862BDA5EA1004170C6 /* DateFormatter.swift */,
+				2786C49A2BDF84B900481C6F /* WaitIndicatorFootPrint.swift */,
 			);
 			path = Extention;
 			sourceTree = "<group>";
@@ -518,6 +530,8 @@
 				27A4621F2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib in Resources */,
 				27F975A02BC6B01300B2A041 /* Base in Resources */,
 				27F9759B2BC6B01100B2A041 /* Base in Resources */,
+				2786C4EA2BDF989A00481C6F /* FootPrint.json in Resources */,
+				2786C4F22BDFA73800481C6F /* GetSummary.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -699,6 +713,8 @@
 				27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */,
 				27F004512BCD384400C87472 /* OpenAINetworkHelper.swift in Sources */,
 				27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */,
+				2786C49B2BDF84B900481C6F /* WaitIndicatorFootPrint.swift in Sources */,
+				2786C4EE2BDF9D4100481C6F /* FakeDataGenerator.swift in Sources */,
 				27694EF92BD0D28200D90167 /* ChatBotViewController.swift in Sources */,
 				27F841F62BDB5A7E0062EC4B /* FirestoreService.swift in Sources */,
 				2732C77A2BDA385B004170C6 /* Pets.swift in Sources */,
