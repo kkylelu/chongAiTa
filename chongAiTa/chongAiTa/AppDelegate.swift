@@ -26,15 +26,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         
         UINavigationBar.appearance().backgroundColor = UIColor.B1
+        UINavigationBar.appearance().tintColor = .white
         
         if #available(iOS 15, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = UIColor.B1
+            appearance.shadowColor = nil
 
             UINavigationBar.appearance().standardAppearance = appearance
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
         }
+        
+        UITabBar.appearance().tintColor = UIColor.B1
         
         return true
     }
