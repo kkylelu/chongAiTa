@@ -354,7 +354,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     @objc func doneButtonTapped() {
         if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
-            activityIndicator.startAnimating()
+            view.showLoadingAnimation()
             uploadImagesToStorage { [weak self] imageUrls in
                 guard let self = self else { return }
                 let newJournal = Journal(id: self.journal?.id ?? UUID(), title: title, body: body, date: date, images: self.selectedImages, place: self.selectedPlace, city: self.selectedCity, imageUrls: imageUrls)
@@ -460,7 +460,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         var processedImagesCount = 0
         let totalImages = images.count
         for image in images {
-            showActivityIndicator()
+            view.showLoadingAnimation()
             resizeImage(image, targetWidth: bodyTextView.bounds.width / 2) { [weak self] resizedImage in
                 if let resizedImage = resizedImage {
                     self?.selectedImages.append(resizedImage)
@@ -474,7 +474,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
                         }
                         processedImagesCount += 1
                         print("Processed \(processedImagesCount) of \(totalImages) images")
-                        self?.hideActivityIndicator()
+                        self?.view.hideLoadingAnimation()
                         if processedImagesCount == totalImages {
                             print("All images processed.")
                             self?.imagesReadyToSave = true

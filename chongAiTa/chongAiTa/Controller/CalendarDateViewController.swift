@@ -44,7 +44,6 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     
     func setupUI(){
         view.backgroundColor = .white
-        tableView.separatorStyle = .none
     }
     
     func setupTableView() {
