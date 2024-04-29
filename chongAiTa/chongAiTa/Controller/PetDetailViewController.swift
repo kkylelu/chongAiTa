@@ -91,6 +91,11 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
 
     }
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
+    
     // MARK: - Setup UI
     func setupUI() {
         view.backgroundColor = .white

@@ -8,6 +8,7 @@
 import UIKit
 import JournalingSuggestions
 import Kingfisher
+import Lottie
 
 class JournalHomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -44,6 +45,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     // MARK: - Setup UI
     func setupUI(){
+        
         
         tableView.separatorStyle = .none
         
