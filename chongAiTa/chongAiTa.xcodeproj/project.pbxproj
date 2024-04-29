@@ -36,6 +36,7 @@
 		2786C4EA2BDF989A00481C6F /* FootPrint.json in Resources */ = {isa = PBXBuildFile; fileRef = 2786C4E92BDF989A00481C6F /* FootPrint.json */; };
 		2786C4EE2BDF9D4100481C6F /* FakeDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2786C4ED2BDF9D4100481C6F /* FakeDataGenerator.swift */; };
 		2786C4F22BDFA73800481C6F /* GetSummary.json in Resources */ = {isa = PBXBuildFile; fileRef = 2786C4F12BDFA73700481C6F /* GetSummary.json */; };
+		2786C4F42BDFB36000481C6F /* CustomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2786C4F32BDFB36000481C6F /* CustomAlertView.swift */; };
 		278D20DB2BCF825600F80764 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278D20DA2BCF825600F80764 /* MapViewController.swift */; };
 		278D46552BCFCD0300C4F677 /* NewJournalNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278D46542BCFCD0300C4F677 /* NewJournalNotification.swift */; };
 		27A462122BCABFAC00503F3E /* JournalingSuggestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */; };
@@ -118,6 +119,7 @@
 		2786C4E92BDF989A00481C6F /* FootPrint.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = FootPrint.json; sourceTree = "<group>"; };
 		2786C4ED2BDF9D4100481C6F /* FakeDataGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeDataGenerator.swift; sourceTree = "<group>"; };
 		2786C4F12BDFA73700481C6F /* GetSummary.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = GetSummary.json; sourceTree = "<group>"; };
+		2786C4F32BDFB36000481C6F /* CustomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertView.swift; sourceTree = "<group>"; };
 		278D20DA2BCF825600F80764 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		278D46542BCFCD0300C4F677 /* NewJournalNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewJournalNotification.swift; sourceTree = "<group>"; };
 		27A462112BCABFAC00503F3E /* JournalingSuggestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingSuggestionsView.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 				277092582BD67B93004F2553 /* CostChartView.swift */,
 				274A49FC2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift */,
 				27BC7D462BDCFAB5007B73BF /* MainTabBarController.swift */,
+				2786C4F32BDFB36000481C6F /* CustomAlertView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -695,6 +698,7 @@
 			files = (
 				278D46552BCFCD0300C4F677 /* NewJournalNotification.swift in Sources */,
 				27A939032BD36D4B00BF4845 /* DateEventListViewController.swift in Sources */,
+				2786C4F42BDFB36000481C6F /* CustomAlertView.swift in Sources */,
 				277092572BD670FC004F2553 /* CostChartViewController.swift in Sources */,
 				277FE39B2BCD7C0400F63F6A /* OpenAIResponse.swift in Sources */,
 				27A462142BCAC00D00503F3E /* JournalingSuggestionsModel.swift in Sources */,
