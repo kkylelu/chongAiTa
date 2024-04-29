@@ -11,22 +11,23 @@ import Kingfisher
 
 class JournalHomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    @IBOutlet weak var tableView: UITableView!
+    var tableView: UITableView!
     var floatingButton: UIButton!
     var journalsArray: [Journal] = []
     var emptyPlaceholderLabel: UILabel!
     var activityIndicator: UIActivityIndicatorView!
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         fetchJournalsFromFirebase()
         
+        tableView = UITableView(frame: .zero, style: .plain)
         tableView.dataSource = self
         tableView.delegate = self
-        
         tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
+        
+        view.addSubview(tableView)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatBot))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
@@ -36,11 +37,25 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         
         setupEmptyPlaceholderLabel()
         setupActivityIndicator()
+        setupUI()
         updateUI()
         
     }
     
     // MARK: - Setup UI
+    func setupUI(){
+        
+        tableView.separatorStyle = .none
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+                tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+                tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            ])
+    }
+    
     
     func setupActivityIndicator(){
         activityIndicator = UIActivityIndicatorView(style: .large)
