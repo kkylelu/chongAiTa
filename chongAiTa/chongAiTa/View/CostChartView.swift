@@ -52,6 +52,10 @@ struct CostChartView: View {
         }
 
         totalCost = categoryTotalCosts.values.reduce(0, +)
+        if totalCost == 0 {
+            totalCost = 1 // 或是給一個很小的值,如 0.01
+        }
+
         costs = categoryTotalCosts.map { (name, amount) in (name, amount) }
     }
 
@@ -90,7 +94,8 @@ struct CostChartView: View {
                             HStack {
                                 Text(cost.name)
                                 Spacer()
-                                Text("\(Int((cost.amount / totalCost) * 100))%") 
+                                Text(totalCost > 0 ? "\(Int((cost.amount / totalCost) * 100))%" : "0%")
+
                                     .frame(alignment: .trailing)
                                 Spacer().frame(width: 20)
                                 Text("$\(cost.amount, specifier: "%.2f")")
