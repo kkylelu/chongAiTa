@@ -30,6 +30,7 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
         setupPresetActivities()
     }
 
+    // MARK: - Setup UI
     func setupUI() {
         view.backgroundColor = .systemGray6
     }
@@ -67,7 +68,19 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
             DefaultActivity(category: .medication, date: selectedDate)
         ]
     }
-
+    
+    func getIconForCategory(_ category: ActivityCategory) -> UIImage {
+        switch category {
+        case .food:
+            return UIImage(named: "foodIcon")!
+        case .medication:
+            return UIImage(named: "medicationIcon")!
+        case .shower:
+            return UIImage(named: "dogShowerIcon")!
+        }
+    }
+    
+    // MARK: - CollectionView Delegate
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return defaultActivities.count
@@ -82,17 +95,25 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
         cell.configure(with: activity.category.displayName, icon: getIconForCategory(activity.category), date: activity.date)
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let activity = defaultActivities[indexPath.item]
+        let icon = getIconForCategory(activity.category)
+        let displayName = activity.category.displayName
+        let selectedTime = activity.date
 
-    // 獲取分類圖標
-    func getIconForCategory(_ category: ActivityCategory) -> UIImage {
-        switch category {
-        case .food:
-            return UIImage(named: "foodIcon")!
-        case .medication:
-            return UIImage(named: "medicationIcon")!
-        case .shower:
-            return UIImage(named: "dogShowerIcon")!
-        }
+        let event = CalendarEvents(
+            title: displayName,
+            date: selectedTime,
+            activity: activity,
+            image: icon
+        )
+
+        let eventDetailVC = EventDetailViewController()
+        eventDetailVC.configure(event: event)
+        navigationController?.pushViewController(eventDetailVC, animated: true)
     }
+
+   
 }
 
