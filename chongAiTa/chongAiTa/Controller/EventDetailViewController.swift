@@ -8,7 +8,7 @@
 import UIKit
 import FirebaseFirestore
 
-class EventDetailViewController: UIViewController,UINavigationControllerDelegate {
+class EventDetailViewController: UIViewController,UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate {
     let containerView = UIView()
     var iconImageView = UIImageView()
     var titleLabel = UILabel()
@@ -19,6 +19,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     var costTextField = UITextField()
     var timeLabel = UILabel()
     var datePicker = UIDatePicker()
+    var doneButton: UIButton!
     
     var eventImage: UIImage?
     var eventTitle: String?
@@ -34,6 +35,9 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         setupUI()
         addSubviews(to: containerView)
         displayEventDetails()
+        titleTextField.delegate = self
+        costTextField.delegate = self
+        noteTextView.delegate = self
     }
     
     // MARK: - Setup UI
@@ -63,9 +67,19 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         NSLayoutConstraint.activate([
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            containerView.widthAnchor.constraint(equalToConstant: 300),
-            containerView.heightAnchor.constraint(equalToConstant: 560)
+            containerView.widthAnchor.constraint(equalToConstant: 350),
+            containerView.heightAnchor.constraint(equalToConstant: 650)
         ])
+        
+        doneButton = UIButton(type: .system)
+        doneButton.setTitle("完成", for: .normal)
+        doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        doneButton.backgroundColor = UIColor.B1
+        doneButton.layer.cornerRadius = 10
+        doneButton.tintColor = .white
+        doneButton.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(doneButton)
     }
     
     func addSubviews(to containerView: UIView) {
@@ -106,6 +120,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         recurrenceButton.addTarget(self, action: #selector(showRecurrenceSettings), for: .touchUpInside)
         recurrenceButton.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(recurrenceButton)
+        containerView.addSubview(doneButton)
         
         containerView.addSubview(iconImageView)
         containerView.addSubview(titleLabel)
@@ -153,8 +168,14 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
             datePicker.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 10),
             
             recurrenceButton.topAnchor.constraint(equalTo: datePicker.bottomAnchor, constant: 10),
-            recurrenceButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
-            recurrenceButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor)
+            recurrenceButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            
+            doneButton.topAnchor.constraint(equalTo: recurrenceButton.bottomAnchor, constant: 20),
+            doneButton.leadingAnchor.constraint(equalTo: costTextField.leadingAnchor),
+            doneButton.trailingAnchor.constraint(equalTo: costTextField.trailingAnchor),
+            doneButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            doneButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
+            doneButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -225,7 +246,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         let cost = Double(costTextField.text ?? "") ?? 0.0
         if let activity = selectedActivity, let currentId = currentEventId {
             let title = titleTextField.text?.isEmpty ?? true ? (eventTitle ?? activity.category.displayName) : titleTextField.text!
-
+            
             let event = CalendarEvents(
                 id: currentId,
                 title: title,
@@ -236,11 +257,11 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
                 cost: cost,
                 recurrence: selectedRecurrence
             )
-
+            
             if !EventsManager.shared.hasEvent(event) {
                 EventsManager.shared.saveEvents([event])
                 NotificationCenter.default.post(name: .didCreateEvent, object: event)
-
+                
                 FirestoreService.shared.uploadEvent(event) { [weak self] result in
                     print(result)
                     
@@ -257,7 +278,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
             }
         }
     }
-
+    
     private func closeViewController() {
         if let navController = navigationController, navController.viewControllers.count > 1 {
             navController.popViewController(animated: true)
@@ -265,4 +286,27 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
             dismiss(animated: true, completion: nil)
         }
     }
+    
+    // MARK: - UITextField and TextView Delegate
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.layer.borderColor = UIColor.B1.cgColor
+        textField.layer.borderWidth = 1.0
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.layer.borderColor = UIColor.clear.cgColor
+        textField.layer.borderWidth = 0.0
+    }
+
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textView.layer.borderColor = UIColor.B1.cgColor
+        textView.layer.borderWidth = 1.0
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        textView.layer.borderColor = UIColor.systemGray6.cgColor
+        textView.layer.borderWidth = 1.0
+    }
+    
 }
