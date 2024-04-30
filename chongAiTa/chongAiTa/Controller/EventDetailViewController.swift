@@ -237,31 +237,32 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
                 recurrence: selectedRecurrence
             )
 
-            // 檢查該活動是否已經存在
             if !EventsManager.shared.hasEvent(event) {
-                // 如果不存在，才儲存到本地和上傳到 Firestore
                 EventsManager.shared.saveEvents([event])
-                
+                NotificationCenter.default.post(name: .didCreateEvent, object: event)
+
                 FirestoreService.shared.uploadEvent(event) { [weak self] result in
                     print(result)
                     
                     switch result {
                     case .success():
                         print("活動成功上傳到 Firestore。")
-                        DispatchQueue.main.async {
-                            self?.navigationController?.popViewController(animated: true)
-                        }
                     case .failure(let error):
                         print("上傳到 Firestore 時出現錯誤：\(error)")
                     }
+                    self?.closeViewController()
                 }
             } else {
-                // 如果已經存在，直接返回上一頁
-                navigationController?.popViewController(animated: true)
+                closeViewController()
             }
         }
     }
 
-
-
+    private func closeViewController() {
+        if let navController = navigationController, navController.viewControllers.count > 1 {
+            navController.popViewController(animated: true)
+        } else {
+            dismiss(animated: true, completion: nil)
+        }
+    }
 }

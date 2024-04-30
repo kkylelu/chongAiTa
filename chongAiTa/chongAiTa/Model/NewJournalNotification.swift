@@ -7,5 +7,5 @@
 
 import Foundation
 extension Notification.Name {
-    static let didCreateEvent = Notification.Name("didCreateEvent")
+    static let newJournalEntrySaved = Notification.Name("newJournalEntrySaved")
 }

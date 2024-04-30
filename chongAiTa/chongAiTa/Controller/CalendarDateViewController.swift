@@ -24,13 +24,14 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         setupTableView()
         tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
         
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNewEvent(_:)), name: .didCreateEvent, object: nil)
         setupEmptyPlaceholderLabel()
         updateUI()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        print("viewWillAppear called")
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("viewDidAppear called")
         
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: selectedDate)
@@ -38,7 +39,6 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         
         loadEvents(from: startOfDay, to: endOfDay)
     }
-
     
     // MARK: - Setup UI
     

@@ -144,7 +144,7 @@ class FirestoreService {
     }
     
     // MARK: - Upload and Fetch Events
-    
+
     func uploadEvent(_ event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
         let eventRef = db.collection("events").document(event.id.uuidString)
         
@@ -162,13 +162,13 @@ class FirestoreService {
         ]
         print("Uploading event to Firestore: \(event)")
         
-        completion(.success(()))
-        // completion(.failure(()))
         eventRef.setData(eventData) { error in
             if let error = error {
                 print("Error uploading event to Firestore: \(error)")
+                completion(.failure(error))
             } else {
                 print("Event successfully uploaded to Firestore: \(event)")
+                completion(.success(())) 
             }
         }
     }
