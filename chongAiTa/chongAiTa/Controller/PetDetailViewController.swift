@@ -53,8 +53,12 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         
         tableView.delegate = self
         tableView.dataSource = self
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addNewPets))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: .plain, target: self, action: #selector(goSettingPage))
+        
         setupUI()
-       
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -69,8 +73,8 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
     }
-
-
+    
+    
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -88,13 +92,13 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             }
         }
-
+        
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-
+    
     
     // MARK: - Setup UI
     func setupUI() {
@@ -104,6 +108,15 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         petImageView.isUserInteractionEnabled = true
         petImageView.addGestureRecognizer(tapGesture)
         
+        let imagePickerButton = UIButton(type: .custom)
+        let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular)
+            let image = UIImage(systemName: "camera.circle.fill", withConfiguration: config)
+            imagePickerButton.setImage(image, for: .normal)
+            imagePickerButton.tintColor = UIColor.B1
+            imagePickerButton.imageView?.contentMode = .scaleAspectFit
+            imagePickerButton.addTarget(self, action: #selector(imagePickerButtonTapped), for: .touchUpInside)
+                    
+        
         tableView.backgroundColor = .white
         
         pickerView.delegate = self
@@ -112,9 +125,11 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         view.addSubview(tableView)
         view.addSubview(backgroundView)
         view.addSubview(petImageView)
+        view.addSubview(imagePickerButton)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         petImageView.translatesAutoresizingMaskIntoConstraints = false
+        imagePickerButton.translatesAutoresizingMaskIntoConstraints = false
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -128,12 +143,17 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             petImageView.widthAnchor.constraint(equalToConstant: 150),
             petImageView.heightAnchor.constraint(equalToConstant: 150),
             
+            imagePickerButton.widthAnchor.constraint(equalToConstant: 50),
+            imagePickerButton.heightAnchor.constraint(equalToConstant: 50),
+            imagePickerButton.trailingAnchor.constraint(equalTo: petImageView.trailingAnchor, constant: 10),
+            imagePickerButton.bottomAnchor.constraint(equalTo: petImageView.bottomAnchor, constant: 10),
+            
             backgroundView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             backgroundView.centerYAnchor.constraint(equalTo: petImageView.centerYAnchor, constant:  -200),
             backgroundView.widthAnchor.constraint(equalToConstant: 450),
             backgroundView.heightAnchor.constraint(equalToConstant: 450)
         ])
-
+        
     }
     
     func loadFakeData() {
@@ -161,12 +181,16 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         tableView.reloadData()
     }
-
-
+    
+    
     
     // MARK: - Action
     
     @objc func imageTapped(_ sender: UITapGestureRecognizer) {
+        presentImagePicker()
+    }
+    
+    @objc func imagePickerButtonTapped() {
         presentImagePicker()
     }
     
@@ -203,33 +227,33 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.pet?.imageUrl = [imageUrl]
                     self.isPetDataChanged = true
                 }
-
+                
             }
         }
     }
-
+    
     
     func resizeImage(_ image: UIImage, targetWidth: CGFloat, completion: @escaping (UIImage?) -> Void) {
-            DispatchQueue.global().async {
-                let size = image.size
-                let scaleFactor = targetWidth / size.width
-                let newHeight = size.height * scaleFactor
-                let newSize = CGSize(width: targetWidth, height: newHeight)
-                
-                UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
-                image.draw(in: CGRect(origin: .zero, size: newSize))
-                let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                
-                DispatchQueue.main.async {
-                    completion(resizedImage)
-                }
+        DispatchQueue.global().async {
+            let size = image.size
+            let scaleFactor = targetWidth / size.width
+            let newHeight = size.height * scaleFactor
+            let newSize = CGSize(width: targetWidth, height: newHeight)
+            
+            UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+            image.draw(in: CGRect(origin: .zero, size: newSize))
+            let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            DispatchQueue.main.async {
+                completion(resizedImage)
             }
         }
+    }
     
     func showPicker(for type: PickerType) {
         currentPickerType = type
-
+        
         switch type {
         case .gender:
             pickerData = Pet.Gender.allCases.map { $0.rawValue }
@@ -238,15 +262,15 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         case .neutered:
             pickerData = ["已結紮", "未結紮"]
         }
-
+        
         let pickerViewController = UIViewController()
         pickerViewController.preferredContentSize = CGSize(width: UIScreen.main.bounds.width, height: 260)
         pickerViewController.view.addSubview(pickerView)
-
+        
         pickerView.delegate = self
         pickerView.dataSource = self
         pickerView.reloadAllComponents()
-
+        
         pickerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             pickerView.leadingAnchor.constraint(equalTo: pickerViewController.view.leadingAnchor),
@@ -254,10 +278,10 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             pickerView.topAnchor.constraint(equalTo: pickerViewController.view.topAnchor),
             pickerView.bottomAnchor.constraint(equalTo: pickerViewController.view.bottomAnchor)
         ])
-
+        
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         alertController.setValue(pickerViewController, forKey: "contentViewController")
-
+        
         let doneAction = UIAlertAction(title: "確定", style: .default) { [unowned self] _ in
             let selectedRow = pickerView.selectedRow(inComponent: 0)
             self.pickerView(pickerView, didSelectRow: selectedRow, inComponent: 0)
@@ -267,16 +291,16 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         
         alertController.addAction(doneAction)
         alertController.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-
+        
         if let popoverController = alertController.popoverPresentationController {
             popoverController.sourceView = self.view
             popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
             popoverController.permittedArrowDirections = []
         }
-
+        
         present(alertController, animated: true)
     }
-
+    
     
     @objc func pickerDoneButtonTapped() {
         dismissPicker()
@@ -342,10 +366,10 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         if let date = (item == .birthday ? pet?.birthday : pet?.joinDate) {
             datePicker.date = date
         }
-
+        
         let alertController = UIAlertController(title: "選擇\(item.title)", message: nil, preferredStyle: .actionSheet)
         alertController.setValue(datePickerViewController, forKey: "contentViewController")
-
+        
         let saveAction = UIAlertAction(title: "確定", style: .default) { [unowned self] _ in
             let selectedDate = datePicker.date
             
@@ -364,7 +388,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         
         present(alertController, animated: true)
     }
-
+    
     
     func showNumberPadAlert(for item: PetDetailItem) {
         let alertController = UIAlertController(title: "輸入\(item.title)", message: nil, preferredStyle: .alert)
@@ -397,7 +421,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         imagePickerController.delegate = self
         imagePickerController.allowsEditing = true
         imagePickerController.sourceType = .photoLibrary
-
+        
         present(imagePickerController, animated: true, completion: nil)
     }
     
@@ -429,7 +453,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             completion(false)
             return
         }
-
+        
         FirestoreService.shared.fetchPet(petId: petUUID) { result in
             DispatchQueue.main.async {
                 switch result {
@@ -444,8 +468,16 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
     }
-
-
+    
+    @objc func addNewPets(){
+        print("tapped addNewPets function")
+    }
+    
+    @objc func goSettingPage(){
+        print("tapped goSettingPage function")
+    }
+    
+    
     // MARK: - TableView Delegate
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
@@ -464,17 +496,17 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PetDetailTableViewCell.reuseIdentifier, for: indexPath) as? PetDetailTableViewCell else {
-                fatalError("Unexpected Table View Cell")
-            }
-            
-            let item = PetDetailItem.forIndexPath(indexPath)
-            if let pet = pet {
-                cell.configure(with: item, pet: pet)
-            } else {
-                print("No pet data available for row \(indexPath.row)")
-            }
-            
-            return cell
+            fatalError("Unexpected Table View Cell")
+        }
+        
+        let item = PetDetailItem.forIndexPath(indexPath)
+        if let pet = pet {
+            cell.configure(with: item, pet: pet)
+        } else {
+            print("No pet data available for row \(indexPath.row)")
+        }
+        
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -529,14 +561,14 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // MARK: - ImagePicker Delegate
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let editedImage = info[.editedImage] as? UIImage {
-                petImageView.image = editedImage
-                uploadImageToFirebaseStorage(image: editedImage)
-            } else if let originalImage = info[.originalImage] as? UIImage {
-                petImageView.image = originalImage
-                uploadImageToFirebaseStorage(image: originalImage)
-            }
-            isPetDataChanged = true
-            dismiss(animated: true, completion: nil)
+        if let editedImage = info[.editedImage] as? UIImage {
+            petImageView.image = editedImage
+            uploadImageToFirebaseStorage(image: editedImage)
+        } else if let originalImage = info[.originalImage] as? UIImage {
+            petImageView.image = originalImage
+            uploadImageToFirebaseStorage(image: originalImage)
         }
+        isPetDataChanged = true
+        dismiss(animated: true, completion: nil)
+    }
 }
