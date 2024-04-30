@@ -128,7 +128,12 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     
     @objc func floatingButtonTapped() {
         let dateEventListVC = DateEventListViewController(date: selectedDate)
-        navigationController?.pushViewController(dateEventListVC, animated: true)
+        
+        if let presentationController = dateEventListVC.presentationController as? UISheetPresentationController {
+            presentationController.detents = [.medium()]
+        }
+        
+        self.present(dateEventListVC, animated: true, completion: nil)
     }
     
     @objc func handleNewEvent(_ notification: Notification) {

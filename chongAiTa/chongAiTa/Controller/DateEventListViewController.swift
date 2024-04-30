@@ -111,9 +111,8 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
 
         let eventDetailVC = EventDetailViewController()
         eventDetailVC.configure(event: event)
-        navigationController?.pushViewController(eventDetailVC, animated: true)
+        self.present(eventDetailVC, animated: true, completion: nil)
     }
 
-   
 }
 
