@@ -70,7 +70,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         collectionView.register(DateCell.self, forCellWithReuseIdentifier: "DateCell")
         
         weekHeaderView.translatesAutoresizingMaskIntoConstraints = false
-        weekHeaderView.backgroundColor = .systemGray6
+        weekHeaderView.backgroundColor = UIColor.B2
         
         view.addSubview(weekHeaderView)
         view.addSubview(collectionView)

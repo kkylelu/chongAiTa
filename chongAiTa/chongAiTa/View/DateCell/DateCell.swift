@@ -53,7 +53,7 @@ class DateCell: UICollectionViewCell {
         
         circleBackgroundView.layer.cornerRadius = min(circleBackgroundView.frame.width, circleBackgroundView.frame.height) / 2
     }
-
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
