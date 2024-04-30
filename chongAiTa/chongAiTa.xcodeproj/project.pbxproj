@@ -30,6 +30,7 @@
 		27694F552BD124AB00D90167 /* FAQEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694F542BD124AB00D90167 /* FAQEntry.swift */; };
 		277092572BD670FC004F2553 /* CostChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277092562BD670FC004F2553 /* CostChartViewController.swift */; };
 		277092592BD67B93004F2553 /* CostChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277092582BD67B93004F2553 /* CostChartView.swift */; };
+		277EE07F2BE0C86A000439E4 /* ActivityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277EE07E2BE0C86A000439E4 /* ActivityCollectionViewCell.swift */; };
 		277FE39B2BCD7C0400F63F6A /* OpenAIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */; };
 		2780026F2BD0B426007AD842 /* GooglePlacesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */; };
 		2786C49B2BDF84B900481C6F /* WaitIndicatorFootPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2786C49A2BDF84B900481C6F /* WaitIndicatorFootPrint.swift */; };
@@ -113,6 +114,7 @@
 		27694F542BD124AB00D90167 /* FAQEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQEntry.swift; sourceTree = "<group>"; };
 		277092562BD670FC004F2553 /* CostChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostChartViewController.swift; sourceTree = "<group>"; };
 		277092582BD67B93004F2553 /* CostChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostChartView.swift; sourceTree = "<group>"; };
+		277EE07E2BE0C86A000439E4 /* ActivityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCollectionViewCell.swift; sourceTree = "<group>"; };
 		277FE39A2BCD7C0400F63F6A /* OpenAIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIResponse.swift; sourceTree = "<group>"; };
 		2780026E2BD0B426007AD842 /* GooglePlacesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GooglePlacesResponse.swift; sourceTree = "<group>"; };
 		2786C49A2BDF84B900481C6F /* WaitIndicatorFootPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitIndicatorFootPrint.swift; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 			children = (
 				2739EA422BD2424B0054D455 /* DateCell.swift */,
 				27A939042BD3716300BF4845 /* CardTableViewCell.swift */,
+				277EE07E2BE0C86A000439E4 /* ActivityCollectionViewCell.swift */,
 			);
 			path = DateCell;
 			sourceTree = "<group>";
@@ -731,6 +734,7 @@
 				2732C7852BDA542D004170C6 /* PetDetailTableViewCell.swift in Sources */,
 				277092592BD67B93004F2553 /* CostChartView.swift in Sources */,
 				27BC7D472BDCFAB5007B73BF /* MainTabBarController.swift in Sources */,
+				277EE07F2BE0C86A000439E4 /* ActivityCollectionViewCell.swift in Sources */,
 				2732C7872BDA5EA1004170C6 /* DateFormatter.swift in Sources */,
 				27A939072BD3AC2200BF4845 /* EventDetailViewController.swift in Sources */,
 				27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */,
