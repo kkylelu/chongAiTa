@@ -64,23 +64,23 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     func setupEmptyPlaceholderLabel() {
-            emptyPlaceholderLabel = UILabel()
-            emptyPlaceholderLabel.text = "點擊下方「加號圖示➕」新增活動"
-            emptyPlaceholderLabel.textColor = UIColor.gray
-            emptyPlaceholderLabel.textAlignment = .center
-            emptyPlaceholderLabel.font = UIFont.systemFont(ofSize: 20)
-            emptyPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(emptyPlaceholderLabel)
-            
-            NSLayoutConstraint.activate([
-                emptyPlaceholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                emptyPlaceholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-                emptyPlaceholderLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-                emptyPlaceholderLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-            ])
-            
-            emptyPlaceholderLabel.isHidden = true
-        }
+        emptyPlaceholderLabel = UILabel()
+        emptyPlaceholderLabel.text = "點擊下方「加號圖示➕」新增活動"
+        emptyPlaceholderLabel.textColor = UIColor.gray
+        emptyPlaceholderLabel.textAlignment = .center
+        emptyPlaceholderLabel.font = UIFont.systemFont(ofSize: 20)
+        emptyPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyPlaceholderLabel)
+        
+        NSLayoutConstraint.activate([
+            emptyPlaceholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyPlaceholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyPlaceholderLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            emptyPlaceholderLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+        
+        emptyPlaceholderLabel.isHidden = true
+    }
     
     
     func setupFloatingButton(){
@@ -112,10 +112,10 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     // MARK: - UpdateUI
     
     func updateUI() {
-            emptyPlaceholderLabel.isHidden = !dataSource.isEmpty
-            tableView.isHidden = dataSource.isEmpty
-            tableView.reloadData()
-        }
+        emptyPlaceholderLabel.isHidden = !dataSource.isEmpty
+        tableView.isHidden = dataSource.isEmpty
+        tableView.reloadData()
+    }
     
     // MARK: - Action
     
@@ -124,7 +124,7 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         tableView.reloadData()
         updateUI()
     }
-
+    
     
     @objc func floatingButtonTapped() {
         let dateEventListVC = DateEventListViewController(date: selectedDate)
@@ -152,14 +152,22 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "JournalHomeCell", for: indexPath) as? JournalHomeTableViewCell else {
-                fatalError("無法取得 JournalHomeTableViewCell 的實例。")
-            }
-            let event = dataSource[indexPath.row]
-            cell.configure(with: event)
-            cell.selectionStyle = .none
-            return cell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "JournalHomeCell", for: indexPath) as? JournalHomeTableViewCell else {
+            fatalError("無法取得 JournalHomeTableViewCell 的實例。")
         }
+        let event = dataSource[indexPath.row]
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
+        dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
+        let formattedDate = dateFormatter.string(from: event.date)
+        
+        cell.configure(with: event, formattedDate: formattedDate)
+        cell.selectionStyle = .none
+        
+        return cell
+    }
+
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 165.0
@@ -183,12 +191,12 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
             
             self.updateUI()
         }
-
+        
         deleteAction.backgroundColor = UIColor.B4
-
+        
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         configuration.performsFirstActionWithFullSwipe = true
-
+        
         return configuration
     }
 }
