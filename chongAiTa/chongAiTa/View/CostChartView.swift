@@ -30,7 +30,7 @@ struct CostChartView: View {
     @State private var costs: [(name: String, amount: Double)] = []
     @State private var totalCost: Double = 0
     @State private var selectedTimeRange: TimeRange = .lastWeek
-
+    
     private func fetchData() {
         let allCosts: [(eventId: UUID, cost: Double)]
         switch selectedTimeRange {
@@ -39,9 +39,9 @@ struct CostChartView: View {
         case .currentMonth:
             allCosts = EventsManager.shared.getCostsForCurrentMonth()
         }
-
+        
         var categoryTotalCosts: [String: Double] = [:]
-
+        
         for cost in allCosts {
             if let event = EventsManager.shared.loadEvent(with: cost.eventId) {
                 let categoryName = event.activity.category.displayName
@@ -50,15 +50,15 @@ struct CostChartView: View {
                 categoryTotalCosts["未分類", default: 0] += cost.cost
             }
         }
-
+        
         totalCost = categoryTotalCosts.values.reduce(0, +)
         if totalCost == 0 {
-            totalCost = 1 // 或是給一個很小的值,如 0.01
+            totalCost = 1 // 或是設定很小的值，如 0.01
         }
-
+        
         costs = categoryTotalCosts.map { (name, amount) in (name, amount) }
     }
-
+    
     var body: some View {
         VStack {
             if costs.isEmpty {
@@ -72,7 +72,8 @@ struct CostChartView: View {
                     .onChange(of: selectedTimeRange) { _ in
                         fetchData()
                     }
-
+                    .padding(.top, 20)
+                
                 List {
                     Chart(costs, id: \.name) { element in
                         SectorMark(
@@ -81,28 +82,36 @@ struct CostChartView: View {
                             angularInset: 1.5
                         )
                         .cornerRadius(5.0)
-                        .foregroundStyle(by: .value("Activity", element.name))
+                        .foregroundStyle(
+                            element.name == "餵食" ? Color.yellow.gradient :
+                            element.name == "美容洗澡" ? Color.brown.gradient :
+                            element.name == "看醫生" ? Color.orange.gradient :
+                            Color.gray.gradient
+                        )
+                    
+                        .accessibilityLabel("\(element.name): \(Int((element.amount / totalCost) * 100))%")
+                        
                     }
                     .chartLegend(alignment: .center)
                     .scaledToFit()
                     .frame(maxWidth: .infinity)
                     .listRowSeparator(.hidden)
                     .frame(height: 300)
-
+                    
                     Section(header: Text("花費項目")) {
                         ForEach(costs, id: \.name) { cost in
                             HStack {
                                 Text(cost.name)
+                                    .frame(width: 100, alignment: .leading)
                                 Spacer()
-                                Text(totalCost > 0 ? "\(Int((cost.amount / totalCost) * 100))%" : "0%")
-
-                                    .frame(alignment: .trailing)
-                                Spacer().frame(width: 20)
-                                Text("$\(cost.amount, specifier: "%.2f")")
-                                    .frame(alignment: .trailing)
+                                Text("\(Int((cost.amount / totalCost) * 100))%")
+                                    .frame(width: 70, alignment: .trailing)
+                                Text(cost.amount, format: .currency(code: "TWD").precision(.fractionLength(0)))
+                                    .frame(width: 120, alignment: .trailing)
                             }
                         }
                     }
+                    
                 }
                 .listStyle(.plain)
             }
