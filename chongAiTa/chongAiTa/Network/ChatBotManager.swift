@@ -18,7 +18,7 @@ class ChatBotManager {
             ["role": "user", "content": message]
         ]
         let parameters: Parameters = [
-            "model": "gpt-3.5-turbo", 
+            "model": "gpt-4-turbo", 
             "messages": messages,
         ]
 
