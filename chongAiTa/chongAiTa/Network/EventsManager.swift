@@ -225,19 +225,36 @@ class EventsManager {
     
     func getCostsForLastWeek() -> [(eventId: UUID, cost: Double)] {
         var costsForLastWeek: [(eventId: UUID, cost: Double)] = []
-        
+
+        // 使用 Calendar 計算上週一到上週日的日期
         let calendar = Calendar.current
         let today = Date()
-        let lastWeekStart = calendar.date(byAdding: .day, value: -7, to: today)!
-        
+        let weekday = calendar.component(.weekday, from: today)
+        var daysToLastMonday = 0
+
+        // 確定從今天到上週一需要退回多少天
+        if weekday == 1 { // 如果今天是週日
+            daysToLastMonday = -6 // 上週一是六天前
+        } else {
+            daysToLastMonday = -weekday + 2 // 退回到上週一
+        }
+
+        let lastMonday = calendar.date(byAdding: .day, value: daysToLastMonday, to: today)!
+        let lastSunday = calendar.date(byAdding: .day, value: 6, to: lastMonday)!
+
+        // 包括週日的整天
+        let lastWeekEnd = calendar.date(byAdding: .day, value: 1, to: lastSunday)!
+
+        // 篩選上周一到上周日的活動
         for (_, events) in eventsByDate {
-            for event in events where event.date >= lastWeekStart && event.date < today && event.cost != nil {
+            for event in events where event.date >= lastMonday && event.date < lastWeekEnd && event.cost != nil {
                 costsForLastWeek.append((event.id, event.cost!))
             }
         }
-        
+
         return costsForLastWeek
     }
+
 
     func getCostsForCurrentMonth() -> [(eventId: UUID, cost: Double)] {
         var costsForCurrentMonth: [(eventId: UUID, cost: Double)] = []
