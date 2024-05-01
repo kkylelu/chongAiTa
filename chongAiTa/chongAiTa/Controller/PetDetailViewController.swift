@@ -359,7 +359,15 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .wheels
+        datePicker.locale = Locale(identifier: "zh_TW")
         datePickerViewController.view.addSubview(datePicker)
+        datePickerViewController.preferredContentSize = CGSize(width: UIScreen.main.bounds.width, height: 260)
+
+        NSLayoutConstraint.activate([
+                datePicker.centerXAnchor.constraint(equalTo: datePickerViewController.view.centerXAnchor),
+                datePicker.centerYAnchor.constraint(equalTo: datePickerViewController.view.centerYAnchor),
+                datePicker.widthAnchor.constraint(equalTo: datePickerViewController.view.widthAnchor)
+            ])
         
         // 設置初始日期
         if let date = (item == .birthday ? pet?.birthday : pet?.joinDate) {
