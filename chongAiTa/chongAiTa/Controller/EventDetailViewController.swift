@@ -73,7 +73,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         
         doneButton = UIButton(type: .system)
         doneButton.setTitle("完成", for: .normal)
-        doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 18)
         doneButton.backgroundColor = UIColor.B1
         doneButton.layer.cornerRadius = 10
         doneButton.tintColor = .white
@@ -98,6 +98,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         noteTextView.layer.borderColor = UIColor.systemGray6.cgColor
         noteTextView.layer.borderWidth = 1.0
         noteTextView.layer.cornerRadius = 5
+        noteTextView.font = UIFont.systemFont(ofSize: 16)
         noteTextView.translatesAutoresizingMaskIntoConstraints = false
         
         costLabel.text = "花費金額"
@@ -112,6 +113,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
         
         datePicker.datePickerMode = .dateAndTime
+        datePicker.locale = Locale(identifier: "zh_TW")
         datePicker.translatesAutoresizingMaskIntoConstraints = false
         
         recurrenceButton = UIButton(type: .system)
@@ -164,7 +166,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
             timeLabel.topAnchor.constraint(equalTo: costTextField.bottomAnchor, constant: 20),
             timeLabel.leadingAnchor.constraint(equalTo: noteLabel.leadingAnchor),
             
-            datePicker.leadingAnchor.constraint(equalTo: timeLabel.leadingAnchor),
+            datePicker.leadingAnchor.constraint(equalTo: costTextField.leadingAnchor),
             datePicker.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 10),
             
             recurrenceButton.topAnchor.constraint(equalTo: datePicker.bottomAnchor, constant: 10),
