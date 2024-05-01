@@ -13,11 +13,19 @@ import CoreLocation
 class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDelegate {
     
     var mapView: GMSMapView!
+    var isLayerButtonExpanded = false
     let locationManager = CLLocationManager()
+    
+    var layerButton: UIButton!
+    var animalHospitalButton: UIButton!
+    var petGroomingButton: UIButton!
+    var petSuppliesButton: UIButton!
+    var currentLocButton: UIButton!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
@@ -25,53 +33,40 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         setupUI()
         setNavigationTitle(.map)
-        setupCurrentLocButton()
         
         // 顯示使用者目前位置
         mapView.isMyLocationEnabled = true
         
         mapView.delegate = self
-
+        
     }
     
     func setupUI() {
-                
+        
         let camera = GMSCameraPosition.camera(withLatitude: 25.039413072140746, longitude: 121.53243457301599, zoom: 16.0)
         mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
         mapView.translatesAutoresizingMaskIntoConstraints = false
+        
+        layerButton = createLayerButton(type: .layer, action: #selector(toggleLayerButtons))
+        animalHospitalButton = createLayerButton(type: .animalHospital, action: #selector(findNearbyAnimalHospitals))
+        petGroomingButton = createLayerButton(type: .petGrooming, action: nil)
+        petSuppliesButton = createLayerButton(type: .petSupplies, action: nil)
+        currentLocButton = createLayerButton(type: .currentLocation, action: #selector(goToCurrentLocation))
+        
         view.addSubview(mapView)
-        
-//        let marker = GMSMarker()
-//        marker.position = CLLocationCoordinate2D(latitude: 25.039413072140746, longitude: 121.53243457301599)
-//        marker.title = "AppWorks School"
-//        marker.snippet = "100台北市中正區仁愛路二段99號"
-//        marker.map = mapView
-        
-        let hospitalButton = UIButton(type: .custom)
-        hospitalButton.backgroundColor = UIColor.hexStringToUIColor(hex: "#FEAABC")
-        hospitalButton.layer.cornerRadius = 28
-        hospitalButton.layer.shadowOpacity = 0.3
-        hospitalButton.layer.shadowRadius = 4
-        hospitalButton.layer.shadowOffset = CGSize(width: 0, height: 4)
-        let hospitalButtonImage = UIImage(systemName: "cross.case.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
-        hospitalButton.setImage(hospitalButtonImage, for: .normal)
-        hospitalButton.tintColor = .white
-        hospitalButton.translatesAutoresizingMaskIntoConstraints = false
-        hospitalButton.addTarget(self, action: #selector(findNearbyAnimalHospitals), for: .touchUpInside)
-        view.addSubview(hospitalButton)
-        
-        let currentLocButton = UIButton(type: .custom)
-        currentLocButton.backgroundColor = UIColor.B1
-        currentLocButton.layer.cornerRadius = 28
-        currentLocButton.layer.shadowOpacity = 0.3
-        currentLocButton.layer.shadowRadius = 4
-        currentLocButton.layer.shadowOffset = CGSize(width: 0, height: 4)
-        let currentLocButtonImage = UIImage(systemName: "mappin.and.ellipse", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
-        currentLocButton.setImage(currentLocButtonImage, for: .normal)
-        currentLocButton.tintColor = .white
-        currentLocButton.translatesAutoresizingMaskIntoConstraints = false
-        
+        view.addSubview(layerButton)
         view.addSubview(currentLocButton)
+        view.addSubview(animalHospitalButton)
+        view.addSubview(petGroomingButton)
+        view.addSubview(petSuppliesButton)
+        
+        animalHospitalButton.center = layerButton.center
+        petGroomingButton.center = layerButton.center
+        petSuppliesButton.center = layerButton.center
+        
+        animalHospitalButton.alpha = 0
+        petGroomingButton.alpha = 0
+        petSuppliesButton.alpha = 0
         
         NSLayoutConstraint.activate([
             mapView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -84,11 +79,31 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
             currentLocButton.widthAnchor.constraint(equalToConstant: 56),
             currentLocButton.heightAnchor.constraint(equalToConstant: 56),
             
-            hospitalButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
-            hospitalButton.bottomAnchor.constraint(equalTo: currentLocButton.topAnchor, constant: -15),
-            hospitalButton.widthAnchor.constraint(equalToConstant: 56),
-            hospitalButton.heightAnchor.constraint(equalToConstant: 56)
+            layerButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            layerButton.bottomAnchor.constraint(equalTo: currentLocButton.topAnchor, constant: -15),
+            layerButton.widthAnchor.constraint(equalToConstant: 56),
+            layerButton.heightAnchor.constraint(equalToConstant: 56),
         ])
+    }
+    
+    func createLayerButton(type: LayerButtonType, action: Selector?) -> UIButton {
+        let button = UIButton(type: .custom)
+        button.backgroundColor = type.backgroundColor
+        button.layer.cornerRadius = 28
+        button.layer.shadowOpacity = 0.3
+        button.layer.shadowRadius = 4
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.setImage(type.image, for: .normal)
+        button.tintColor = .white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 56).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        
+        if let action = action {
+            button.addTarget(self, action: action, for: .touchUpInside)
+        }
+        
+        return button
     }
     
     func setupCurrentLocButton() {
@@ -96,13 +111,48 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         currentLocButton?.addTarget(self, action: #selector(goToCurrentLocation), for: .touchUpInside)
     }
     
+    // MARK: - Action
     @objc func goToCurrentLocation() {
         if CLLocationManager.locationServicesEnabled() {
             locationManager.startUpdatingLocation()
         }
     }
     
-    // CLLocationManagerDelegate
+    @objc func toggleLayerButtons() {
+        isLayerButtonExpanded.toggle()
+        
+        UIView.animate(withDuration: 0.3) {
+            if self.isLayerButtonExpanded {
+
+                self.animalHospitalButton.alpha = 1
+                self.petGroomingButton.alpha = 1
+                self.petSuppliesButton.alpha = 1
+                
+                self.animalHospitalButton.isUserInteractionEnabled = true
+                self.petGroomingButton.isUserInteractionEnabled = true
+                self.petSuppliesButton.isUserInteractionEnabled = true
+                
+                self.animalHospitalButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y - 80)
+                self.petGroomingButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y)
+                self.petSuppliesButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y + 80)
+            } else {
+
+                self.animalHospitalButton.center = self.layerButton.center
+                self.petGroomingButton.center = self.layerButton.center
+                self.petSuppliesButton.center = self.layerButton.center
+                
+                self.animalHospitalButton.alpha = 0
+                self.petGroomingButton.alpha = 0
+                self.petSuppliesButton.alpha = 0
+                
+                self.animalHospitalButton.isUserInteractionEnabled = false
+                self.petGroomingButton.isUserInteractionEnabled = false
+                self.petSuppliesButton.isUserInteractionEnabled = false
+            }
+        }
+    }
+    
+    // MARK: - CLLocationManager Delegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude, longitude: location.coordinate.longitude, zoom: 16.0)
@@ -152,20 +202,20 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         marker.userData = place
         marker.map = mapView
     }
-
+    
     func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker) {
-
+        
         guard let place = marker.userData as? Place else {
             print("錯誤：無法獲取地點資料")
             return
         }
-
+        
         let alertController = UIAlertController(
             title: "導航到 \(place.name)",
             message: "你想要打開 Google 地圖進行導航嗎？",
             preferredStyle: .alert
         )
-
+        
         let openAction = UIAlertAction(title: "打開", style: .default) { _ in
             if let url = URL(string: "comgooglemaps://?saddr=&daddr=\(place.geometry.location.lat),\(place.geometry.location.lng)&directionsmode=driving"),
                UIApplication.shared.canOpenURL(url) {
@@ -176,15 +226,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
                 UIApplication.shared.open(webUrl, options: [:], completionHandler: nil)
             }
         }
-
+        
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-
+        
         alertController.addAction(openAction)
         alertController.addAction(cancelAction)
-
+        
         present(alertController, animated: true, completion: nil)
     }
-
-
+    
+    
     
 }
