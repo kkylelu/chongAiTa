@@ -47,6 +47,13 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         return view
     }()
     
+    let infoLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 16)
+        return label
+    }()
+    
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,6 +79,8 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             }
         }
+        
+        updateInfoLabelText()
     }
     
     
@@ -110,11 +119,11 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         
         let imagePickerButton = UIButton(type: .custom)
         let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular)
-            let image = UIImage(systemName: "camera.circle.fill", withConfiguration: config)
-            imagePickerButton.setImage(image, for: .normal)
-            imagePickerButton.tintColor = UIColor.B1
-            imagePickerButton.imageView?.contentMode = .scaleAspectFit
-            imagePickerButton.addTarget(self, action: #selector(imagePickerButtonTapped), for: .touchUpInside)
+        let image = UIImage(systemName: "camera.circle.fill", withConfiguration: config)
+        imagePickerButton.setImage(image, for: .normal)
+        imagePickerButton.tintColor = UIColor.B1
+        imagePickerButton.imageView?.contentMode = .scaleAspectFit
+        imagePickerButton.addTarget(self, action: #selector(imagePickerButtonTapped), for: .touchUpInside)
         
         tableView.backgroundColor = .white
         
@@ -125,18 +134,16 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         view.addSubview(backgroundView)
         view.addSubview(petImageView)
         view.addSubview(imagePickerButton)
+        view.addSubview(infoLabel)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         petImageView.translatesAutoresizingMaskIntoConstraints = false
         imagePickerButton.translatesAutoresizingMaskIntoConstraints = false
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        infoLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: petImageView.bottomAnchor, constant: 20),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            
+
             petImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             petImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             petImageView.widthAnchor.constraint(equalToConstant: 150),
@@ -150,7 +157,17 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             backgroundView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             backgroundView.centerYAnchor.constraint(equalTo: petImageView.centerYAnchor, constant:  -200),
             backgroundView.widthAnchor.constraint(equalToConstant: 450),
-            backgroundView.heightAnchor.constraint(equalToConstant: 450)
+            backgroundView.heightAnchor.constraint(equalToConstant: 450),
+            
+            infoLabel.topAnchor.constraint(equalTo: petImageView.bottomAnchor, constant: 26),
+            infoLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            infoLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            tableView.topAnchor.constraint(equalTo: infoLabel.bottomAnchor, constant: 3),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            
         ])
         
     }
@@ -181,7 +198,21 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.reloadData()
     }
     
-    
+    func updateInfoLabelText() {
+        guard let pet = pet else {
+            infoLabel.text = ""
+            return
+        }
+        
+        let calendar = Calendar.current
+        let ageComponents = calendar.dateComponents([.year], from: pet.birthday ?? Date(), to: Date())
+        let age = ageComponents.year ?? 0
+        
+        let joinedComponents = calendar.dateComponents([.day], from: pet.joinDate ?? Date(), to: Date())
+        let joinedDays = joinedComponents.day ?? 0
+        
+        infoLabel.text = "／我今年 \(age) 歲，來到家裡 \(joinedDays) 天囉＼"
+    }
     
     // MARK: - Action
     
@@ -362,12 +393,12 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         datePicker.locale = Locale(identifier: "zh_TW")
         datePickerViewController.view.addSubview(datePicker)
         datePickerViewController.preferredContentSize = CGSize(width: UIScreen.main.bounds.width, height: 260)
-
+        
         NSLayoutConstraint.activate([
-                datePicker.centerXAnchor.constraint(equalTo: datePickerViewController.view.centerXAnchor),
-                datePicker.centerYAnchor.constraint(equalTo: datePickerViewController.view.centerYAnchor),
-                datePicker.widthAnchor.constraint(equalTo: datePickerViewController.view.widthAnchor)
-            ])
+            datePicker.centerXAnchor.constraint(equalTo: datePickerViewController.view.centerXAnchor),
+            datePicker.centerYAnchor.constraint(equalTo: datePickerViewController.view.centerYAnchor),
+            datePicker.widthAnchor.constraint(equalTo: datePickerViewController.view.widthAnchor)
+        ])
         
         // 設置初始日期
         if let date = (item == .birthday ? pet?.birthday : pet?.joinDate) {
@@ -387,6 +418,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
             self.tableView.reloadData()
+            updateInfoLabelText()
             self.isPetDataChanged = true
         }
         
@@ -503,9 +535,9 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PetDetailTableViewCell.reuseIdentifier, for: indexPath) as? PetDetailTableViewCell else {
-                print("Error: Cell is not of type PetDetailTableViewCell at row \(indexPath.row)")
-                return UITableViewCell()
-            }
+            print("Error: Cell is not of type PetDetailTableViewCell at row \(indexPath.row)")
+            return UITableViewCell()
+        }
         
         let item = PetDetailItem.forIndexPath(indexPath)
         if let pet = pet {
