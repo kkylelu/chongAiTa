@@ -1,0 +1,375 @@
+//
+//  FirestoreService.swift
+//  chongAiTa
+//
+//  Created by Kyle Lu on 2024/4/26.
+//
+
+import Foundation
+import FirebaseFirestore
+import Alamofire
+import FirebaseStorage
+
+enum FirestoreError: Error {
+    case noData
+    case decodingError
+}
+
+class FirestoreService {
+    static let shared = FirestoreService()
+    
+    let db = Firestore.firestore()
+    
+    // MARK: - Upload and Fetch FAQs
+    func uploadFAQCategory(_ faqCategory: FAQCategory, completion: @escaping (Result<Void, Error>) -> Void) {
+        let faqCategoryRef = db.collection("faqs").document(faqCategory.id ?? "")
+        
+        faqCategoryRef.setData(["id": faqCategory.id ?? ""]) { error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            let uploadEntries = { (collectionName: String, entries: [FAQEntry], completionHandler: @escaping (Error?) -> Void) in
+                let entriesCollection = faqCategoryRef.collection(collectionName)
+                let dispatchGroup = DispatchGroup()
+                
+                for entry in entries {
+                    dispatchGroup.enter()
+                    let entryData = ["question": entry.question, "answer": entry.answer]
+                    entriesCollection.addDocument(data: entryData) { error in
+                        if let error = error {
+                            completionHandler(error)
+                        }
+                        dispatchGroup.leave()
+                    }
+                }
+                
+                dispatchGroup.notify(queue: .main) {
+                    completionHandler(nil)
+                }
+            }
+            
+            let dispatchGroup = DispatchGroup()
+            
+            dispatchGroup.enter()
+            uploadEntries("health", faqCategory.health) { error in
+                if let error = error {
+                    completion(.failure(error))
+                }
+                dispatchGroup.leave()
+            }
+            
+            dispatchGroup.enter()
+            uploadEntries("nutrition", faqCategory.nutrition) { error in
+                if let error = error {
+                    completion(.failure(error))
+                }
+                dispatchGroup.leave()
+            }
+            
+            dispatchGroup.enter()
+            uploadEntries("care", faqCategory.care) { error in
+                if let error = error {
+                    completion(.failure(error))
+                }
+                dispatchGroup.leave()
+            }
+            
+            dispatchGroup.notify(queue: .main) {
+                completion(.success(()))
+            }
+        }
+    }
+    
+    func fetchFAQCategory(completion: @escaping (Result<FAQCategory, Error>) -> Void) {
+        db.collection("faqs").getDocuments { snapshot, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let documents = snapshot?.documents, !documents.isEmpty else {
+                completion(.failure(FirestoreError.noData))
+                return
+            }
+            
+            var healthEntries: [FAQEntry] = []
+            var nutritionEntries: [FAQEntry] = []
+            var careEntries: [FAQEntry] = []
+            
+            for document in documents {
+                let faqCategoryID = document.documentID
+                
+                // 獲取 health 分類的文件
+                self.db.collection("faqs").document(faqCategoryID).collection("health").getDocuments { snapshot, error in
+                    if let error = error {
+                        completion(.failure(error))
+                        return
+                    }
+                    
+                    if let entries = snapshot?.documents.compactMap({ try? $0.data(as: FAQEntry.self) }) {
+                        healthEntries.append(contentsOf: entries)
+                    }
+                    
+                    // 獲取 nutrition 分類的文件
+                    self.db.collection("faqs").document(faqCategoryID).collection("nutrition").getDocuments { snapshot, error in
+                        if let error = error {
+                            completion(.failure(error))
+                            return
+                        }
+                        
+                        if let entries = snapshot?.documents.compactMap({ try? $0.data(as: FAQEntry.self) }) {
+                            nutritionEntries.append(contentsOf: entries)
+                        }
+                        
+                        // 獲取 care 分類的文件
+                        self.db.collection("faqs").document(faqCategoryID).collection("care").getDocuments { snapshot, error in
+                            if let error = error {
+                                completion(.failure(error))
+                                return
+                            }
+                            
+                            if let entries = snapshot?.documents.compactMap({ try? $0.data(as: FAQEntry.self) }) {
+                                careEntries.append(contentsOf: entries)
+                            }
+                            
+                            let faqCategory = FAQCategory(id: faqCategoryID, health: healthEntries, nutrition: nutritionEntries, care: careEntries)
+                            completion(.success(faqCategory))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Upload and Fetch Events
+
+    func uploadEvent(_ event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
+        let eventRef = db.collection("events").document(event.id.uuidString)
+        
+        let eventData: [String: Any] = [
+            "id": event.id.uuidString,
+            "title": event.title,
+            "date": event.date,
+            "activity": [
+                "category": event.activity.category.rawValue,
+                "date": event.activity.date
+            ],
+            "content": event.content ?? "",
+            "cost": event.cost ?? 0.0,
+            "recurrence": event.recurrence?.rawValue ?? ""
+        ]
+        print("Uploading event to Firestore: \(event)")
+        
+        eventRef.setData(eventData) { error in
+            if let error = error {
+                print("Error uploading event to Firestore: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Event successfully uploaded to Firestore: \(event)")
+                completion(.success(())) 
+            }
+        }
+    }
+    
+    
+    func fetchEvents(from startDate: Date, to endDate: Date, completion: @escaping (Result<[CalendarEvents], Error>) -> Void) {
+        let eventsCollection = db.collection("events")
+        let query = eventsCollection
+            .whereField("date", isGreaterThanOrEqualTo: startDate)
+            .whereField("date", isLessThan: endDate)
+        
+        query.getDocuments { snapshot, error in
+            if let error = error {
+                completion(.failure(error))
+            } else if let documents = snapshot?.documents {
+                let events = documents.compactMap { document -> CalendarEvents? in
+                    let data = document.data()
+                    guard let id = data["id"] as? String,
+                          let title = data["title"] as? String,
+                          let date = data["date"] as? Timestamp,
+                          let activityData = data["activity"] as? [String: Any],
+                          let categoryRawValue = activityData["category"] as? Int,
+                          let category = ActivityCategory(rawValue: categoryRawValue),
+                          let activityDate = activityData["date"] as? Timestamp else {
+                        return nil
+                    }
+                    
+                    let content = data["content"] as? String
+                    let cost = data["cost"] as? Double
+                    let recurrenceRawValue = data["recurrence"] as? String
+                    let recurrence = Recurrence(rawValue: recurrenceRawValue ?? "")
+                    
+                    let activity = DefaultActivity(category: category, date: activityDate.dateValue())
+                    
+                    return CalendarEvents(id: UUID(uuidString: id)!, title: title, date: date.dateValue(), activity: activity, content: content, cost: cost, recurrence: recurrence)
+                }
+                completion(.success(events))
+            } else {
+                completion(.success([]))
+            }
+        }
+    }
+    
+    func deleteEvent(_ event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
+        let eventRef = db.collection("events").document(event.id.uuidString)
+        eventRef.delete() { error in
+            if let error = error {
+                print("Error deleting event from Firestore: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Event successfully deleted from Firestore")
+                completion(.success(()))
+            }
+        }
+    }
+    
+    // MARK: - Upload and Fetch Journals
+    
+    func uploadJournal(_ journal: Journal, completion: @escaping (Result<Void, Error>) -> Void) {
+        let journalRef = db.collection("journals").document(journal.id.uuidString)
+        
+        let journalData: [String: Any] = [
+            "id": journal.id.uuidString,
+            "title": journal.title,
+            "body": journal.body,
+            "date": journal.date,
+            "imageUrls": journal.imageUrls
+        ]
+        
+        journalRef.setData(journalData) { error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+    
+    func fetchJournals(completion: @escaping (Result<[Journal], Error>) -> Void) {
+        let journalsCollection = db.collection("journals")
+        journalsCollection.getDocuments { snapshot, error in
+            if let error = error {
+                completion(.failure(error))
+            } else if let documents = snapshot?.documents {
+                let journals = documents.compactMap { document -> Journal? in
+                    let data = document.data()
+                    guard let id = data["id"] as? String,
+                          let title = data["title"] as? String,
+                          let body = data["body"] as? String,
+                          let date = data["date"] as? Timestamp,
+                          let imageUrls = data["imageUrls"] as? [String] else {
+                        return nil
+                    }
+                    
+                    return Journal(id: UUID(uuidString: id)!, title: title, body: body, date: date.dateValue(), images: [], place: nil, city: nil, imageUrls: imageUrls)
+                }
+                completion(.success(journals))
+            } else {
+                completion(.success([]))
+            }
+        }
+    }
+    
+    func deleteJournal(_ journal: Journal, completion: @escaping (Result<Void, Error>) -> Void) {
+        let journalRef = db.collection("journals").document(journal.id.uuidString)
+        
+        // 刪除 Firestore 資料
+        journalRef.delete { error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            // 刪除與日記相關的所有圖片
+            let storageRef = Storage.storage().reference()
+            let deleteGroup = DispatchGroup()
+            
+            for imageUrl in journal.imageUrls {
+                deleteGroup.enter()
+                let imageRef = storageRef.child(imageUrl)
+                imageRef.delete { error in
+                    if let error = error {
+                        print("Error deleting image: \(error.localizedDescription)")
+                    }
+                    deleteGroup.leave()
+                }
+            }
+            
+            deleteGroup.notify(queue: .main) {
+                completion(.success(()))
+            }
+        }
+    }
+    
+    // MARK: - Upload and Fetch Pet
+    func uploadPet(pet: Pet, completion: @escaping (Error?) -> Void) {
+            let petRef = db.collection("pets").document(pet.id.uuidString)
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            
+            let birthdayString = pet.birthday.map { dateFormatter.string(from: $0) } ?? ""
+            let joinDateString = pet.joinDate.map { dateFormatter.string(from: $0) } ?? ""
+            
+            let petData: [String: Any] = [
+                "id": pet.id.uuidString,
+                "imageUrl": pet.imageUrl,
+                "name": pet.name,
+                "gender": pet.gender.rawValue,
+                "type": pet.type.rawValue,
+                "breed": pet.breed ?? "",
+                "birthday": birthdayString,
+                "joinDate": joinDateString,
+                "weight": pet.weight ?? 0,
+                "isNeutered": pet.isNeutered
+            ]
+            
+            petRef.setData(petData) { error in
+                if let error = error {
+                    print("上傳寵物資料失敗: \(error.localizedDescription)")
+                } else {
+                    print("寵物資料成功上傳至雲端。")
+                }
+                completion(error)
+            }
+        }
+
+    func fetchPet(petId: UUID, completion: @escaping (Result<Pet, Error>) -> Void) {
+            let docRef = db.collection("pets").document(petId.uuidString)
+            docRef.getDocument { (document, error) in
+                if let document = document, document.exists {
+                    let data = document.data()!
+                    guard let id = UUID(uuidString: data["id"] as? String ?? ""),
+                          let name = data["name"] as? String,
+                          let imageUrl = data["imageUrl"] as? [String],
+                          let genderRaw = data["gender"] as? String,
+                          let gender = Pet.Gender(rawValue: genderRaw),
+                          let typeRaw = data["type"] as? Int,
+                          let type = Pet.PetType(rawValue: typeRaw),
+                          let birthdayString = data["birthday"] as? String,
+                          let joinDateString = data["joinDate"] as? String else {
+                        completion(.failure(NSError(domain: "DataFormatError", code: 1001, userInfo: nil)))
+                        return
+                    }
+                    
+                    let birthday = DateFormatter.date(from: birthdayString)
+                    let joinDate = DateFormatter.date(from: joinDateString)
+                    let breed = data["breed"] as? String
+                    let weight = data["weight"] as? Double
+                    let isNeutered = data["isNeutered"] as? Bool ?? false
+                    
+                    let pet = Pet(id: id, image: nil, imageUrl: imageUrl, name: name, gender: gender, type: type, breed: breed, birthday: birthday, joinDate: joinDate, weight: weight, isNeutered: isNeutered)
+                    completion(.success(pet))
+                } else {
+                    completion(.failure(error ?? NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)))
+                }
+            }
+        }
+
+    // MARK: - PerformRequest
+    func performRequest<T: Codable>(url: String, method: HTTPMethod, parameters: Parameters?, headers: HTTPHeaders, completion: @escaping ((Result<T, Error>) -> Void)) {
+        NetworkManager.shared.request(url: url, method: method, parameters: parameters, headers: headers, completion: completion)
+    }
+    
+}
