@@ -15,22 +15,37 @@ class PetDetailTableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "PetDetailTableViewCell"
     
-    @IBOutlet weak var iconImageView: UIImageView!
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var valueLabel: UILabel!
-    @IBOutlet weak var petDetailButton: UIButton!
+    var iconImageView = UIImageView()
+    var titleLabel = UILabel()
+    var valueLabel = UILabel()
+    var petDetailButton = UIButton(type: .system)
     
     weak var delegate: PetDetailTableViewCellDelegate?
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
-        petDetailButton.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Setup UI
     func setupUI() {
         contentView.backgroundColor = .systemGray6
+        
+        titleLabel.font = UIFont.systemFont(ofSize: 18)
+        valueLabel.font = UIFont.systemFont(ofSize: 18)
+        
+        let image = UIImage(systemName: "chevron.right")
+        petDetailButton.setImage(image, for: .normal)
+        petDetailButton.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+
+        contentView.addSubview(iconImageView)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(valueLabel)
+        contentView.addSubview(petDetailButton)
         
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -46,9 +61,10 @@ class PetDetailTableViewCell: UITableViewCell {
             
             titleLabel.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 8),
             titleLabel.centerYAnchor.constraint(equalTo: iconImageView.centerYAnchor),
+            titleLabel.widthAnchor.constraint(equalToConstant: 80),
             
             valueLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
-            valueLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -16),
+            valueLabel.trailingAnchor.constraint(lessThanOrEqualTo: petDetailButton.leadingAnchor, constant: -16),
             valueLabel.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             
             petDetailButton.leadingAnchor.constraint(equalTo: valueLabel.trailingAnchor, constant: 8),
@@ -57,10 +73,21 @@ class PetDetailTableViewCell: UITableViewCell {
             petDetailButton.heightAnchor.constraint(equalToConstant: 16),
             petDetailButton.widthAnchor.constraint(equalToConstant: 16)
         ])
+        valueLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
-        titleLabel.widthAnchor.constraint(equalTo: valueLabel.widthAnchor).isActive = true
     }
     
+    func formatDate(_ date: Date?, format: String) -> String {
+        guard let date = date else {
+            return "未設定日期"
+        }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
+        dateFormatter.dateFormat = format
+        
+        return dateFormatter.string(from: date)
+    }
     
     func configure(with item: PetDetailItem, pet: Pet) {
         
@@ -86,13 +113,13 @@ class PetDetailTableViewCell: UITableViewCell {
             valueLabel.text = pet.breed ?? "未知"
         case .birthday:
             if let date = pet.birthday {
-                valueLabel.text = DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .none)
+                valueLabel.text = formatDate(pet.birthday, format: "yyyy 年 M 月 d 日")
             } else {
                 valueLabel.text = "未設定"
             }
         case .joinDate:
             if let date = pet.joinDate {
-                valueLabel.text = DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .none)
+                valueLabel.text = formatDate(pet.joinDate, format: "yyyy 年 M 月 d 日")
             } else {
                 valueLabel.text = "未設定"
             }
@@ -107,7 +134,7 @@ class PetDetailTableViewCell: UITableViewCell {
         }
     }
     @objc func buttonTapped(_ sender: UIButton) {
-            delegate?.didTapButton(self)
-        }
+        delegate?.didTapButton(self)
+    }
 }
 

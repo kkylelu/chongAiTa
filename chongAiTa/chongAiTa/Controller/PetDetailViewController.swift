@@ -28,7 +28,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
-        tableView.register(UINib(nibName: "PetDetailTableViewCell", bundle: nil), forCellReuseIdentifier: "PetDetailTableViewCell")
+        tableView.register(PetDetailTableViewCell.self, forCellReuseIdentifier: PetDetailTableViewCell.reuseIdentifier)
         return tableView
     }()
     
@@ -115,7 +115,6 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             imagePickerButton.tintColor = UIColor.B1
             imagePickerButton.imageView?.contentMode = .scaleAspectFit
             imagePickerButton.addTarget(self, action: #selector(imagePickerButtonTapped), for: .touchUpInside)
-                    
         
         tableView.backgroundColor = .white
         
@@ -496,8 +495,9 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PetDetailTableViewCell.reuseIdentifier, for: indexPath) as? PetDetailTableViewCell else {
-            fatalError("Unexpected Table View Cell")
-        }
+                print("Error: Cell is not of type PetDetailTableViewCell at row \(indexPath.row)")
+                return UITableViewCell()
+            }
         
         let item = PetDetailItem.forIndexPath(indexPath)
         if let pet = pet {

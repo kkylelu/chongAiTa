@@ -11,7 +11,6 @@
 		2732C7782BDA1BA5004170C6 /* PetDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C7772BDA1BA5004170C6 /* PetDetailViewController.swift */; };
 		2732C77A2BDA385B004170C6 /* Pets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C7792BDA385B004170C6 /* Pets.swift */; };
 		2732C77F2BDA4CC1004170C6 /* PetDetailItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C77E2BDA4CC1004170C6 /* PetDetailItem.swift */; };
-		2732C7842BDA542D004170C6 /* PetDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2732C7832BDA542D004170C6 /* PetDetailTableViewCell.xib */; };
 		2732C7852BDA542D004170C6 /* PetDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C7822BDA542D004170C6 /* PetDetailTableViewCell.swift */; };
 		2732C7872BDA5EA1004170C6 /* DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C7862BDA5EA1004170C6 /* DateFormatter.swift */; };
 		2739EA402BD241540054D455 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2739EA3F2BD241540054D455 /* CalendarViewController.swift */; };
@@ -99,7 +98,6 @@
 		2732C7792BDA385B004170C6 /* Pets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pets.swift; sourceTree = "<group>"; };
 		2732C77E2BDA4CC1004170C6 /* PetDetailItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetDetailItem.swift; sourceTree = "<group>"; };
 		2732C7822BDA542D004170C6 /* PetDetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetDetailTableViewCell.swift; sourceTree = "<group>"; };
-		2732C7832BDA542D004170C6 /* PetDetailTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PetDetailTableViewCell.xib; sourceTree = "<group>"; };
 		2732C7862BDA5EA1004170C6 /* DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatter.swift; sourceTree = "<group>"; };
 		2739EA3F2BD241540054D455 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
 		2739EA422BD2424B0054D455 /* DateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateCell.swift; sourceTree = "<group>"; };
@@ -217,7 +215,6 @@
 			isa = PBXGroup;
 			children = (
 				2732C7822BDA542D004170C6 /* PetDetailTableViewCell.swift */,
-				2732C7832BDA542D004170C6 /* PetDetailTableViewCell.xib */,
 			);
 			path = PetCell;
 			sourceTree = "<group>";
@@ -530,7 +527,6 @@
 			files = (
 				27694F532BD1232E00D90167 /* petsfaq.json in Resources */,
 				27F9759D2BC6B01300B2A041 /* Assets.xcassets in Resources */,
-				2732C7842BDA542D004170C6 /* PetDetailTableViewCell.xib in Resources */,
 				27F004552BCD3D5900C87472 /* API-Keys.plist in Resources */,
 				275CC3632BC7C12F0062C75C /* GoogleService-Info.plist in Resources */,
 				27A4621F2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib in Resources */,
