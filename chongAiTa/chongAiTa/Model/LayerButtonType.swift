@@ -7,29 +7,41 @@
 
 import UIKit
 
-enum LayerButtonType {
-    case layer
-    case animalHospital
-    case petGrooming
-    case petSupplies
-    case currentLocation
-    
+enum LayerButtonType: Int {
+    case layer = 0
+    case animalHospital = 1
+    case petGrooming = 2
+    case petStore = 3
+    case currentLocation = 4
+
     var backgroundColor: UIColor {
         switch self {
         case .layer:
             return UIColor.B1
-        case . currentLocation:
+        case .currentLocation:
             return UIColor.B3
-        case .petSupplies:
+        case .petStore:
             return UIColor.B2
         case .animalHospital:
             return UIColor.B5
         case .petGrooming:
             return UIColor.B6
-        
         }
     }
-    
+
+    var placesType: String {
+        switch self {
+        case .animalHospital:
+            return "veterinary_care"
+        case .petGrooming:
+            return "park"
+        case .petStore:
+            return "pet_store"
+        case .layer, .currentLocation:
+            return "" // Assuming these don't correspond to a Google Places type
+        }
+    }
+
     var image: UIImage? {
         switch self {
         case .layer:
@@ -38,10 +50,11 @@ enum LayerButtonType {
             return UIImage(systemName: "cross.case.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 24, weight: .medium))
         case .petGrooming:
             return UIImage(systemName: "scissors", withConfiguration: UIImage.SymbolConfiguration(pointSize: 24, weight: .medium))
-        case .petSupplies:
+        case .petStore:
             return UIImage(systemName: "cart.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 24, weight: .medium))
         case .currentLocation:
             return UIImage(systemName: "mappin.and.ellipse", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
         }
     }
 }
+

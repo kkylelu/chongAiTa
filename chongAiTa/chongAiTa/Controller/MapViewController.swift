@@ -18,7 +18,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     
     var layerButton: UIButton!
     var animalHospitalButton: UIButton!
-    var petGroomingButton: UIButton!
+    var park: UIButton!
     var petSuppliesButton: UIButton!
     var currentLocButton: UIButton!
     
@@ -41,6 +41,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
     }
     
+    // MARK: - Setup UI
     func setupUI() {
         
         let camera = GMSCameraPosition.camera(withLatitude: 25.039413072140746, longitude: 121.53243457301599, zoom: 16.0)
@@ -48,24 +49,29 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         mapView.translatesAutoresizingMaskIntoConstraints = false
         
         layerButton = createLayerButton(type: .layer, action: #selector(toggleLayerButtons))
-        animalHospitalButton = createLayerButton(type: .animalHospital, action: #selector(findNearbyAnimalHospitals))
-        petGroomingButton = createLayerButton(type: .petGrooming, action: nil)
-        petSuppliesButton = createLayerButton(type: .petSupplies, action: nil)
+        animalHospitalButton = createLayerButton(type: .animalHospital, action: #selector(findNearbyPlaces(_:)))
+        park = createLayerButton(type: .petGrooming, action: #selector(findNearbyPlaces(_:)))
+        petSuppliesButton = createLayerButton(type: .petStore, action: #selector(findNearbyPlaces(_:)))
         currentLocButton = createLayerButton(type: .currentLocation, action: #selector(goToCurrentLocation))
         
         view.addSubview(mapView)
         view.addSubview(layerButton)
         view.addSubview(currentLocButton)
         view.addSubview(animalHospitalButton)
-        view.addSubview(petGroomingButton)
+        view.addSubview(park)
         view.addSubview(petSuppliesButton)
         
+        animalHospitalButton.tag = LayerButtonType.animalHospital.rawValue
+        park.tag = LayerButtonType.petGrooming.rawValue
+        petSuppliesButton.tag = LayerButtonType.petStore.rawValue
+        
+        
         animalHospitalButton.center = layerButton.center
-        petGroomingButton.center = layerButton.center
+        park.center = layerButton.center
         petSuppliesButton.center = layerButton.center
         
         animalHospitalButton.alpha = 0
-        petGroomingButton.alpha = 0
+        park.alpha = 0
         petSuppliesButton.alpha = 0
         
         NSLayoutConstraint.activate([
@@ -103,6 +109,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
             button.addTarget(self, action: action, for: .touchUpInside)
         }
         
+        switch type {
+        case .animalHospital:
+            button.addTarget(self, action: #selector(findNearbyPlaces(_:)), for: .touchUpInside)
+        case .petGrooming:
+            button.addTarget(self, action: #selector(findNearbyPlaces(_:)), for: .touchUpInside)
+        case .petStore:
+            button.addTarget(self, action: #selector(findNearbyPlaces(_:)), for: .touchUpInside)
+        default:
+            break
+        }
+        
         return button
     }
     
@@ -123,31 +140,64 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         UIView.animate(withDuration: 0.3) {
             if self.isLayerButtonExpanded {
-
+                
                 self.animalHospitalButton.alpha = 1
-                self.petGroomingButton.alpha = 1
+                self.park.alpha = 1
                 self.petSuppliesButton.alpha = 1
                 
                 self.animalHospitalButton.isUserInteractionEnabled = true
-                self.petGroomingButton.isUserInteractionEnabled = true
+                self.park.isUserInteractionEnabled = true
                 self.petSuppliesButton.isUserInteractionEnabled = true
                 
                 self.animalHospitalButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y - 80)
-                self.petGroomingButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y)
+                self.park.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y)
                 self.petSuppliesButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y + 80)
             } else {
-
+                
                 self.animalHospitalButton.center = self.layerButton.center
-                self.petGroomingButton.center = self.layerButton.center
+                self.park.center = self.layerButton.center
                 self.petSuppliesButton.center = self.layerButton.center
                 
                 self.animalHospitalButton.alpha = 0
-                self.petGroomingButton.alpha = 0
+                self.park.alpha = 0
                 self.petSuppliesButton.alpha = 0
                 
                 self.animalHospitalButton.isUserInteractionEnabled = false
-                self.petGroomingButton.isUserInteractionEnabled = false
+                self.park.isUserInteractionEnabled = false
                 self.petSuppliesButton.isUserInteractionEnabled = false
+            }
+        }
+    }
+    
+    @objc func findNearbyPlaces(_ sender: UIButton) {
+        guard let buttonType = LayerButtonType(rawValue: sender.tag) else {
+            print("未設定按鈕類型")
+            return
+        }
+        
+        let type = buttonType.placesType
+        guard let location = locationManager.location else {
+            print("無法獲取用戶位置")
+            return
+        }
+        
+        let apiKeys = APIKeys(resourceName: "API-Keys")
+        let googlePlacesAPIKey = apiKeys.googlePlacesAPIKey
+        
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
+        let radius = 3000  // 查詢範圍為 3000 公尺
+        
+        let url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(latitude),\(longitude)&radius=\(radius)&type=\(type)&key=\(googlePlacesAPIKey)"
+        
+        NetworkManager.shared.request(url: url, method: .get, parameters: nil, headers: []) { (result: Result<PlacesResponse, Error>) in
+            switch result {
+            case .success(let data):
+                for place in data.results {
+                    self.addPlaceMarker(place)
+                }
+            case .failure(let error):
+                print("錯誤：\(error.localizedDescription)")
             }
         }
     }
@@ -165,34 +215,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         print("找不到使用者的位置: \(error.localizedDescription)")
     }
     
-    @objc func findNearbyAnimalHospitals() {
-        guard let location = locationManager.location else {
-            print("無法獲取用戶位置")
-            return
-        }
-        
-        let apiKeys = APIKeys(resourceName: "API-Keys")
-        let googlePlacesAPIKey = apiKeys.googlePlacesAPIKey
-        
-        let latitude = location.coordinate.latitude
-        let longitude = location.coordinate.longitude
-        // 查詢範圍為 3000 公尺
-        let radius = 3000
-        let type = "veterinary_care"
-        
-        let url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(latitude),\(longitude)&radius=\(radius)&type=\(type)&key=\(googlePlacesAPIKey)"
-        
-        NetworkManager.shared.request(url: url, method: .get, parameters: nil, headers: []) { (result: Result<PlacesResponse, Error>) in
-            switch result {
-            case .success(let data):
-                for place in data.results {
-                    self.addPlaceMarker(place)
-                }
-            case .failure(let error):
-                print("錯誤：\(error.localizedDescription)")
-            }
-        }
-    }
+    
     
     func addPlaceMarker(_ place: Place) {
         let marker = GMSMarker()
