@@ -29,6 +29,11 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         configureQuickReplyButtons()
         
         tableView.register(MessageBubbleTableViewCell.self, forCellReuseIdentifier: "MessageBubbleTableViewCell")
+        
+        textField.delegate = self
+        
+        setNavigationTitle(.chatbot)
+        
     }
     
     func configureQuickReplyButtons() {
@@ -68,9 +73,11 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.borderStyle = .roundedRect
+        textField.placeholder = "輸入寵物相關問題"
         view.addSubview(textField)
         
         sendButton = UIButton(type: .system)
+        sendButton.tintColor = UIColor.B1
         sendButton.translatesAutoresizingMaskIntoConstraints = false
         let sendButtonImage = UIImage(systemName: "paperplane.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 24, weight: .medium))
         sendButton.setImage(sendButtonImage, for: .normal)
@@ -264,5 +271,18 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.selectionStyle = .none
         return cell
     }
+    
+    // MARK: - UITextField and TextView Delegate
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.layer.borderColor = UIColor.B1.cgColor
+        textField.layer.borderWidth = 1.0
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.layer.borderColor = UIColor.clear.cgColor
+        textField.layer.borderWidth = 0.0
+    }
+
 
 }

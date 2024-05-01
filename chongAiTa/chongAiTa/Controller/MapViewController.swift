@@ -24,6 +24,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         locationManager.startUpdatingLocation()
         
         setupUI()
+        setNavigationTitle(.map)
         setupCurrentLocButton()
         
         // 顯示使用者目前位置

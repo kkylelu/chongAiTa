@@ -44,6 +44,9 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         setupUI()
         configureCollectionView()
         setupNavigationBar()
+        
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+
     }
     
     override func viewWillAppear(_ animated: Bool) {

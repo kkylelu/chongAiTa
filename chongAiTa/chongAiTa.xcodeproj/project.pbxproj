@@ -54,6 +54,7 @@
 		27A9390B2BD4206E00BF4845 /* NewJournalNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390A2BD4206E00BF4845 /* NewJournalNotification.swift */; };
 		27A9390F2BD55D8B00BF4845 /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390E2BD55D8B00BF4845 /* EventsManager.swift */; };
 		27BC7D472BDCFAB5007B73BF /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BC7D462BDCFAB5007B73BF /* MainTabBarController.swift */; };
+		27E855C62BE2065A0079E216 /* NavigationTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E855C52BE2065A0079E216 /* NavigationTitle.swift */; };
 		27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004482BCCE0A100C87472 /* JournalContent.swift */; };
 		27F0044C2BCD33A500C87472 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 27F0044B2BCD33A500C87472 /* Alamofire */; };
 		27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */; };
@@ -137,6 +138,7 @@
 		27A9390A2BD4206E00BF4845 /* NewJournalNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewJournalNotification.swift; sourceTree = "<group>"; };
 		27A9390E2BD55D8B00BF4845 /* EventsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsManager.swift; sourceTree = "<group>"; };
 		27BC7D462BDCFAB5007B73BF /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		27E855C52BE2065A0079E216 /* NavigationTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTitle.swift; sourceTree = "<group>"; };
 		27F004482BCCE0A100C87472 /* JournalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalContent.swift; sourceTree = "<group>"; };
 		27F0044E2BCD36E200C87472 /* TextGenerationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGenerationManager.swift; sourceTree = "<group>"; };
 		27F004502BCD384400C87472 /* OpenAINetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAINetworkHelper.swift; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				2732C77E2BDA4CC1004170C6 /* PetDetailItem.swift */,
 				2732C7862BDA5EA1004170C6 /* DateFormatter.swift */,
 				2786C49A2BDF84B900481C6F /* WaitIndicatorFootPrint.swift */,
+				27E855C52BE2065A0079E216 /* NavigationTitle.swift */,
 			);
 			path = Extention;
 			sourceTree = "<group>";
@@ -721,6 +724,7 @@
 				27694EF92BD0D28200D90167 /* ChatBotViewController.swift in Sources */,
 				27F841F62BDB5A7E0062EC4B /* FirestoreService.swift in Sources */,
 				2732C77A2BDA385B004170C6 /* Pets.swift in Sources */,
+				27E855C62BE2065A0079E216 /* NavigationTitle.swift in Sources */,
 				2732C7782BDA1BA5004170C6 /* PetDetailViewController.swift in Sources */,
 				274A49FD2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift in Sources */,
 				27A4621B2BCBE89D00503F3E /* JournalHomeViewController.swift in Sources */,

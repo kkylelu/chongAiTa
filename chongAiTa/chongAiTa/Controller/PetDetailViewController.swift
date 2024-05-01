@@ -65,6 +65,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: .plain, target: self, action: #selector(goSettingPage))
         
         setupUI()
+        setNavigationTitle(.pet)
         
     }
     

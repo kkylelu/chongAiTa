@@ -22,6 +22,7 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
         setupUI()
         setupFloatingButton()
         setupTableView()
+        setNavigationTitle(.calendarDate)
         tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleNewEvent(_:)), name: .didCreateEvent, object: nil)

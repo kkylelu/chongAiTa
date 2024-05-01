@@ -26,6 +26,7 @@ class CostChartViewController: UIViewController {
             hostingController!.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             hostingController!.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        setNavigationTitle(.costChart)
     }
 }
 
