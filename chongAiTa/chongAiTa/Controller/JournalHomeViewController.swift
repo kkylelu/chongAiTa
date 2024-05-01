@@ -1,0 +1,307 @@
+//
+//  JournalHomeViewController.swift
+//  chongAiTa
+//
+//  Created by Kyle Lu on 2024/4/14.
+//
+
+import UIKit
+import JournalingSuggestions
+import Kingfisher
+import Lottie
+
+class JournalHomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    var tableView: UITableView!
+    var floatingButton: UIButton!
+    var journalsArray: [Journal] = []
+    var emptyPlaceholderLabel: UILabel!
+    var activityIndicator: UIActivityIndicatorView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        fetchJournalsFromFirebase()
+        
+        tableView = UITableView(frame: .zero, style: .plain)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
+        
+        view.addSubview(tableView)
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatBot))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        
+        setupFloatingButton()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNewJournalEntry(_:)), name: .newJournalEntrySaved, object: nil)
+        
+        setupEmptyPlaceholderLabel()
+        setupActivityIndicator()
+        setupUI()
+        updateUI()
+        
+        generateFakeDataAndUpdateUI()
+    }
+    
+    // MARK: - Setup UI
+    func generateFakeDataAndUpdateUI() {
+        // 產生 3 篇假日記資料
+        journalsArray = FakeDataGenerator.generateFakeJournals(count: 3)
+        updateUI()
+    }
+    
+    func setupUI(){
+        
+        tableView.separatorStyle = .none
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+                tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+                tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            ])
+    }
+    
+    
+    func setupActivityIndicator(){
+        activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+        
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
+    func setupFloatingButton(){
+        floatingButton = UIButton(type: .custom)
+        floatingButton.translatesAutoresizingMaskIntoConstraints = false
+        floatingButton.backgroundColor = UIColor.B1
+        
+        let image = UIImage(systemName: "plus", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
+        
+        floatingButton.setImage(image, for: .normal)
+        floatingButton.tintColor = .white
+        floatingButton.layer.cornerRadius = 28
+        floatingButton.layer.shadowOpacity = 0.3
+        floatingButton.layer.shadowRadius = 4
+        floatingButton.layer.shadowOffset = CGSize(width: 0, height: 4)
+        floatingButton.addTarget(self, action: #selector(floatingButtonTapped), for: .touchUpInside)
+        
+        view.addSubview(floatingButton)
+        
+        NSLayoutConstraint.activate([
+            floatingButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            floatingButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -25),
+            floatingButton.widthAnchor.constraint(equalToConstant: 56),
+            floatingButton.heightAnchor.constraint(equalToConstant: 56)
+        ])
+        
+    }
+    
+    @objc func floatingButtonTapped() {
+        let journalVC = JournalViewController()
+        navigationController?.pushViewController(journalVC, animated: true)
+    }
+    
+    func setupEmptyPlaceholderLabel() {
+        emptyPlaceholderLabel = UILabel()
+        emptyPlaceholderLabel.text = "點擊下方「加號圖示➕」新增日記"
+        emptyPlaceholderLabel.textColor = UIColor.gray
+        emptyPlaceholderLabel.textAlignment = .center
+        emptyPlaceholderLabel.font = UIFont.systemFont(ofSize: 20)
+        emptyPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyPlaceholderLabel)
+        
+        NSLayoutConstraint.activate([
+            emptyPlaceholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyPlaceholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyPlaceholderLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            emptyPlaceholderLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+        
+        emptyPlaceholderLabel.isHidden = true
+    }
+    
+    
+    // MARK: - UpdateUI
+    
+    func updateUI() {
+        emptyPlaceholderLabel.isHidden = !journalsArray.isEmpty
+        tableView.isHidden = journalsArray.isEmpty
+        tableView.reloadData()
+    }
+    
+    
+    // MARK: - Action
+    
+    @objc func handleNewJournalEntry(_ notification: Notification) {
+        if let newJournal = notification.userInfo?["journal"] as? Journal {
+            if let index = journalsArray.firstIndex(where: { $0.id == newJournal.id }) {
+                journalsArray[index] = newJournal
+            } else {
+                journalsArray.append(newJournal)
+            }
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                self.updateUI()
+            }
+        }
+    }
+    
+    func fetchJournalsFromFirebase() {
+        FirestoreService.shared.fetchJournals { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let journals):
+                    // 加入假資料和從 Firebase 下載資料
+                    self?.journalsArray = journals + FakeDataGenerator.generateFakeJournals(count: 2)
+                    self?.updateUI()
+                case .failure(let error):
+                    print("Failed to fetch journals from Firebase: \(error)")
+                    // 當從 Firebase 下載失敗時，還是可以顯示假資料
+                    self?.journalsArray = FakeDataGenerator.generateFakeJournals(count: 2)
+                    self?.updateUI()
+                }
+            }
+        }
+    }
+
+    
+    // AI 日記回顧
+    @objc func generateSummary() {
+        navigationItem.leftBarButtonItem?.isEnabled = false
+        
+        // 延遲 1 秒後重新啟用按鈕，避免連續點擊
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.navigationItem.leftBarButtonItem?.isEnabled = true
+        }
+        
+        // 檢查日記內容是否超過 50 個中文字
+        let totalChineseCharacters = journalsArray.reduce(0) { count, journal in
+            return count + journal.body.count
+        }
+        
+        if totalChineseCharacters >= 50 {
+            view.showLoadingAnimation()
+            TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.view.hideLoadingAnimation()
+                    switch result {
+                    case .success(let summary):
+                        self?.displaySummaryAlert(summary)
+                    case .failure(let error):
+                        print("Error generating summary: \(error)")
+                    }
+                }
+            }
+        } else {
+            // 顯示提示訊息
+            let alert = UIAlertController(title: "缺少日記內容", message: "日記內容需要超過 50 個中文字，才能使用 AI 回顧功能哦🐾", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "確定", style: .default))
+            self.present(alert, animated: true)
+        }
+    }
+    
+    func displaySummaryAlert(_ summary: String) {
+        let customAlert = CustomAlertView()
+        customAlert.configureWith(summary: summary)
+        customAlert.show(in: self)
+    }
+    
+    @objc func navigateToChatBot() {
+        let chatVC = ChatBotViewController()
+        navigationController?.pushViewController(chatVC, animated: true)
+    }
+    
+    
+    // MARK: - TableView Delegate
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return journalsArray.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "JournalHomeCell", for: indexPath) as? JournalHomeTableViewCell else {
+            return UITableViewCell()
+        }
+        
+        let journal = journalsArray[indexPath.row]
+        cell.journalTitleLabel.text = journal.title
+        
+        let previewText = journal.body.prefix(12)
+        cell.journalContentLabel.text = String(previewText) + "..."
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
+        dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
+        cell.timeLabel.text = dateFormatter.string(from: journal.date)
+        
+        if !journal.images.isEmpty {
+            cell.JournalImageView.contentMode = .scaleAspectFill
+            cell.JournalImageView.clipsToBounds = true
+            cell.JournalImageView.image = journal.images.first
+            print("Displaying image for row \(indexPath.row)")
+        } else {
+            cell.JournalImageView.image = nil
+            print("No image to display for row \(indexPath.row)")
+        }
+        
+        if let imageURL = URL(string: journal.imageUrls.first ?? "") {
+            cell.JournalImageView.kf.setImage(with: imageURL, placeholder: nil, options: [.transition(.fade(0.3))])
+        } else {
+            cell.JournalImageView.image = nil
+        }
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 165.0
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedJournal = journalsArray[indexPath.row]
+        let journalVC = JournalViewController()
+        journalVC.journal = selectedJournal
+        navigationController?.pushViewController(journalVC, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] (action, view, completionHandler) in
+            guard let strongSelf = self else {
+                completionHandler(false)
+                return
+            }
+            
+            let journalToDelete = strongSelf.journalsArray[indexPath.row]
+            
+            // 從 Firestore 和 Firebase Storage 刪除日記資料和相關圖片
+            FirestoreService.shared.deleteJournal(journalToDelete) { result in
+                switch result {
+                case .success:
+                    // 刪除資料
+                    strongSelf.journalsArray.remove(at: indexPath.row)
+                    
+                    // 從 tableView 中刪除對應的 cell
+                    tableView.deleteRows(at: [indexPath], with: .automatic)
+                    
+                    completionHandler(true)
+                    strongSelf.updateUI()
+                case .failure(let error):
+                    print("Error deleting journal: \(error)")
+                    completionHandler(false)
+                }
+            }
+        }
+        
+        deleteAction.backgroundColor = UIColor.B4
+        
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        configuration.performsFirstActionWithFullSwipe = true
+        return configuration
+    }
+}

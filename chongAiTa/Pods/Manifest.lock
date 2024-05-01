@@ -1,0 +1,40 @@
+PODS:
+  - GoogleMaps (8.4.0):
+    - GoogleMaps/Maps (= 8.4.0)
+  - GoogleMaps/Base (8.4.0)
+  - GoogleMaps/Maps (8.4.0):
+    - GoogleMaps/Base
+  - GooglePlaces (8.5.0)
+  - IQKeyboardManagerSwift (7.0.2)
+  - Kingfisher (7.11.0)
+  - lottie-ios (4.4.3)
+  - SwiftLint (0.54.0)
+
+DEPENDENCIES:
+  - GoogleMaps
+  - GooglePlaces
+  - IQKeyboardManagerSwift
+  - Kingfisher
+  - lottie-ios
+  - SwiftLint
+
+SPEC REPOS:
+  trunk:
+    - GoogleMaps
+    - GooglePlaces
+    - IQKeyboardManagerSwift
+    - Kingfisher
+    - lottie-ios
+    - SwiftLint
+
+SPEC CHECKSUMS:
+  GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
+  GooglePlaces: 426efb69051e7b460e16300ba63598687d10fa1a
+  IQKeyboardManagerSwift: d338c11a896e9f29603443700c4567e32f830c22
+  Kingfisher: b9c985d864d43515f404f1ef4a8ce7d802ace3ac
+  lottie-ios: fcb5e73e17ba4c983140b7d21095c834b3087418
+  SwiftLint: c1de071d9d08c8aba837545f6254315bc900e211
+
+PODFILE CHECKSUM: 28fa43b421e2dc05da7d57ca51c46090a125e0ed
+
+COCOAPODS: 1.15.2

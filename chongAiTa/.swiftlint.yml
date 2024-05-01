@@ -1,0 +1,14 @@
+# rules that have both warning and error levels, can set just the warning level
+# implicitly
+line_length:
+  warning: 200
+  error: 250
+
+excluded: # case-sensitive paths to ignore during linting. Takes precedence over `included`
+  - Pods
+  - Carthage
+  - Generated
+
+disabled_rules:
+  - trailing_whitespace
+  - force_cast
