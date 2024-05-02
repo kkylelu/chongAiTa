@@ -130,6 +130,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     
     // MARK: - Action
     @objc func goToCurrentLocation() {
+        mapView.clear()
         if CLLocationManager.locationServicesEnabled() {
             locationManager.startUpdatingLocation()
         }
