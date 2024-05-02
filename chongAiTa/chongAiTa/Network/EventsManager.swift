@@ -225,36 +225,30 @@ class EventsManager {
     
     func getCostsForLastWeek() -> [(eventId: UUID, cost: Double)] {
         var costsForLastWeek: [(eventId: UUID, cost: Double)] = []
-
-        // 使用 Calendar 計算上週一到上週日的日期
+        
         let calendar = Calendar.current
         let today = Date()
         let weekday = calendar.component(.weekday, from: today)
         var daysToLastMonday = 0
-
-        // 確定從今天到上週一需要退回多少天
-        if weekday == 1 { // 如果今天是週日
-            daysToLastMonday = -6 // 上週一是六天前
+        
+        if weekday == 1 {
+            daysToLastMonday = -6
         } else {
-            daysToLastMonday = -weekday + 2 // 退回到上週一
+            daysToLastMonday = -weekday + 2
         }
-
+        
         let lastMonday = calendar.date(byAdding: .day, value: daysToLastMonday, to: today)!
         let lastSunday = calendar.date(byAdding: .day, value: 6, to: lastMonday)!
-
-        // 包括週日的整天
         let lastWeekEnd = calendar.date(byAdding: .day, value: 1, to: lastSunday)!
-
-        // 篩選上周一到上周日的活動
-        for (_, events) in eventsByDate {
-            for event in events where event.date >= lastMonday && event.date < lastWeekEnd && event.cost != nil {
-                costsForLastWeek.append((event.id, event.cost!))
-            }
+        
+        let eventsForLastWeek = loadEvents(from: lastMonday, to: lastWeekEnd)
+        
+        for event in eventsForLastWeek where event.cost != nil {
+            costsForLastWeek.append((event.id, event.cost!))
         }
-
+        
         return costsForLastWeek
     }
-
 
     func getCostsForCurrentMonth() -> [(eventId: UUID, cost: Double)] {
         var costsForCurrentMonth: [(eventId: UUID, cost: Double)] = []
@@ -262,12 +256,13 @@ class EventsManager {
         let calendar = Calendar.current
         let today = Date()
         let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
-        let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth)!
+        let endOfMonthDate = calendar.date(byAdding: .month, value: 1, to: startOfMonth)!
+        let endOfMonth = calendar.startOfDay(for: endOfMonthDate)
         
-        for (_, events) in eventsByDate {
-            for event in events where event.date >= startOfMonth && event.date < endOfMonth && event.cost != nil {
-                costsForCurrentMonth.append((event.id, event.cost!))
-            }
+        let eventsForCurrentMonth = loadEvents(from: startOfMonth, to: endOfMonth)
+        
+        for event in eventsForCurrentMonth where event.cost != nil {
+            costsForCurrentMonth.append((event.id, event.cost!))
         }
         
         return costsForCurrentMonth
