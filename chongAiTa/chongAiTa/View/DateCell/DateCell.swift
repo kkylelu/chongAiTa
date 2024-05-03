@@ -9,6 +9,7 @@ import UIKit
 
 struct Event {
     var title: String
+    var category: ActivityCategory
 }
 
 class DateCell: UICollectionViewCell {
@@ -100,48 +101,65 @@ class DateCell: UICollectionViewCell {
     }
     
     func configureCell(with date: Date?, events: [Event]) {
-        
-        dateLabel.text = date != nil ? DateFormatter.localizedString(from: date!, dateStyle: .medium, timeStyle: .none) : ""
-        
-        eventViews.forEach { $0.removeFromSuperview() }
-        eventViews = []
-        
         if let date = date {
             let formatter = DateFormatter()
-            formatter.dateFormat = "d"
+            formatter.dateFormat = "d"  // 只顯示日期數字
             dateLabel.text = formatter.string(from: date)
             isCurrentDate = Calendar.current.isDateInToday(date)
         } else {
             dateLabel.text = nil
             isCurrentDate = false
         }
+
+        // 移除舊的 event views
+        eventViews.forEach { $0.removeFromSuperview() }
+        eventViews = []
         
-        let dateLabelHeight: CGFloat = 10
-        let spacing: CGFloat = 2
-        let totalEventsToShow = min(events.count, 4)
-        let availableHeight = contentView.bounds.height - dateLabelHeight - CGFloat(totalEventsToShow - 1) * spacing
-        let eventHeight: CGFloat = availableHeight / CGFloat(totalEventsToShow)
-        
-        NSLayoutConstraint.activate([
-            dateLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
-            dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            dateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            dateLabel.heightAnchor.constraint(equalToConstant: dateLabelHeight)
-        ])
-        
-        // 根據活動數量決定是否顯示更多
-        moreEventsLabel.isHidden = events.count <= 3
+        // 增加新的 event views
+        let totalEventsToShow = min(events.count, 3)
         var lastBottomAnchor = dateLabel.bottomAnchor
-        for (index, event) in events.prefix(3).enumerated() {
-            let eventLabel = UILabel()
-            eventLabel.text = event.title
-            setupEventLabel(eventLabel, below: lastBottomAnchor)
-            lastBottomAnchor = eventLabel.bottomAnchor
+        for event in events.prefix(totalEventsToShow) {
+            let eventView = createEventView(for: event)
+            contentView.addSubview(eventView)
+            NSLayoutConstraint.activate([
+                eventView.topAnchor.constraint(equalTo: lastBottomAnchor, constant: 2),
+                eventView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+                eventView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+                eventView.heightAnchor.constraint(equalToConstant: 14)
+            ])
+            lastBottomAnchor = eventView.bottomAnchor
+            eventViews.append(eventView)
         }
-        if events.count > 3 {
+
+        // 是否顯示更多活動的標籤
+        moreEventsLabel.isHidden = events.count <= 3
+        if !moreEventsLabel.isHidden {
             setupEventLabel(moreEventsLabel, below: lastBottomAnchor)
-            moreEventsLabel.text = "···"
-            moreEventsLabel.isHidden = false
+        }
+    }
+
+    
+    func createEventView(for event: Event) -> UILabel {
+        let label = UILabel()
+        label.text = event.title
+        label.textColor = .white
+        label.textAlignment = .center
+        label.backgroundColor = color(for: event.category)
+        label.layer.cornerRadius = 6
+        label.layer.masksToBounds = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }
+    
+    // 根據活動類別返回相對應的顏色
+    func color(for category: ActivityCategory) -> UIColor {
+        switch category {
+        case .food:
+            return UIColor.orange
+        case .medication:
+            return UIColor.yellow
+        case .shower:
+            return UIColor.brown
         }
     }
     
@@ -164,10 +182,12 @@ class DateCell: UICollectionViewCell {
         if isCurrentDate {
             dateLabel.textColor = .white
             circleBackgroundView.isHidden = false
+            circleBackgroundView.backgroundColor = UIColor.B1
         } else {
             dateLabel.textColor = .black
             circleBackgroundView.isHidden = true
         }
     }
+
     
 }

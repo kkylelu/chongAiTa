@@ -228,7 +228,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DateCell", for: indexPath) as! DateCell
-        
+
         let firstDayIndex = firstWeekdayOfMonth
         let dateOffset = indexPath.item - firstDayIndex
         let calendar = Calendar.current
@@ -238,13 +238,16 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             let startOfDay = calendar.startOfDay(for: dateForCell)
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
             let events = EventsManager.shared.loadEvents(from: startOfDay, to: endOfDay)
-            cell.configureCell(with: dateForCell, events: events.map { Event(title: $0.title) })
+            cell.configureCell(with: dateForCell, events: events.map {
+                Event(title: $0.title, category: $0.activity.category) 
+            })
         } else {
             cell.configureCell(with: nil, events: [])
         }
-        
+
         return cell
     }
+
     
     func firstOfMonth() -> Date {
         let calendar = Calendar.current
