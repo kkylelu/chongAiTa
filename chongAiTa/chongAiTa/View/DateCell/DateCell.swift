@@ -49,8 +49,8 @@ class DateCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        layer.borderColor = UIColor.lightGray.cgColor
-        layer.borderWidth = 0.5
+        layer.borderColor = UIColor.systemGray4.cgColor
+        layer.borderWidth = 0.3
         
         circleBackgroundView.layer.cornerRadius = min(circleBackgroundView.frame.width, circleBackgroundView.frame.height) / 2
     }
@@ -154,12 +154,11 @@ class DateCell: UICollectionViewCell {
     func color(for category: ActivityCategory) -> UIColor {
         switch category {
         case .food:
-            return UIColor.B2
+            return UIColor.B3
         case .medication:
             return UIColor.B5
         case .shower:
             return UIColor.B7
-            
         }
     }
     

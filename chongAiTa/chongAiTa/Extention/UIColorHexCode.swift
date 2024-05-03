@@ -15,6 +15,7 @@ private enum STColor: String {
     case B5 = "#E36588" // 粉紅
     case B6 = "#99EDCC" // 清新綠
     case B7 = "#9AC4F8" // 淺藍
+    case B8 = "#FDE9DA" // 皮膚色
 }
 
 extension UIColor {

@@ -78,11 +78,13 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         view.addSubview(weekHeaderView)
         view.addSubview(collectionView)
         
+        
+        
         NSLayoutConstraint.activate([
             weekHeaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             weekHeaderView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             weekHeaderView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            weekHeaderView.heightAnchor.constraint(equalToConstant: 20),
+            weekHeaderView.heightAnchor.constraint(equalToConstant: 30),
             
             collectionView.topAnchor.constraint(equalTo: weekHeaderView.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -98,6 +100,14 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             dayLabel.textAlignment = .center
             weekHeaderView.addSubview(dayLabel)
             dayLabel.translatesAutoresizingMaskIntoConstraints = false
+            
+            if day == "六" {
+                    dayLabel.textColor = UIColor.B5
+                } else if day == "日" {
+                    dayLabel.textColor = UIColor.B7
+                } else {
+                    dayLabel.textColor = UIColor.black
+                }
             
             NSLayoutConstraint.activate([
                 dayLabel.topAnchor.constraint(equalTo: weekHeaderView.topAnchor),
@@ -239,14 +249,25 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
             let events = EventsManager.shared.loadEvents(from: startOfDay, to: endOfDay)
             cell.configureCell(with: dateForCell, events: events.map {
-                Event(title: $0.title, category: $0.activity.category) 
+                Event(title: $0.title, category: $0.activity.category)
             })
+            
+            // 檢查日期是否是星期六或星期日
+            let weekday = calendar.component(.weekday, from: dateForCell)
+            if weekday == 7 {
+                cell.dateLabel.textColor = UIColor.B5
+            } else if weekday == 1 {
+                cell.dateLabel.textColor = UIColor.B7
+            } else {
+                cell.dateLabel.textColor = .black
+            }
         } else {
             cell.configureCell(with: nil, events: [])
         }
 
         return cell
     }
+
 
     
     func firstOfMonth() -> Date {
