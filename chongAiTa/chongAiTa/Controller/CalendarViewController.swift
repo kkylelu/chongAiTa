@@ -83,7 +83,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             weekHeaderView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             weekHeaderView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             weekHeaderView.heightAnchor.constraint(equalToConstant: 30),
-            
+        
             collectionView.topAnchor.constraint(equalTo: weekHeaderView.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
@@ -150,35 +150,63 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         datePicker.datePickerMode = .date
         datePicker.locale = Locale(identifier: "zh_Hant_TW")
         datePicker.preferredDatePickerStyle = .wheels
-        datePicker.addTarget(self, action: #selector(datePickerDidChange(_:)), for: .valueChanged)
-        
-        var dateComponents = DateComponents()
-        dateComponents.year = Calendar.current.component(.year, from: Date())
-        dateComponents.month = Calendar.current.component(.month, from: Date())
-        let calendar = Calendar.current
-        datePicker.minimumDate = calendar.date(from: DateComponents(year: 2020))
-        datePicker.maximumDate = calendar.date(from: DateComponents(year: 2030))
-        
-        let alertController = UIAlertController(title: "\n\n\n\n\n\n\n\n\n", message: nil, preferredStyle: .actionSheet)
-        alertController.view.addSubview(datePicker)
-        
-        let selectAction = UIAlertAction(title: "選擇", style: .default, handler: { _ in
-            self.datePickerDidChange(datePicker)
-        })
-        
-        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-        
-        alertController.addAction(selectAction)
-        alertController.addAction(cancelAction)
-        
-        present(alertController, animated: true, completion: nil)
+
+        datePicker.minimumDate = Calendar.current.date(from: DateComponents(year: 2020))
+        datePicker.maximumDate = Calendar.current.date(from: DateComponents(year: 2030))
+
+        let popupView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 300))
+        popupView.backgroundColor = .white
+        popupView.layer.cornerRadius = 12
+        popupView.clipsToBounds = true
+
+        popupView.addSubview(datePicker)
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            datePicker.centerXAnchor.constraint(equalTo: popupView.centerXAnchor),
+            datePicker.centerYAnchor.constraint(equalTo: popupView.centerYAnchor),
+            datePicker.widthAnchor.constraint(equalTo: popupView.widthAnchor),
+            datePicker.heightAnchor.constraint(equalToConstant: 216)
+        ])
+
+        let selectButton = UIButton(type: .system)
+        selectButton.setTitle("選擇", for: .normal)
+        selectButton.tintColor = UIColor.B1
+        selectButton.frame = CGRect(x: popupView.frame.width / 2, y: popupView.frame.height - 50, width: popupView.frame.width / 2, height: 50)
+        selectButton.addTarget(self, action: #selector(selectButtonTapped(_:)), for: .touchUpInside)
+        popupView.addSubview(selectButton)
+
+        let cancelButton = UIButton(type: .system)
+        cancelButton.setTitle("取消", for: .normal)
+        cancelButton.tintColor = UIColor.black
+        cancelButton.frame = CGRect(x: 0, y: popupView.frame.height - 50, width: popupView.frame.width / 2, height: 50)
+        cancelButton.addTarget(self, action: #selector(dismissCustomPopup), for: .touchUpInside)
+        popupView.addSubview(cancelButton)
+
+        // 顯示自定義視圖
+        self.view.addSubview(popupView)
+        popupView.center = self.view.center
+    }
+
+    @objc func dismissCustomPopup() {
+        if let popupView = self.view.subviews.last {
+            UIView.animate(withDuration: 0.3, animations: {
+                popupView.alpha = 0
+            }, completion: { _ in
+                popupView.removeFromSuperview()
+            })
+        }
+    }
+
+    
+    @objc func selectButtonTapped(_ sender: UIButton) {
+        if let datePicker = self.view.subviews.last?.subviews.compactMap({ $0 as? UIDatePicker }).first {
+            currentMonthDate = datePicker.date
+            collectionView.reloadData()
+            updateTitleButton()
+        }
+        dismissCustomPopup()
     }
     
-    @objc func datePickerDidChange(_ sender: UIDatePicker) {
-        currentMonthDate = sender.date
-        collectionView.reloadData()
-        updateTitleButton()
-    }
     
     func updateTitleButton() {
         if let titleButton = navigationItem.titleView as? UIButton {
