@@ -123,8 +123,8 @@ class DateCell: UICollectionViewCell {
             contentView.addSubview(eventView)
             NSLayoutConstraint.activate([
                 eventView.topAnchor.constraint(equalTo: lastBottomAnchor, constant: 2),
-                eventView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-                eventView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+                eventView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 2),
+                eventView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -2),
                 eventView.heightAnchor.constraint(equalToConstant: 14)
             ])
             lastBottomAnchor = eventView.bottomAnchor
@@ -138,28 +138,28 @@ class DateCell: UICollectionViewCell {
         }
     }
 
-    
     func createEventView(for event: Event) -> UILabel {
         let label = UILabel()
         label.text = event.title
+        label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = .white
         label.textAlignment = .center
         label.backgroundColor = color(for: event.category)
-        label.layer.cornerRadius = 6
+        label.layer.cornerRadius = 3
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }
     
-    // 根據活動類別返回相對應的顏色
     func color(for category: ActivityCategory) -> UIColor {
         switch category {
         case .food:
-            return UIColor.orange
+            return UIColor.B2
         case .medication:
-            return UIColor.yellow
+            return UIColor.B5
         case .shower:
-            return UIColor.brown
+            return UIColor.B7
+            
         }
     }
     
