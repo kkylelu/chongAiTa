@@ -159,6 +159,12 @@ class DateCell: UICollectionViewCell {
             return UIColor.B5
         case .shower:
             return UIColor.B7
+        case .toy:
+            return UIColor.B4
+        case .walk:
+            return UIColor.B6
+        case .others:
+            return UIColor.systemGray6
         }
     }
     

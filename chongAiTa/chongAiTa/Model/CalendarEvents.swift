@@ -47,6 +47,9 @@ enum ActivityCategory: Int {
     case food = 0
     case medication = 1
     case shower = 2
+    case toy = 3
+    case walk = 4
+    case others = 5
     // 後續可增加更多類別
     
     var displayName: String {
@@ -57,17 +60,29 @@ enum ActivityCategory: Int {
             return "看醫生"
         case .shower:
             return "美容洗澡"
+        case .toy:
+            return "買玩具"
+        case .walk:
+            return "散步"
+        case .others:
+            return "其他"
         }
     }
     
     var icon: UIImage? {
         switch self {
         case .food:
-            return UIImage(named: "foodIcon")
+            return UIImage(named: "Feed")
         case .medication:
-            return UIImage(named: "medicationIcon")
+            return UIImage(named: "Vet Visit")
         case .shower:
-            return UIImage(named: "exerciseIcon")
+            return UIImage(named: "Groom")
+        case .toy:
+            return UIImage(named: "Toy Shopping")
+        case .walk:
+            return UIImage(named: "Walk")
+        case .others:
+            return UIImage(named: "Others")
         }
     }
 }

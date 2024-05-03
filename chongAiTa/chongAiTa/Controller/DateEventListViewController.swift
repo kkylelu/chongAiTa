@@ -65,18 +65,27 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
         defaultActivities = [
             DefaultActivity(category: .food, date: selectedDate),
             DefaultActivity(category: .shower, date: selectedDate),
-            DefaultActivity(category: .medication, date: selectedDate)
+            DefaultActivity(category: .medication, date: selectedDate),
+            DefaultActivity(category: .toy, date: selectedDate),
+            DefaultActivity(category: .walk, date: selectedDate),
+            DefaultActivity(category: .others, date: selectedDate)
         ]
     }
     
     func getIconForCategory(_ category: ActivityCategory) -> UIImage {
         switch category {
         case .food:
-            return UIImage(named: "foodIcon")!
+            return UIImage(named: "Feed")!
         case .medication:
-            return UIImage(named: "medicationIcon")!
+            return UIImage(named: "Vet Visit")!
         case .shower:
-            return UIImage(named: "dogShowerIcon")!
+            return UIImage(named: "Groom")!
+        case .toy:
+            return UIImage(named: "Toy Shopping")!
+        case .walk:
+            return UIImage(named: "Walk")!
+        case .others:
+            return UIImage(named: "Others")!
         }
     }
     
