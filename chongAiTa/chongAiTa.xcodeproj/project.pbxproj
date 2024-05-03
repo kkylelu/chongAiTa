@@ -54,6 +54,10 @@
 		27A9390B2BD4206E00BF4845 /* NewJournalNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390A2BD4206E00BF4845 /* NewJournalNotification.swift */; };
 		27A9390F2BD55D8B00BF4845 /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390E2BD55D8B00BF4845 /* EventsManager.swift */; };
 		27BC7D472BDCFAB5007B73BF /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BC7D462BDCFAB5007B73BF /* MainTabBarController.swift */; };
+		27D471FD2BE4FEF900D92B01 /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D471FC2BE4FEF900D92B01 /* UserProfileViewController.swift */; };
+		27D471FF2BE5034600D92B01 /* UserProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D471FE2BE5034600D92B01 /* UserProfileItem.swift */; };
+		27D472022BE5039200D92B01 /* UserProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D472012BE5039200D92B01 /* UserProfileCollectionViewCell.swift */; };
+		27D472042BE50C3400D92B01 /* UserProfileHeaderReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D472032BE50C3400D92B01 /* UserProfileHeaderReusableView.swift */; };
 		27E855C62BE2065A0079E216 /* NavigationTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E855C52BE2065A0079E216 /* NavigationTitle.swift */; };
 		27E855C82BE2396A0079E216 /* LayerButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E855C72BE2396A0079E216 /* LayerButtonType.swift */; };
 		27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F004482BCCE0A100C87472 /* JournalContent.swift */; };
@@ -142,6 +146,10 @@
 		27A9390A2BD4206E00BF4845 /* NewJournalNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewJournalNotification.swift; sourceTree = "<group>"; };
 		27A9390E2BD55D8B00BF4845 /* EventsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsManager.swift; sourceTree = "<group>"; };
 		27BC7D462BDCFAB5007B73BF /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		27D471FC2BE4FEF900D92B01 /* UserProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
+		27D471FE2BE5034600D92B01 /* UserProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileItem.swift; sourceTree = "<group>"; };
+		27D472012BE5039200D92B01 /* UserProfileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileCollectionViewCell.swift; sourceTree = "<group>"; };
+		27D472032BE50C3400D92B01 /* UserProfileHeaderReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileHeaderReusableView.swift; sourceTree = "<group>"; };
 		27E855C52BE2065A0079E216 /* NavigationTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTitle.swift; sourceTree = "<group>"; };
 		27E855C72BE2396A0079E216 /* LayerButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerButtonType.swift; sourceTree = "<group>"; };
 		27F004482BCCE0A100C87472 /* JournalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalContent.swift; sourceTree = "<group>"; };
@@ -254,6 +262,7 @@
 				2732C7792BDA385B004170C6 /* Pets.swift */,
 				2786C4ED2BDF9D4100481C6F /* FakeDataGenerator.swift */,
 				27E855C72BE2396A0079E216 /* LayerButtonType.swift */,
+				27D471FE2BE5034600D92B01 /* UserProfileItem.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -261,6 +270,7 @@
 		274CE0D92BC8277900277222 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				27D472002BE5037100D92B01 /* UserProfileCell */,
 				2732C77B2BDA3A52004170C6 /* PetCell */,
 				2739EA412BD2420F0054D455 /* DateCell */,
 				27694F4E2BD0F7E500D90167 /* MessageBubbleTableViewCell */,
@@ -291,6 +301,7 @@
 				277092562BD670FC004F2553 /* CostChartViewController.swift */,
 				2732C7772BDA1BA5004170C6 /* PetDetailViewController.swift */,
 				27F62CAE2BE09130005A91F2 /* SignInViewController.swift */,
+				27D471FC2BE4FEF900D92B01 /* UserProfileViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -332,6 +343,15 @@
 				27A4621E2BCBEAEA00503F3E /* JournalHomeTableViewCell.xib */,
 			);
 			path = JournalHomeCell;
+			sourceTree = "<group>";
+		};
+		27D472002BE5037100D92B01 /* UserProfileCell */ = {
+			isa = PBXGroup;
+			children = (
+				27D472012BE5039200D92B01 /* UserProfileCollectionViewCell.swift */,
+				27D472032BE50C3400D92B01 /* UserProfileHeaderReusableView.swift */,
+			);
+			path = UserProfileCell;
 			sourceTree = "<group>";
 		};
 		27F0044D2BCD36CD00C87472 /* Network */ = {
@@ -711,6 +731,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				278D46552BCFCD0300C4F677 /* NewEventNotification.swift in Sources */,
+				27D471FD2BE4FEF900D92B01 /* UserProfileViewController.swift in Sources */,
 				27A939032BD36D4B00BF4845 /* DateEventListViewController.swift in Sources */,
 				2786C4F42BDFB36000481C6F /* CustomAlertView.swift in Sources */,
 				277092572BD670FC004F2553 /* CostChartViewController.swift in Sources */,
@@ -728,8 +749,10 @@
 				27A9390B2BD4206E00BF4845 /* NewJournalNotification.swift in Sources */,
 				27E855C82BE2396A0079E216 /* LayerButtonType.swift in Sources */,
 				2780026F2BD0B426007AD842 /* GooglePlacesResponse.swift in Sources */,
+				27D472042BE50C3400D92B01 /* UserProfileHeaderReusableView.swift in Sources */,
 				27A939012BD3680F00BF4845 /* CalendarEvents.swift in Sources */,
 				27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */,
+				27D471FF2BE5034600D92B01 /* UserProfileItem.swift in Sources */,
 				27F004512BCD384400C87472 /* OpenAINetworkHelper.swift in Sources */,
 				27F62CB12BE09760005A91F2 /* CustomFunc.swift in Sources */,
 				27F975942BC6B01100B2A041 /* AppDelegate.swift in Sources */,
@@ -757,6 +780,7 @@
 				27F004492BCCE0A100C87472 /* JournalContent.swift in Sources */,
 				278D20DB2BCF825600F80764 /* MapViewController.swift in Sources */,
 				2732C77F2BDA4CC1004170C6 /* PetDetailItem.swift in Sources */,
+				27D472022BE5039200D92B01 /* UserProfileCollectionViewCell.swift in Sources */,
 				27A938FF2BD364E900BF4845 /* CalendarDateViewController.swift in Sources */,
 				27A939052BD3716300BF4845 /* CardTableViewCell.swift in Sources */,
 			);

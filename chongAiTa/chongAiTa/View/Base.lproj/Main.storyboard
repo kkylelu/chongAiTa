@@ -88,6 +88,21 @@
             </objects>
             <point key="canvasLocation" x="36" y="1242"/>
         </scene>
+        <!--User Profile View Controller-->
+        <scene sceneID="qgZ-VQ-hha">
+            <objects>
+                <viewController id="a5d-8i-5rV" customClass="UserProfileViewController" customModule="chongAiTa" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="c0f-Cn-TV7">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Lwc-8Z-T3V"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fSY-Fh-GBo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="21" y="1915"/>
+        </scene>
         <!--Cost Chart View Controller-->
         <scene sceneID="EdU-Kd-egt">
             <objects>
@@ -301,9 +316,9 @@
     <resources>
         <image name="calendar" catalog="system" width="128" height="107"/>
         <image name="chart.pie" catalog="system" width="128" height="123"/>
-        <image name="map" catalog="system" width="128" height="112"/>
+        <image name="map" catalog="system" width="32" height="32"/>
         <image name="pawprint" catalog="system" width="128" height="114"/>
-        <image name="square.and.pencil" catalog="system" width="128" height="121"/>
+        <image name="square.and.pencil" catalog="system" width="32" height="32"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

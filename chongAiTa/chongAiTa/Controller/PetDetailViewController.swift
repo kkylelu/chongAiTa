@@ -63,6 +63,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addNewPets))
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: .plain, target: self, action: #selector(goSettingPage))
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         setupUI()
         setNavigationTitle(.pet)
@@ -514,9 +515,9 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func goSettingPage(){
-        print("tapped goSettingPage function")
+        let userVC = UserProfileViewController()
+        navigationController?.pushViewController(userVC, animated: true)
     }
-    
     
     // MARK: - TableView Delegate
     func numberOfSections(in tableView: UITableView) -> Int {
