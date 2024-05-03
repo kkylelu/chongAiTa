@@ -160,11 +160,11 @@ class DateCell: UICollectionViewCell {
         case .shower:
             return UIColor.B7
         case .toy:
-            return UIColor.B4
+            return UIColor.B1
         case .walk:
             return UIColor.B6
         case .others:
-            return UIColor.systemGray6
+            return UIColor.systemGray2
         }
     }
     

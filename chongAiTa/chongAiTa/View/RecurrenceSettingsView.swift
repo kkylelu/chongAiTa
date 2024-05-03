@@ -77,7 +77,6 @@ class RecurrenceSettingsView: UIView {
     // MARK: - Actions
     
     @objc func doneButtonTapped() {
-        // 獲取選擇的重複設置
         let selectedRow = pickerView.selectedRow(inComponent: 0)
         switch selectedRow {
         case 0:
@@ -97,7 +96,6 @@ class RecurrenceSettingsView: UIView {
         default:
             break
         }
-        
         
         // 將選擇的重複設定傳回給 EventDetailViewController
         eventDetailViewController?.selectedRecurrence = selectedRecurrence

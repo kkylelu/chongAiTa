@@ -13,7 +13,7 @@ private enum STColor: String {
     case B3 = "#a3612e" // 咖啡色
     case B4 = "#311D0E" // 深咖啡
     case B5 = "#E36588" // 粉紅
-    case B6 = "#99EDCC" // 清新綠
+    case B6 = "#8A9B68" // 茶綠
     case B7 = "#9AC4F8" // 淺藍
     case B8 = "#FDE9DA" // 皮膚色
 }

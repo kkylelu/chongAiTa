@@ -16,8 +16,8 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     var currentMonthDate = Date()
     var calendarEventsArray: [CalendarEvents] = []
     var eventsListener: ListenerRegistration?
-
-        
+    
+    
     // 目前月份的天數
     var daysInMonth: Int {
         let calendar = Calendar.current
@@ -46,7 +46,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         setupNavigationBar()
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -100,12 +100,12 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             dayLabel.translatesAutoresizingMaskIntoConstraints = false
             
             if day == "六" {
-                    dayLabel.textColor = UIColor.B5
-                } else if day == "日" {
-                    dayLabel.textColor = UIColor.B7
-                } else {
-                    dayLabel.textColor = UIColor.black
-                }
+                dayLabel.textColor = UIColor.B5
+            } else if day == "日" {
+                dayLabel.textColor = UIColor.B7
+            } else {
+                dayLabel.textColor = UIColor.black
+            }
             
             NSLayoutConstraint.activate([
                 dayLabel.topAnchor.constraint(equalTo: weekHeaderView.topAnchor),
@@ -148,6 +148,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     @objc func presentDatePicker() {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
+        datePicker.locale = Locale(identifier: "zh_Hant_TW")
         datePicker.preferredDatePickerStyle = .wheels
         datePicker.addTarget(self, action: #selector(datePickerDidChange(_:)), for: .valueChanged)
         
@@ -210,7 +211,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     func loadEventsForCurrentMonth() {
         let startOfMonth = firstOfMonth()
         let endOfMonth = Calendar.current.date(byAdding: .month, value: 1, to: startOfMonth)!
-
+        
         FirestoreService.shared.fetchEvents(from: startOfMonth, to: endOfMonth) { [weak self] result in
             switch result {
             case .success(let events):
@@ -233,10 +234,10 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 42
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DateCell", for: indexPath) as! DateCell
-
+        
         let firstDayIndex = firstWeekdayOfMonth
         let dateOffset = indexPath.item - firstDayIndex
         let calendar = Calendar.current
@@ -262,11 +263,11 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         } else {
             cell.configureCell(with: nil, events: [])
         }
-
+        
         return cell
     }
-
-
+    
+    
     
     func firstOfMonth() -> Date {
         let calendar = Calendar.current
@@ -286,5 +287,5 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             navigationController?.pushViewController(calendarDateVC, animated: true)
         }
     }
-
+    
 }
