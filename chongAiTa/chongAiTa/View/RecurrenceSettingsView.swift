@@ -9,7 +9,7 @@ import UIKit
 
 class RecurrenceSettingsView: UIView {
     
-    let recurrenceTypes = ["每天", "每週", "每月", "每年"]
+    let recurrenceTypes = ["每天", "每週", "每月", "每年", "不重複"]
     var selectedRecurrence: Recurrence?
     var eventDetailViewController: EventDetailViewController?
     
@@ -92,7 +92,8 @@ class RecurrenceSettingsView: UIView {
             case 3:
                 selectedRecurrence = .yearly
                 selectedRecurrenceLabel.text = "每年"
-            break
+            case 4:
+                selectedRecurrenceLabel.text = "不重複"
         default:
             break
         }
