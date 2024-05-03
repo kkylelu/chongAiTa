@@ -28,6 +28,10 @@ class RecurrenceSettingsView: UIView {
     var doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("確認", for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = UIColor.B1
+        button.layer.cornerRadius = 10
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -65,7 +69,8 @@ class RecurrenceSettingsView: UIView {
             
             doneButton.centerXAnchor.constraint(equalTo: centerXAnchor),
             doneButton.topAnchor.constraint(equalTo: pickerView.bottomAnchor, constant: 20),
-            doneButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
+            doneButton.widthAnchor.constraint(equalTo: pickerView.widthAnchor, multiplier: 0.8),
+            doneButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     

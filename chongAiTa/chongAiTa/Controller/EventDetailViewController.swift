@@ -218,14 +218,24 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     }
     
     @objc func showRecurrenceSettings() {
-        let recurrenceSettingsView = RecurrenceSettingsView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height / 2))
+        let width = view.bounds.width * 0.8
+        let height = view.bounds.height / 2
+        let frame = CGRect(x: (view.bounds.width - width) / 2, y: (view.bounds.height - height) / 2, width: width, height: height)
+        let recurrenceSettingsView = RecurrenceSettingsView(frame: frame)
         recurrenceSettingsView.center = view.center
         recurrenceSettingsView.eventDetailViewController = self
         view.addSubview(recurrenceSettingsView)
         
+        recurrenceSettingsView.layer.shadowColor = UIColor.black.cgColor
+        recurrenceSettingsView.layer.cornerRadius = 10
+        recurrenceSettingsView.layer.shadowOpacity = 0.1
+        recurrenceSettingsView.layer.shadowOffset = CGSize(width: 0, height: -1)
+        recurrenceSettingsView.layer.shadowRadius = 10
+
         // 當 RecurrenceSettingsView 關閉時,更新 recurrenceButton 的標題
         recurrenceSettingsView.doneButton.addTarget(self, action: #selector(updateRecurrenceButtonTitle), for: .touchUpInside)
     }
+
     
     @objc func updateRecurrenceButtonTitle() {
         if let selectedRecurrence = selectedRecurrence {

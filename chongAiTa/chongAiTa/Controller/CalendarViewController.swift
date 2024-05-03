@@ -78,8 +78,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         view.addSubview(weekHeaderView)
         view.addSubview(collectionView)
         
-        
-        
         NSLayoutConstraint.activate([
             weekHeaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             weekHeaderView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
