@@ -84,16 +84,21 @@ struct CostChartView: View {
                         .cornerRadius(5.0)
                         .foregroundStyle(
                             element.name == "餵食" ? Color(uiColor: UIColor.B3) :
-                            element.name == "美容洗澡" ? Color(uiColor: UIColor.B7) :
-                            element.name == "看醫生" ? Color(uiColor: UIColor.B5) :
-                            element.name == "買玩具" ? Color(uiColor: UIColor.B1) :
-                            element.name == "散步" ? Color(uiColor: UIColor.B6) :
-                            Color(uiColor: UIColor.systemGray2)
+                                element.name == "美容洗澡" ? Color(uiColor: UIColor.B7) :
+                                element.name == "看醫生" ? Color(uiColor: UIColor.B5) :
+                                element.name == "買玩具" ? Color(uiColor: UIColor.B1) :
+                                element.name == "散步" ? Color(uiColor: UIColor.B6) :
+                                Color(uiColor: UIColor.systemGray2)
                         )
-                    
-                        .accessibilityLabel("\(element.name): \(Int((element.amount / totalCost) * 100))%")
                         
+                        .accessibilityLabel("\(element.name): \(Int((element.amount / totalCost) * 100))%")
+                        .annotation(position: .overlay){
+                            Text("\(Int((element.amount / totalCost) * 100))%")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                        }
                     }
+                    
                     .chartLegend(alignment: .center)
                     .scaledToFit()
                     .frame(maxWidth: .infinity)
