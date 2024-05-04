@@ -12,39 +12,96 @@ import CryptoKit
 
 class SignInViewController: UIViewController {
     
+    let welcomeLabel = UILabel()
+    let imageView = UIImageView(image: UIImage(named: "Good Dog"))
+    let descriptionLabel = UILabel()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setSignInWithAppleBtn()
+        setupUI()
+        setSignInWithAppleButton()
     }
+    
+    // MARK: - Setup UI
+    func setupUI() {
+        welcomeLabel.text = "歡迎使用"
+        welcomeLabel.textAlignment = .center
+        welcomeLabel.font = UIFont.boldSystemFont(ofSize: 40)
+        
+        imageView.contentMode = .scaleAspectFit
+        
+        descriptionLabel.text = "PawsPal 寵愛牠 \n 幫你輕鬆紀錄與寵物的美好生活"
+        descriptionLabel.numberOfLines = 0
+        descriptionLabel.textAlignment = .center
+        descriptionLabel.font = UIFont.systemFont(ofSize: 24)
 
-    // MARK: - 在畫面上產生 Sign in with Apple 按鈕
-    func setSignInWithAppleBtn() {
+        if #available(iOS 13.0, *) {
+            descriptionLabel.textColor = UIColor { (traitCollection) -> UIColor in
+                switch traitCollection.userInterfaceStyle {
+                case .dark:
+                    return .white
+                default:
+                    return .darkGray
+                }
+            }
+        } else {
+            descriptionLabel.textColor = .darkGray
+        }
+        
+        view.addSubview(welcomeLabel)
+        view.addSubview(imageView)
+        view.addSubview(descriptionLabel)
+        
+        welcomeLabel.translatesAutoresizingMaskIntoConstraints = false
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+                welcomeLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
+                welcomeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                
+                imageView.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 5),
+                imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                imageView.widthAnchor.constraint(equalToConstant: 300),
+                imageView.heightAnchor.constraint(equalToConstant: 300),
+                
+                descriptionLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 5),
+                descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+                descriptionLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            ])
+    }
+    
+    
+    // MARK: - create Sign in with Apple button
+    func setSignInWithAppleButton() {
         let signInWithAppleBtn = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: chooseAppleButtonStyle())
         view.addSubview(signInWithAppleBtn)
         signInWithAppleBtn.cornerRadius = 25
-        signInWithAppleBtn.addTarget(self, action: #selector(signInWithApple), for: .touchUpInside)
+        signInWithAppleBtn.addTarget(self, action: #selector(signInWithAppleTapped), for: .touchUpInside)
         signInWithAppleBtn.translatesAutoresizingMaskIntoConstraints = false
         signInWithAppleBtn.heightAnchor.constraint(equalToConstant: 50).isActive = true
         signInWithAppleBtn.widthAnchor.constraint(equalToConstant: 280).isActive = true
         signInWithAppleBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         signInWithAppleBtn.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -70).isActive = true
     }
-
+    
     func chooseAppleButtonStyle() -> ASAuthorizationAppleIDButton.Style {
-        return (UITraitCollection.current.userInterfaceStyle == .light) ? .black : .white // 淺色模式就顯示黑色的按鈕，深色模式就顯示白色的按鈕
+        return (UITraitCollection.current.userInterfaceStyle == .light) ? .black : .white
     }
     
-    // MARK: - Sign in with Apple 登入
+    // MARK: - Sign in with Apple log in
     fileprivate var currentNonce: String?
-
-    @objc func signInWithApple() {
+    
+    @objc func signInWithAppleTapped() {
         let nonce = randomNonceString()
         currentNonce = nonce
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.fullName, .email]
         request.nonce = sha256(nonce)
-
+        
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = self
@@ -56,7 +113,7 @@ class SignInViewController: UIViewController {
         let charset: Array<Character> = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
         var result = ""
         var remainingLength = length
-
+        
         while(remainingLength > 0) {
             let randoms: [UInt8] = (0 ..< 16).map { _ in
                 var random: UInt8 = 0
@@ -66,12 +123,12 @@ class SignInViewController: UIViewController {
                 }
                 return random
             }
-
+            
             randoms.forEach { random in
                 if (remainingLength == 0) {
                     return
                 }
-
+                
                 if (random < charset.count) {
                     result.append(charset[Int(random)])
                     remainingLength -= 1
@@ -80,7 +137,7 @@ class SignInViewController: UIViewController {
         }
         return result
     }
-
+    
     private func sha256(_ input: String) -> String {
         let inputData = Data(input.utf8)
         let hashedData = SHA256.hash(data: inputData)
@@ -90,8 +147,7 @@ class SignInViewController: UIViewController {
         return hashString
     }
     
-    // MARK: - 監聽目前的 Apple ID 的登入狀況
-    // 主動監聽
+    // MARK: - check Apple ID state
     func checkAppleIDCredentialState(userID: String) {
         ASAuthorizationAppleIDProvider().getCredentialState(forUserID: userID) { credentialState, error in
             switch credentialState {
@@ -166,18 +222,32 @@ extension SignInViewController: ASAuthorizationControllerPresentationContextProv
 }
 
 extension SignInViewController {
-    // MARK: - 透過 Credential 與 Firebase Auth 串接
+    // MARK: - sync Credential and Firebase Auth
     func firebaseSignInWithApple(credential: AuthCredential) {
         Auth.auth().signIn(with: credential) { authResult, error in
             guard error == nil else {
                 CustomFunc.customAlert(title: "", message: "\(String(describing: error!.localizedDescription))", vc: self, actionHandler: nil)
                 return
             }
-            CustomFunc.customAlert(title: "登入成功！", message: "", vc: self, actionHandler: self.getFirebaseUserInfo)
+            //            CustomFunc.customAlert(title: "登入成功！", message: "", vc: self, actionHandler: self.getFirebaseUserInfo)
+            self.navigateToMainTabBarController()
         }
     }
     
-    // MARK: - Firebase 取得登入使用者的資訊
+    func navigateToMainTabBarController() {
+        DispatchQueue.main.async {
+            if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MainTabBarController") as? UITabBarController {
+                let scenes = UIApplication.shared.connectedScenes
+                let windowScene = scenes.first as? UIWindowScene
+                if let window = windowScene?.windows.first(where: { $0.isKeyWindow }) {
+                    window.rootViewController = mainTabBarController
+                    window.makeKeyAndVisible()
+                }
+            }
+        }
+    }
+    
+    // MARK: - get Firebase user info
     func getFirebaseUserInfo() {
         let currentUser = Auth.auth().currentUser
         guard let user = currentUser else {
