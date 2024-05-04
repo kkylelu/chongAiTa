@@ -30,7 +30,6 @@ class UserProfileCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Setup UI
     private func setupUI() {
-        contentView.backgroundColor = .white
 
         titleLabel.font = UIFont.systemFont(ofSize: 18)
         

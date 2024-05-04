@@ -15,13 +15,16 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
         .account([.logout, .deleteAccount])
     ]
 
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
     }
-    
+
+    // MARK: - Setup UI
     func setupCollectionView() {
-       
+        
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
         layout.itemSize = CGSize(width: view.frame.width - 20, height: 100)
@@ -29,16 +32,27 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.backgroundColor = UIColor.white
         collectionView.register(UserProfileCollectionViewCell.self, forCellWithReuseIdentifier: "UserProfileCollectionViewCell")
         collectionView.register(UserProfileHeaderReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: UserProfileHeaderReusableView.reuseIdentifier)
         
         layout.headerReferenceSize = CGSize(width: collectionView.bounds.width, height: 50)
         
+        if #available(iOS 13.0, *) {
+            collectionView.backgroundColor = UIColor { (traitCollection) -> UIColor in
+                switch traitCollection.userInterfaceStyle {
+                case .dark:
+                    return .black
+                default:
+                    return .white
+                }
+            }
+        } else {
+            collectionView.backgroundColor = .white
+        }
+        
         view.addSubview(collectionView)
        
     }
-
     
     // MARK: - CollectionView Delegate
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -86,7 +100,21 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
         }
         return header
     }
-
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if #available(iOS 13.0, *) {
+            cell.backgroundColor = UIColor { (traitCollection) -> UIColor in
+                switch traitCollection.userInterfaceStyle {
+                case .dark:
+                    return .black
+                default:
+                    return .clear
+                }
+            }
+        } else {
+            cell.backgroundColor = .clear
+        }
+    }
     
     func didTapButton(in cell: UserProfileCollectionViewCell) {
         if let indexPath = collectionView.indexPath(for: cell) {
