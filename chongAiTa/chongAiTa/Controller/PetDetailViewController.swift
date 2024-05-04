@@ -85,8 +85,6 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         updateInfoLabelText()
     }
     
-    
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -113,7 +111,8 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // MARK: - Setup UI
     func setupUI() {
-        view.backgroundColor = .white
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
+        setupTableViewBackgroundColor()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
         petImageView.isUserInteractionEnabled = true
@@ -126,9 +125,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         imagePickerButton.tintColor = UIColor.B1
         imagePickerButton.imageView?.contentMode = .scaleAspectFit
         imagePickerButton.addTarget(self, action: #selector(imagePickerButtonTapped), for: .touchUpInside)
-        
-        tableView.backgroundColor = .white
-        
+
         pickerView.delegate = self
         pickerView.dataSource = self
         
@@ -173,6 +170,21 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         ])
         
     }
+    
+    private func setupTableViewBackgroundColor() {
+            if #available(iOS 13.0, *) {
+                tableView.backgroundColor = UIColor { (traitCollection) -> UIColor in
+                    switch traitCollection.userInterfaceStyle {
+                    case .dark:
+                        return .black
+                    default:
+                        return .white
+                    }
+                }
+            } else {
+                view.backgroundColor = .white
+            }
+        }
     
     func loadFakeData() {
         let dateFormatter = DateFormatter()

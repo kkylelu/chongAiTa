@@ -34,6 +34,7 @@ class PetDetailTableViewCell: UITableViewCell {
     // MARK: - Setup UI
     func setupUI() {
         contentView.backgroundColor = .systemGray6
+        setupIconImageViewTintColor()
         
         titleLabel.font = UIFont.systemFont(ofSize: 18)
         valueLabel.font = UIFont.systemFont(ofSize: 18)
@@ -77,6 +78,21 @@ class PetDetailTableViewCell: UITableViewCell {
         
     }
     
+    private func setupIconImageViewTintColor() {
+            if #available(iOS 13.0, *) {
+                iconImageView.tintColor = UIColor { (traitCollection) -> UIColor in
+                    switch traitCollection.userInterfaceStyle {
+                    case .dark:
+                        return .white
+                    default:
+                        return .black
+                    }
+                }
+            } else {
+                iconImageView.tintColor = .black
+            }
+        }
+    
     func formatDate(_ date: Date?, format: String) -> String {
         guard let date = date else {
             return "未設定日期"
@@ -92,7 +108,6 @@ class PetDetailTableViewCell: UITableViewCell {
     func configure(with item: PetDetailItem, pet: Pet) {
         
         iconImageView.image = item.icon
-        iconImageView.tintColor = .black
         
         titleLabel.text = item.title
         titleLabel.textAlignment = .left
