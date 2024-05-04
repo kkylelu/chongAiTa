@@ -88,7 +88,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         titleTextView.delegate = self
         bodyTextView.delegate = self
         
-        view.backgroundColor = .white
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
         
         // Navigationbar
         let datePicker = UIDatePicker()
