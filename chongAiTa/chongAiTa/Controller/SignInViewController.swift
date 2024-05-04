@@ -267,7 +267,7 @@ extension SignInViewController {
         let db = Firestore.firestore()
         
         // 設定 Firestore 中用戶資料
-        db.collection("users").document(user.uid).setData([
+        db.collection("user").document(user.uid).setData([
             "appleID": user.uid,
             "name": user.displayName ?? "",
             "email": user.email ?? ""

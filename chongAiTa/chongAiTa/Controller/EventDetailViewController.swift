@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class EventDetailViewController: UIViewController,UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate {
     let containerView = UIView()
@@ -286,16 +287,23 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
                 EventsManager.shared.saveEvents([event])
                 NotificationCenter.default.post(name: .didCreateEvent, object: event)
                 
-                FirestoreService.shared.uploadEvent(event) { [weak self] result in
-                    print(result)
+                // 獲取用戶的 UID
+                if let currentUser = Auth.auth().currentUser {
+                    let userId = currentUser.uid
                     
-                    switch result {
-                    case .success():
-                        print("活動成功上傳到 Firestore。")
-                    case .failure(let error):
-                        print("上傳到 Firestore 時出現錯誤：\(error)")
+                    // 上傳事件並傳入 userId
+                    FirestoreService.shared.uploadEvent(userId: userId, event: event) { [weak self] result in
+                        
+                        print(result)
+                        
+                        switch result {
+                        case .success():
+                            print("活動成功上傳到 Firestore。")
+                        case .failure(let error):
+                            print("上傳到 Firestore 時出現錯誤：\(error)")
+                        }
+                        self?.closeViewController()
                     }
-                    self?.closeViewController()
                 }
             } else {
                 closeViewController()

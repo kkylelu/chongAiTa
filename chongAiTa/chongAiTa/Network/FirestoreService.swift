@@ -145,8 +145,8 @@ class FirestoreService {
     
     // MARK: - Upload and Fetch Events
 
-    func uploadEvent(_ event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
-        let eventRef = db.collection("events").document(event.id.uuidString)
+    func uploadEvent(userId: String, event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
+        let eventRef = db.collection("user").document(userId).collection("events").document(event.id.uuidString) 
         
         let eventData: [String: Any] = [
             "id": event.id.uuidString,
@@ -174,9 +174,9 @@ class FirestoreService {
     }
     
     
-    func fetchEvents(from startDate: Date, to endDate: Date, completion: @escaping (Result<[CalendarEvents], Error>) -> Void) {
-        let eventsCollection = db.collection("events")
-        let query = eventsCollection
+    func fetchEvents(userId: String, from startDate: Date, to endDate: Date, completion: @escaping (Result<[CalendarEvents], Error>) -> Void) {
+        let userEventsCollection = db.collection("user").document(userId).collection("events")
+        let query = userEventsCollection
             .whereField("date", isGreaterThanOrEqualTo: startDate)
             .whereField("date", isLessThan: endDate)
         
@@ -212,8 +212,8 @@ class FirestoreService {
         }
     }
     
-    func deleteEvent(_ event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
-        let eventRef = db.collection("events").document(event.id.uuidString)
+    func deleteEvent(userId: String, event: CalendarEvents, completion: @escaping (Result<Void, Error>) -> Void) {
+        let eventRef = db.collection("user").document(userId).collection("events").document(event.id.uuidString)
         eventRef.delete() { error in
             if let error = error {
                 print("Error deleting event from Firestore: \(error)")

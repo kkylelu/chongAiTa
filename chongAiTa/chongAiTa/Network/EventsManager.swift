@@ -7,6 +7,7 @@
 
 import UIKit
 import Dispatch
+import FirebaseAuth
 
 class EventsManager {
     static let shared = EventsManager()
@@ -201,15 +202,21 @@ class EventsManager {
             events.removeAll { $0.id == event.id }
             eventsByDate[key] = events
         }
-        FirestoreService.shared.deleteEvent(event) { result in
-            switch result {
-            case .success():
-                print("成功刪除本機和 firebase 資料")
-            case .failure(let error):
-                print("無法刪除 firebase 資料: \(error)")
+
+        if let currentUser = Auth.auth().currentUser {
+            let userId = currentUser.uid
+
+            FirestoreService.shared.deleteEvent(userId: userId, event: event) { result in
+                switch result {
+                case .success():
+                    print("成功刪除本機和 Firestore 的事件")
+                case .failure(let error):
+                    print("刪除 Firestore 事件時出現錯誤：\(error)")
+                }
             }
         }
     }
+
     
     // MARK: - Costs
     

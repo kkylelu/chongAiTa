@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class CalendarViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -255,19 +256,23 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         let startOfMonth = firstOfMonth()
         let endOfMonth = Calendar.current.date(byAdding: .month, value: 1, to: startOfMonth)!
         
-        FirestoreService.shared.fetchEvents(from: startOfMonth, to: endOfMonth) { [weak self] result in
-            switch result {
-            case .success(let events):
-                DispatchQueue.main.async {
-                    events.forEach { event in
-                        if !EventsManager.shared.hasEvent(event) { // 檢查活動是否已存在
-                            EventsManager.shared.saveEvents([event])  // 保存不存在的活動
+        if let currentUser = Auth.auth().currentUser {
+            let userId = currentUser.uid
+            
+            FirestoreService.shared.fetchEvents(userId: userId, from: startOfMonth, to: endOfMonth) { [weak self] result in
+                switch result {
+                case .success(let events):
+                    DispatchQueue.main.async {
+                        events.forEach { event in
+                            if !EventsManager.shared.hasEvent(event) { // 檢查活動是否已存在
+                                EventsManager.shared.saveEvents([event])  // 保存不存在的活動
+                            }
                         }
+                        self?.collectionView.reloadData()
                     }
-                    self?.collectionView.reloadData()
+                case .failure(let error):
+                    print("從 Firestore 獲取活動時出錯：\(error)")
                 }
-            case .failure(let error):
-                print("從 Firestore 獲取活動時出錯：\(error)")
             }
         }
     }
