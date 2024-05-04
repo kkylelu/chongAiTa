@@ -9,6 +9,7 @@ import UIKit
 import JournalingSuggestions
 import Kingfisher
 import Lottie
+import FirebaseAuth
 
 class JournalHomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -156,18 +157,22 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func fetchJournalsFromFirebase() {
-        FirestoreService.shared.fetchJournals { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let journals):
-                    // 加入假資料和從 Firebase 下載資料
-                    self?.journalsArray = journals + FakeDataGenerator.generateFakeJournals(count: 2)
-                    self?.updateUI()
-                case .failure(let error):
-                    print("Failed to fetch journals from Firebase: \(error)")
-                    // 當從 Firebase 下載失敗時，還是可以顯示假資料
-                    self?.journalsArray = FakeDataGenerator.generateFakeJournals(count: 2)
-                    self?.updateUI()
+        if let currentUser = Auth.auth().currentUser {
+            let userId = currentUser.uid
+            
+            FirestoreService.shared.fetchJournals(userId: userId) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let journals):
+                        // 加入假資料和從 Firebase 下載資料
+                        self?.journalsArray = journals + FakeDataGenerator.generateFakeJournals(count: 2)
+                        self?.updateUI()
+                    case .failure(let error):
+                        print("Failed to fetch journals from Firebase: \(error)")
+                        // 當從 Firebase 下載失敗時，還是可以顯示假資料
+                        self?.journalsArray = FakeDataGenerator.generateFakeJournals(count: 2)
+                        self?.updateUI()
+                    }
                 }
             }
         }
@@ -281,21 +286,24 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
             
             let journalToDelete = strongSelf.journalsArray[indexPath.row]
             
+            if let currentUser = Auth.auth().currentUser {
+                let userId = currentUser.uid
             // 從 Firestore 和 Firebase Storage 刪除日記資料和相關圖片
-            FirestoreService.shared.deleteJournal(journalToDelete) { result in
-                switch result {
-                case .success:
-                    // 刪除資料
-                    strongSelf.journalsArray.remove(at: indexPath.row)
-                    
-                    // 從 tableView 中刪除對應的 cell
-                    tableView.deleteRows(at: [indexPath], with: .automatic)
-                    
-                    completionHandler(true)
-                    strongSelf.updateUI()
-                case .failure(let error):
-                    print("Error deleting journal: \(error)")
-                    completionHandler(false)
+                FirestoreService.shared.deleteJournal(userId: userId, journal: journalToDelete) { result in
+                    switch result {
+                    case .success:
+                        // 刪除資料
+                        strongSelf.journalsArray.remove(at: indexPath.row)
+                        
+                        // 從 tableView 中刪除對應的 cell
+                        tableView.deleteRows(at: [indexPath], with: .automatic)
+                        
+                        completionHandler(true)
+                        strongSelf.updateUI()
+                    case .failure(let error):
+                        print("Error deleting journal: \(error)")
+                        completionHandler(false)
+                    }
                 }
             }
         }

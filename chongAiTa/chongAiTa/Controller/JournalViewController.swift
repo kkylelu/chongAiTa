@@ -11,6 +11,7 @@ import JournalingSuggestions
 import FirebaseFirestore
 import Kingfisher
 import FirebaseStorage
+import FirebaseAuth
 
 class JournalViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
     
@@ -359,14 +360,19 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
                 guard let self = self else { return }
                 let newJournal = Journal(id: self.journal?.id ?? UUID(), title: title, body: body, date: date, images: self.selectedImages, place: self.selectedPlace, city: self.selectedCity, imageUrls: imageUrls)
                 
-                FirestoreService.shared.uploadJournal(newJournal) { result in
-                    switch result {
-                    case .success():
-                        print("日記上傳成功")
-                        NotificationCenter.default.post(name: .newJournalEntrySaved, object: nil, userInfo: ["journal": newJournal])
-                        self.navigationController?.popViewController(animated: true)
-                    case .failure(let error):
-                        print("日記上傳失敗: \(error)")
+                // 獲取用戶的 UID
+                if let currentUser = Auth.auth().currentUser {
+                    let userId = currentUser.uid
+                    
+                    FirestoreService.shared.uploadJournal(userId: userId, journal: newJournal) { result in
+                        switch result {
+                        case .success():
+                            print("日記上傳成功")
+                            NotificationCenter.default.post(name: .newJournalEntrySaved, object: nil, userInfo: ["journal": newJournal])
+                            self.navigationController?.popViewController(animated: true)
+                        case .failure(let error):
+                            print("日記上傳失敗: \(error)")
+                        }
                     }
                 }
             }

@@ -227,8 +227,8 @@ class FirestoreService {
     
     // MARK: - Upload and Fetch Journals
     
-    func uploadJournal(_ journal: Journal, completion: @escaping (Result<Void, Error>) -> Void) {
-        let journalRef = db.collection("journals").document(journal.id.uuidString)
+    func uploadJournal(userId: String, journal: Journal, completion: @escaping (Result<Void, Error>) -> Void) {
+        let journalRef = db.collection("user").document(userId).collection("journals").document(journal.id.uuidString)
         
         let journalData: [String: Any] = [
             "id": journal.id.uuidString,
@@ -247,8 +247,8 @@ class FirestoreService {
         }
     }
     
-    func fetchJournals(completion: @escaping (Result<[Journal], Error>) -> Void) {
-        let journalsCollection = db.collection("journals")
+    func fetchJournals(userId: String, completion: @escaping (Result<[Journal], Error>) -> Void) {
+        let journalsCollection = db.collection("user").document(userId).collection("journals")
         journalsCollection.getDocuments { snapshot, error in
             if let error = error {
                 completion(.failure(error))
@@ -272,8 +272,8 @@ class FirestoreService {
         }
     }
     
-    func deleteJournal(_ journal: Journal, completion: @escaping (Result<Void, Error>) -> Void) {
-        let journalRef = db.collection("journals").document(journal.id.uuidString)
+    func deleteJournal(userId: String, journal: Journal, completion: @escaping (Result<Void, Error>) -> Void) {
+        let journalRef = db.collection("user").document(userId).collection("journals").document(journal.id.uuidString)
         
         // 刪除 Firestore 資料
         journalRef.delete { error in
@@ -304,8 +304,8 @@ class FirestoreService {
     }
     
     // MARK: - Upload and Fetch Pet
-    func uploadPet(pet: Pet, completion: @escaping (Error?) -> Void) {
-            let petRef = db.collection("pets").document(pet.id.uuidString)
+    func uploadPet(userId: String, pet: Pet, completion: @escaping (Error?) -> Void) {
+        let petRef = db.collection("user").document(userId).collection("pets").document(pet.id.uuidString)
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             
@@ -335,37 +335,39 @@ class FirestoreService {
             }
         }
 
-    func fetchPet(petId: UUID, completion: @escaping (Result<Pet, Error>) -> Void) {
-            let docRef = db.collection("pets").document(petId.uuidString)
-            docRef.getDocument { (document, error) in
-                if let document = document, document.exists {
-                    let data = document.data()!
-                    guard let id = UUID(uuidString: data["id"] as? String ?? ""),
-                          let name = data["name"] as? String,
-                          let imageUrl = data["imageUrl"] as? [String],
-                          let genderRaw = data["gender"] as? String,
-                          let gender = Pet.Gender(rawValue: genderRaw),
-                          let typeRaw = data["type"] as? Int,
-                          let type = Pet.PetType(rawValue: typeRaw),
-                          let birthdayString = data["birthday"] as? String,
-                          let joinDateString = data["joinDate"] as? String else {
-                        completion(.failure(NSError(domain: "DataFormatError", code: 1001, userInfo: nil)))
-                        return
-                    }
-                    
-                    let birthday = DateFormatter.date(from: birthdayString)
-                    let joinDate = DateFormatter.date(from: joinDateString)
-                    let breed = data["breed"] as? String
-                    let weight = data["weight"] as? Double
-                    let isNeutered = data["isNeutered"] as? Bool ?? false
-                    
-                    let pet = Pet(id: id, image: nil, imageUrl: imageUrl, name: name, gender: gender, type: type, breed: breed, birthday: birthday, joinDate: joinDate, weight: weight, isNeutered: isNeutered)
-                    completion(.success(pet))
-                } else {
-                    completion(.failure(error ?? NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)))
+    func fetchPet(userId: String, petId: UUID, completion: @escaping (Result<Pet, Error>) -> Void) {
+        let docRef = db.collection("user").document(userId).collection("pets").document(petId.uuidString)
+        docRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                let data = document.data()!
+                guard let id = UUID(uuidString: data["id"] as? String ?? ""),
+                      let name = data["name"] as? String,
+                      let imageUrl = data["imageUrl"] as? [String],
+                      let genderRaw = data["gender"] as? String,
+                      let gender = Pet.Gender(rawValue: genderRaw),
+                      let typeRaw = data["type"] as? Int,
+                      let type = Pet.PetType(rawValue: typeRaw),
+                      let birthdayString = data["birthday"] as? String,
+                      let joinDateString = data["joinDate"] as? String else {
+                    completion(.failure(NSError(domain: "DataFormatError", code: 1001, userInfo: nil)))
+                    return
                 }
+
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                let birthday = dateFormatter.date(from: birthdayString)
+                let joinDate = dateFormatter.date(from: joinDateString)
+                let breed = data["breed"] as? String
+                let weight = data["weight"] as? Double
+                let isNeutered = data["isNeutered"] as? Bool ?? false
+
+                let pet = Pet(id: id, image: imageUrl.isEmpty ? "ShibaInuIcon" : nil, imageUrl: imageUrl, name: name, gender: gender, type: type, breed: breed, birthday: birthday, joinDate: joinDate, weight: weight, isNeutered: isNeutered)
+                completion(.success(pet))
+            } else {
+                completion(.failure(error ?? NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)))
             }
         }
+    }
 
     // MARK: - PerformRequest
     func performRequest<T: Codable>(url: String, method: HTTPMethod, parameters: Parameters?, headers: HTTPHeaders, completion: @escaping ((Result<T, Error>) -> Void)) {
