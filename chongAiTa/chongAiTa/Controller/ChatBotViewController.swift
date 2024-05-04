@@ -63,7 +63,7 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func setupUI() {
-        view.backgroundColor = .white
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
         
         tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
