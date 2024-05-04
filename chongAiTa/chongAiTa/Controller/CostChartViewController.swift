@@ -18,6 +18,9 @@ class CostChartViewController: UIViewController {
         hostingController = UIHostingController(rootView: chartView)
         addChild(hostingController!)
         view.addSubview(hostingController!.view)
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
+        hostingController!.view.backgroundColor = .clear
+        
         hostingController!.view.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([

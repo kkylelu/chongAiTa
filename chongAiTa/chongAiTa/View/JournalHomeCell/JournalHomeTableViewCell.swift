@@ -9,7 +9,6 @@ import UIKit
 
 class JournalHomeTableViewCell: UITableViewCell {
     
-    
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var journalTitleLabel: UILabel!
     @IBOutlet weak var journalContentLabel: UILabel!
@@ -44,8 +43,18 @@ class JournalHomeTableViewCell: UITableViewCell {
         layer.shadowRadius = 6
         layer.masksToBounds = false
         
-        contentView.backgroundColor = .white
-        self.backgroundColor = .clear
+        if #available(iOS 13.0, *) {
+            contentView.backgroundColor = UIColor { (traitCollection) -> UIColor in
+                switch traitCollection.userInterfaceStyle {
+                case .dark:
+                    return .black 
+                default:
+                    return .white
+                }
+            }
+        } else {
+            contentView.backgroundColor = .white
+        }
         
     }
     

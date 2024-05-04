@@ -54,6 +54,8 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     func setupUI(){
         
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
+        
         tableView.separatorStyle = .none
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
