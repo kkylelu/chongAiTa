@@ -30,7 +30,7 @@ class DateCell: UICollectionViewCell {
     var dateLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = .black
+//        label.textColor = .darkGray
         label.backgroundColor = .clear
         return label
     }()
@@ -54,7 +54,6 @@ class DateCell: UICollectionViewCell {
         
         circleBackgroundView.layer.cornerRadius = min(circleBackgroundView.frame.width, circleBackgroundView.frame.height) / 2
     }
-    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -185,14 +184,24 @@ class DateCell: UICollectionViewCell {
     
     func updateDateLabelAppearance() {
         if isCurrentDate {
-            dateLabel.textColor = .white
             circleBackgroundView.isHidden = false
             circleBackgroundView.backgroundColor = UIColor.B1
+            dateLabel.textColor = .white
         } else {
-            dateLabel.textColor = .black
             circleBackgroundView.isHidden = true
+            if #available(iOS 13.0, *) {
+                dateLabel.textColor = UIColor { (traitCollection) -> UIColor in
+                    switch traitCollection.userInterfaceStyle {
+                    case .dark:
+                        return .white
+                    default:
+                        return .black
+                    }
+                }
+            } else {
+                dateLabel.textColor = .black
+            }
         }
     }
 
-    
 }

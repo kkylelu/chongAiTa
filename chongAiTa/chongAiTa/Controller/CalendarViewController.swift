@@ -64,9 +64,10 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     // MARK: - Setup UI
     
     func setupUI() {
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
+        
         let layout = UICollectionViewFlowLayout()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = UIColor.white
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -77,6 +78,19 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         view.addSubview(weekHeaderView)
         view.addSubview(collectionView)
+        
+        if #available(iOS 13.0, *) {
+            collectionView.backgroundColor = UIColor { (traitCollection) -> UIColor in
+                switch traitCollection.userInterfaceStyle {
+                case .dark:
+                    return .black
+                default:
+                    return .white
+                }
+            }
+        } else {
+            collectionView.backgroundColor = .white
+        }
         
         NSLayoutConstraint.activate([
             weekHeaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -104,7 +118,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             } else if day == "日" {
                 dayLabel.textColor = UIColor.B7
             } else {
-                dayLabel.textColor = UIColor.black
+                dayLabel.textColor = UIColor.darkGray
             }
             
             NSLayoutConstraint.activate([
@@ -119,6 +133,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func configureCollectionView() {
         configureFlowLayout()
+
     }
     
     func configureFlowLayout() {
@@ -285,9 +300,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
                 cell.dateLabel.textColor = UIColor.B5
             } else if weekday == 1 {
                 cell.dateLabel.textColor = UIColor.B7
-            } else {
-                cell.dateLabel.textColor = .black
-            }
+            } 
         } else {
             cell.configureCell(with: nil, events: [])
         }
