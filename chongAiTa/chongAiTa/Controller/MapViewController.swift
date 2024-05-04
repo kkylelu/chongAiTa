@@ -36,17 +36,29 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         // 顯示使用者目前位置
         mapView.isMyLocationEnabled = true
-        
         mapView.delegate = self
-        
+                
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if #available(iOS 13.0, *), traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            applyMapStyle()
+        }
+    }
+
     
     // MARK: - Setup UI
     func setupUI() {
         
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
+        
         let camera = GMSCameraPosition.camera(withLatitude: 25.039413072140746, longitude: 121.53243457301599, zoom: 16.0)
         mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
         mapView.translatesAutoresizingMaskIntoConstraints = false
+        
+        applyMapStyle()
         
         layerButton = createLayerButton(type: .layer, action: #selector(toggleLayerButtons))
         animalHospitalButton = createLayerButton(type: .animalHospital, action: #selector(findNearbyPlaces(_:)))
@@ -92,6 +104,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         ])
     }
     
+    func applyMapStyle() {
+        if traitCollection.userInterfaceStyle == .dark {
+            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+                do {
+                    mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+                } catch {
+                    NSLog("無法載入地圖樣式: \(error)")
+                }
+            } else {
+                NSLog("找不到 style.json")
+            }
+        } else {
+            mapView.mapStyle = nil
+        }
+    }
+
     func createLayerButton(type: LayerButtonType, action: Selector?) -> UIButton {
         let button = UIButton(type: .custom)
         button.backgroundColor = type.backgroundColor
