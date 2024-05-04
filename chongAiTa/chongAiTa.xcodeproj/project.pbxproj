@@ -18,6 +18,7 @@
 		274A49FD2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274A49FC2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift */; };
 		274B83262BE5E5990066CB40 /* SetupBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274B83252BE5E5990066CB40 /* SetupBackgroundColor.swift */; };
 		274B83282BE6007E0066CB40 /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = 274B83272BE6007E0066CB40 /* style.json */; };
+		274B832A2BE675300066CB40 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274B83292BE675300066CB40 /* User.swift */; };
 		274CE0D72BC8275C00277222 /* JournalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274CE0D62BC8275C00277222 /* JournalViewController.swift */; };
 		275CC35B2BC7BF3D0062C75C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC35A2BC7BF3D0062C75C /* FirebaseAnalytics */; };
 		275CC35D2BC7BF3D0062C75C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 275CC35C2BC7BF3D0062C75C /* FirebaseFirestore */; };
@@ -115,6 +116,7 @@
 		274A49FC2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrenceSettingsView.swift; sourceTree = "<group>"; };
 		274B83252BE5E5990066CB40 /* SetupBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupBackgroundColor.swift; sourceTree = "<group>"; };
 		274B83272BE6007E0066CB40 /* style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = style.json; sourceTree = "<group>"; };
+		274B83292BE675300066CB40 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		274CE0D62BC8275C00277222 /* JournalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalViewController.swift; sourceTree = "<group>"; };
 		275CC3622BC7C12F0062C75C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		275CC3642BC7D00D0062C75C /* chongAiTa.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = chongAiTa.entitlements; sourceTree = "<group>"; };
@@ -267,6 +269,7 @@
 				2786C4ED2BDF9D4100481C6F /* FakeDataGenerator.swift */,
 				27E855C72BE2396A0079E216 /* LayerButtonType.swift */,
 				27D471FE2BE5034600D92B01 /* UserProfileItem.swift */,
+				274B83292BE675300066CB40 /* User.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -780,6 +783,7 @@
 				2732C7852BDA542D004170C6 /* PetDetailTableViewCell.swift in Sources */,
 				277092592BD67B93004F2553 /* CostChartView.swift in Sources */,
 				27BC7D472BDCFAB5007B73BF /* MainTabBarController.swift in Sources */,
+				274B832A2BE675300066CB40 /* User.swift in Sources */,
 				277EE07F2BE0C86A000439E4 /* ActivityCollectionViewCell.swift in Sources */,
 				2732C7872BDA5EA1004170C6 /* DateFormatter.swift in Sources */,
 				27A939072BD3AC2200BF4845 /* EventDetailViewController.swift in Sources */,

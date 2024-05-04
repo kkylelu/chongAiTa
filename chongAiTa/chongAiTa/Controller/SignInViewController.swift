@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 import AuthenticationServices
 import CryptoKit
 
@@ -225,11 +226,14 @@ extension SignInViewController {
     // MARK: - sync Credential and Firebase Auth
     func firebaseSignInWithApple(credential: AuthCredential) {
         Auth.auth().signIn(with: credential) { authResult, error in
-            guard error == nil else {
+            guard let authResult = authResult, error == nil else {
                 CustomFunc.customAlert(title: "", message: "\(String(describing: error!.localizedDescription))", vc: self, actionHandler: nil)
                 return
             }
-            //            CustomFunc.customAlert(title: "登入成功！", message: "", vc: self, actionHandler: self.getFirebaseUserInfo)
+            // 更新 Firestore 用戶資料
+            self.updateFirestoreWithUserData(user: authResult.user)
+            
+            // 導航到主頁面
             self.navigateToMainTabBarController()
         }
     }
@@ -258,4 +262,23 @@ extension SignInViewController {
         let email = user.email
         CustomFunc.customAlert(title: "使用者資訊", message: "UID：\(uid)\nEmail：\(email!)", vc: self, actionHandler: nil)
     }
+    
+    func updateFirestoreWithUserData(user: FirebaseAuth.User) {
+        let db = Firestore.firestore()
+        
+        // 設定 Firestore 中用戶資料
+        db.collection("users").document(user.uid).setData([
+            "appleID": user.uid,
+            "name": user.displayName ?? "",
+            "email": user.email ?? ""
+        ], merge: true) { error in
+            if let error = error {
+                print("更新用戶資料失敗: \(error.localizedDescription)")
+            } else {
+                print("成功更新用戶資料")
+            }
+        }
+    }
+    
 }
+
