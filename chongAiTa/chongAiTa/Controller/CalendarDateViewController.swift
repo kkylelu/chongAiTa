@@ -44,14 +44,14 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     // MARK: - Setup UI
     
     func setupUI(){
-        view.backgroundColor = .white
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
     }
     
     func setupTableView() {
         tableView = UITableView(frame: .zero, style: .plain)
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = .white
+//        tableView.backgroundColor = .white
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UINib(nibName: "JournalHomeTableViewCell", bundle: nil), forCellReuseIdentifier: "JournalHomeCell")
         view.addSubview(tableView)

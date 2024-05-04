@@ -67,6 +67,15 @@ class ActivityCollectionViewCell: UICollectionViewCell {
         contentView.layer.shadowRadius = 10
         contentView.layer.masksToBounds = false
         contentView.backgroundColor = .white
+        
+            let dynamicBackgroundColor = UIColor { (traitCollection) -> UIColor in
+                if traitCollection.userInterfaceStyle == .dark {
+                    return UIColor.black
+                } else {
+                    return UIColor.white
+                }
+            }
+            contentView.backgroundColor = dynamicBackgroundColor
     }
 
 

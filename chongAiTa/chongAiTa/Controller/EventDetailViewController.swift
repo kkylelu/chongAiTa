@@ -43,7 +43,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     // MARK: - Setup UI
     
     func setupUI() {
-        view.backgroundColor = .white
+        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
         
         let rightBarButtonItem = UIBarButtonItem(title: "完成", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = rightBarButtonItem
@@ -55,7 +55,19 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.tintColor = UIColor.white
         
-        containerView.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            containerView.backgroundColor = UIColor { (traitCollection) -> UIColor in
+                switch traitCollection.userInterfaceStyle {
+                case .dark:
+                    return .black
+                default:
+                    return .white
+                }
+            }
+        } else {
+            containerView.backgroundColor = .white
+        }
+        
         containerView.layer.cornerRadius = 10
         containerView.layer.shadowColor = UIColor.black.cgColor
         containerView.layer.shadowOpacity = 0.1
