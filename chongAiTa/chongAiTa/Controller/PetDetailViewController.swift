@@ -10,6 +10,7 @@ import MobileCoreServices
 import FirebaseStorage
 import FirebaseFirestore
 import Kingfisher
+import FirebaseAuth
 
 class PetDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
@@ -88,15 +89,19 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if isPetDataChanged, let currentPet = pet {
-            FirestoreService.shared.uploadPet(pet: currentPet) { error in
-                if let error = error {
-                    print("Error uploading pet data: \(error.localizedDescription)")
-                } else {
-                    print("Pet data uploaded successfully")
-                    self.isPetDataChanged = false
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
+        if let currentUser = Auth.auth().currentUser {
+            let userId = currentUser.uid
+            
+            if isPetDataChanged, let currentPet = pet {
+                FirestoreService.shared.uploadPet(userId: userId, pet: currentPet) { error in
+                    if let error = error {
+                        print("Error uploading pet data: \(error.localizedDescription)")
+                    } else {
+                        print("Pet data uploaded successfully")
+                        self.isPetDataChanged = false
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                        }
                     }
                 }
             }
@@ -125,7 +130,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         imagePickerButton.tintColor = UIColor.B1
         imagePickerButton.imageView?.contentMode = .scaleAspectFit
         imagePickerButton.addTarget(self, action: #selector(imagePickerButtonTapped), for: .touchUpInside)
-
+        
         pickerView.delegate = self
         pickerView.dataSource = self
         
@@ -142,7 +147,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         infoLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-
+            
             petImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             petImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             petImageView.widthAnchor.constraint(equalToConstant: 150),
@@ -172,19 +177,19 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     private func setupTableViewBackgroundColor() {
-            if #available(iOS 13.0, *) {
-                tableView.backgroundColor = UIColor { (traitCollection) -> UIColor in
-                    switch traitCollection.userInterfaceStyle {
-                    case .dark:
-                        return .black
-                    default:
-                        return .white
-                    }
+        if #available(iOS 13.0, *) {
+            tableView.backgroundColor = UIColor { (traitCollection) -> UIColor in
+                switch traitCollection.userInterfaceStyle {
+                case .dark:
+                    return .black
+                default:
+                    return .white
                 }
-            } else {
-                view.backgroundColor = .white
             }
+        } else {
+            view.backgroundColor = .white
         }
+    }
     
     func loadFakeData() {
         let dateFormatter = DateFormatter()
@@ -483,17 +488,20 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             print("目前沒有寵物資料可以儲存。")
             return
         }
-        
-        print("正在嘗試上傳寵物資料: \(currentPet)")
-        FirestoreService.shared.uploadPet(pet: currentPet) { error in
-            if let error = error {
-                print("上傳寵物資料失敗: \(error.localizedDescription)")
-            } else {
-                print("寵物資料成功上傳至雲端。")
-                self.isPetDataChanged = false
-                // 重新載入 tableView
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
+        if let currentUser = Auth.auth().currentUser {
+            let userId = currentUser.uid
+            
+            print("正在嘗試上傳寵物資料: \(currentPet)")
+            FirestoreService.shared.uploadPet(userId: userId, pet: currentPet) { error in
+                if let error = error {
+                    print("上傳寵物資料失敗: \(error.localizedDescription)")
+                } else {
+                    print("寵物資料成功上傳至雲端。")
+                    self.isPetDataChanged = false
+                    // 重新載入 tableView
+                    DispatchQueue.main.async {
+                        self.tableView.reloadData()
+                    }
                 }
             }
         }
@@ -507,16 +515,19 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             return
         }
         
-        FirestoreService.shared.fetchPet(petId: petUUID) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let fetchedPet):
-                    self.setPet(fetchedPet)
-                    completion(true)
-                case .failure(let error):
-                    print("Error fetching pet: \(error.localizedDescription)")
-                    self.loadFakeData()  // Load fake data if fetch fails
-                    completion(false)
+        if let currentUser = Auth.auth().currentUser {
+            let userId = currentUser.uid
+            FirestoreService.shared.fetchPet(userId: userId, petId: petUUID) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let fetchedPet):
+                        self.setPet(fetchedPet)
+                        completion(true)
+                    case .failure(let error):
+                        print("Error fetching pet: \(error.localizedDescription)")
+                        self.loadFakeData()  // Load fake data if fetch fails
+                        completion(false)
+                    }
                 }
             }
         }
