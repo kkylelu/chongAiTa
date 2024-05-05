@@ -171,7 +171,20 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         datePicker.maximumDate = Calendar.current.date(from: DateComponents(year: 2030))
 
         let popupView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 300))
-        popupView.backgroundColor = .white
+
+        if #available(iOS 13.0, *) {
+            popupView.backgroundColor = UIColor { (traitCollection) -> UIColor in
+                switch traitCollection.userInterfaceStyle {
+                case .dark:
+                    return .black
+                default:
+                    return .white
+                }
+            }
+        } else {
+            view.backgroundColor = .white
+        }
+        
         popupView.layer.cornerRadius = 12
         popupView.clipsToBounds = true
 
@@ -198,7 +211,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         cancelButton.addTarget(self, action: #selector(dismissCustomPopup), for: .touchUpInside)
         popupView.addSubview(cancelButton)
 
-        // 顯示自定義視圖
         self.view.addSubview(popupView)
         popupView.center = self.view.center
     }

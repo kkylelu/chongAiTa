@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 
 // For Sign in with Apple
 import AuthenticationServices
@@ -87,7 +88,7 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
         
         do {
             if needsReauth || needsTokenRevocation {
-                let signInWithApple = SignInWithApple() //Error: Cannot find 'SignInWithApple' in scope
+                let signInWithApple = SignInWithApple()
                 let appleIDCredential = try await signInWithApple()
                 
                 guard let appleIDToken = appleIDCredential.identityToken else {
