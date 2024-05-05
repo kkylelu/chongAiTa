@@ -68,6 +68,8 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         
         setupUI()
         setNavigationTitle(.pet)
+        fetchPetDataFromFirebase {_ in
+        }
         
     }
     
@@ -99,15 +101,21 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
                     } else {
                         print("Pet data uploaded successfully")
                         self.isPetDataChanged = false
-                        DispatchQueue.main.async {
-                            self.tableView.reloadData()
+                        
+                        // 上傳完成後重新獲取寵物資料
+                        self.fetchPetDataFromFirebase { _ in
+                            DispatchQueue.main.async {
+                                self.tableView.reloadData()
+                                self.updateImageView(with: currentPet.imageUrl)
+                                self.updateInfoLabelText()
+                            }
                         }
                     }
                 }
             }
         }
-        
     }
+
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -215,6 +223,16 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             petImageView.image = UIImage(named: pet.image ?? "ShibaInuIcon")
         }
         tableView.reloadData()
+    }
+    
+    // MARK: - Update UI
+    func updateImageView(with imageUrls: [String]) {
+        guard let imageUrl = imageUrls.first else {
+            petImageView.image = UIImage(named: "ShibaInuIcon")
+            return
+        }
+        
+        petImageView.kf.setImage(with: URL(string: imageUrl))
     }
     
     func updateInfoLabelText() {
@@ -508,8 +526,8 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func fetchPetDataFromFirebase(completion: @escaping (Bool) -> Void) {
-        guard let petUUID = pet?.id else {
-            print("No pet UUID available")
+        guard let petName = pet?.name else {
+            print("No pet name available")
             loadFakeData()
             completion(false)
             return
@@ -517,21 +535,26 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if let currentUser = Auth.auth().currentUser {
             let userId = currentUser.uid
-            FirestoreService.shared.fetchPet(userId: userId, petId: petUUID) { result in
+            FirestoreService.shared.fetchPet(userId: userId, petName: petName) { [weak self] result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let fetchedPet):
-                        self.setPet(fetchedPet)
+                        self?.setPet(fetchedPet)
+                        self?.updateImageView(with: fetchedPet.imageUrl)
+                        self?.updateInfoLabelText()
+                        self?.tableView.reloadData()
                         completion(true)
+                        
                     case .failure(let error):
                         print("Error fetching pet: \(error.localizedDescription)")
-                        self.loadFakeData()  // Load fake data if fetch fails
+                        self?.loadFakeData()
                         completion(false)
                     }
                 }
             }
         }
     }
+
     
     @objc func addNewPets(){
         print("tapped addNewPets function")
