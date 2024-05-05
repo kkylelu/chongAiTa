@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class UserProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UserProfileCollectionViewCellDelegate {
 
@@ -14,6 +15,7 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
         .about([.userDetails]),
         .account([.logout, .deleteAccount])
     ]
+    var errorMessage = ""
 
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -52,6 +54,24 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
         
         view.addSubview(collectionView)
        
+    }
+    
+    // MARK: - Action
+    
+    func signOut(){
+        do {
+            try Auth.auth().signOut()
+            print("使用者成功登出")
+        }
+        catch {
+            print(error)
+            errorMessage = error.localizedDescription
+        }
+        
+    }
+    
+    func deleteAccount() async -> Bool {
+      return false
     }
     
     // MARK: - CollectionView Delegate
@@ -124,8 +144,10 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
                 switch action {
                 case .logout:
                     print("點擊 登出 按鈕")
+                    signOut()
                 case .deleteAccount:
                     print("點擊 刪除帳號 按鈕")
+                    
                 default:
                     break
                 }
