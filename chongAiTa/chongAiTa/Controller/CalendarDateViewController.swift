@@ -127,6 +127,12 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     @objc func floatingButtonTapped() {
+        
+        // 提供觸覺回饋
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedbackGenerator.prepare()
+        impactFeedbackGenerator.impactOccurred()
+        
         let dateEventListVC = DateEventListViewController(date: selectedDate)
 
         if let presentationController = dateEventListVC.presentationController as? UISheetPresentationController {

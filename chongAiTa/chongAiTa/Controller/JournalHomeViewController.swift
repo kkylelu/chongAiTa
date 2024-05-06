@@ -85,7 +85,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         floatingButton.translatesAutoresizingMaskIntoConstraints = false
         floatingButton.backgroundColor = UIColor.B1
         
-        let image = UIImage(systemName: "plus", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))
+        let image = UIImage(systemName: "plus", withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium))?.withRenderingMode(.alwaysTemplate)
         
         floatingButton.setImage(image, for: .normal)
         floatingButton.tintColor = .white
@@ -107,6 +107,11 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     @objc func floatingButtonTapped() {
+        // 提供觸覺回饋
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedbackGenerator.prepare()
+        impactFeedbackGenerator.impactOccurred()
+        
         let journalVC = JournalViewController()
         navigationController?.pushViewController(journalVC, animated: true)
     }

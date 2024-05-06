@@ -158,6 +158,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     
     // MARK: - Action
     @objc func goToCurrentLocation() {
+        // 提供觸覺回饋
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedbackGenerator.prepare()
+        impactFeedbackGenerator.impactOccurred()
+        
         mapView.clear()
         if CLLocationManager.locationServicesEnabled() {
             locationManager.startUpdatingLocation()
@@ -165,6 +170,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     }
     
     @objc func toggleLayerButtons() {
+        // 提供觸覺回饋
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedbackGenerator.prepare()
+        impactFeedbackGenerator.impactOccurred()
+        
         isLayerButtonExpanded.toggle()
         
         UIView.animate(withDuration: 0.3) {
@@ -199,6 +209,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     }
     
     @objc func findNearbyPlaces(_ sender: UIButton) {
+        // 提供觸覺回饋
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedbackGenerator.prepare()
+        impactFeedbackGenerator.impactOccurred()
+        
         guard let buttonType = LayerButtonType(rawValue: sender.tag) else {
             print("未設定按鈕類型")
             return
