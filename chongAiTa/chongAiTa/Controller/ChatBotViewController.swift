@@ -37,7 +37,7 @@ class ChatBotViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func configureQuickReplyButtons() {
-        let messages = ["狗狗會感冒嗎？", "多久要帶狗狗去打疫苗？", "狗狗可以吃巧克力嗎？"]
+        let messages = ["狗狗耳朵腫起來怎麼辦？", "多久要帶狗狗去打疫苗？", "狗狗可以吃巧克力嗎？"]
         
         for message in messages {
             let button = UIButton(type: .system)
