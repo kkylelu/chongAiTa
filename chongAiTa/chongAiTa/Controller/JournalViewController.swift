@@ -40,11 +40,17 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     let bodyPlaceholder = "輸入內容"
     
     var journal: Journal?
+    var isNewDiary: Bool = true
     
     
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let journal = journal {
+                isNewDiary = journal.id == UUID()
+            }
+        
         setupUI()
 
         imagePicker.delegate = self
@@ -488,9 +494,6 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     // 從 Firebase 下載圖片並插入 TextView
     func downloadAndInsertImagesIntoTextView() {
-        
-        // TODO: 新增 if else 判斷是開新日記，或開啟舊日記，如果是後者則新增 attachment
-        
         let attributedString = NSMutableAttributedString(attributedString: bodyTextView.attributedText)
         
         let textViewFont = bodyTextView.font ?? UIFont.systemFont(ofSize: 24)
@@ -498,22 +501,40 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             .font: textViewFont
         ]
         
-        for imageURL in selectedImageURLs {
-            if let url = URL(string: imageURL), !isImageAlreadyInserted(imageURL: imageURL) {
-                
-                KingfisherManager.shared.retrieveImage(with: url, options: [.transition(.fade(0.3))], progressBlock: nil) { result in
-                    switch result {
-                    case .success(let value):
-                        DispatchQueue.main.async {
-//                            self.bodyTextView.attributedText = attributedString
+        if isNewDiary {
+            // 新增日記
+            for imageURL in selectedImageURLs {
+                    if let url = URL(string: imageURL), !isImageAlreadyInserted(imageURL: imageURL) {
+                        print("新增日記，圖片已經插入，不需要下載和插入")
+                    }
+                }
+        } else {
+            // 開啟舊日記
+            for imageURL in selectedImageURLs {
+                if let url = URL(string: imageURL), !isImageAlreadyInserted(imageURL: imageURL) {
+                    let attachment = NSTextAttachment()
+                    let attachmentString = NSAttributedString(attachment: attachment)
+                    
+                    attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
+                    attributedString.append(attachmentString)
+                    attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
+                    
+                    KingfisherManager.shared.retrieveImage(with: url, options: [.transition(.fade(0.3))], progressBlock: nil) { result in
+                        switch result {
+                        case .success(let value):
+                            attachment.image = value.image
+                            DispatchQueue.main.async {
+                                self.bodyTextView.attributedText = attributedString
+                            }
+                        case .failure(let error):
+                            print("下載圖片錯誤: \(error)")
                         }
-                    case .failure(let error):
-                        print("下載圖片錯誤: \(error)")
                     }
                 }
             }
         }
     }
+
 
     func isImageAlreadyInserted(imageURL: String) -> Bool {
         return bodyTextView.text.contains(imageURL)
