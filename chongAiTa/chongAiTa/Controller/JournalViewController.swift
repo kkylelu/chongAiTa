@@ -46,16 +46,13 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        
+
         imagePicker.delegate = self
         imagePicker.allowsEditing = false
         
         activityIndicator.center = view.center
         activityIndicator.hidesWhenStopped = true
         view.addSubview(activityIndicator)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         
         selectedDate = Date()
         
@@ -65,6 +62,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             titleTextView.becomeFirstResponder()
         }
     }
+
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -172,16 +170,12 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func setupConstraints() {
-        
-        bottomConstraint = buttonContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        
-        guard let bottom = bottomConstraint else {
-            print("Failed to init bottomConstraint")
-            return
-        }
-        
+        // 移除原有約束的設定
+        // 使用 keyboardLayoutGuide 設定 containerView 的底部約束
+        bottomConstraint = buttonContainerView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+        bottomConstraint?.isActive = true
+
         NSLayoutConstraint.activate([
-            
             titleTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             titleTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             titleTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
@@ -194,10 +188,10 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             
             buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
-            buttonContainerView.heightAnchor.constraint(equalToConstant: 50),
-            bottom
-            
+            buttonContainerView.heightAnchor.constraint(equalToConstant: 50)
         ])
+    
+
         
         NSLayoutConstraint.activate([
             imageButton.leftAnchor.constraint(equalTo: buttonContainerView.leftAnchor),
