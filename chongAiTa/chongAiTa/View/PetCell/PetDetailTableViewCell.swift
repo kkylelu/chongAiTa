@@ -119,6 +119,7 @@ class PetDetailTableViewCell: UITableViewCell {
         
         switch item {
         case .name:
+            print("=== pet.name: \(pet.name)")
             valueLabel.text = pet.name
         case .gender:
             valueLabel.text = pet.gender.rawValue

@@ -76,12 +76,10 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if pet == nil {
-            fetchPetDataFromFirebase { [weak self] hasData in
-                if !hasData {
-                    // 如果 Firebase 中沒有資料，則加載假資料
-                    self?.loadFakeData()
-                }
+        fetchPetDataFromFirebase { [weak self] hasData in
+            if !hasData {
+                // 如果 Firebase 中沒有資料，則加載假資料
+                self?.loadFakeData()
             }
         }
         
@@ -526,16 +524,9 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func fetchPetDataFromFirebase(completion: @escaping (Bool) -> Void) {
-        guard let petName = pet?.name else {
-            print("No pet name available")
-            loadFakeData()
-            completion(false)
-            return
-        }
-        
         if let currentUser = Auth.auth().currentUser {
             let userId = currentUser.uid
-            FirestoreService.shared.fetchPet(userId: userId, petName: petName) { [weak self] result in
+            FirestoreService.shared.fetchPet(userId: userId) { [weak self] result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let fetchedPet):
@@ -547,11 +538,12 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
                         
                     case .failure(let error):
                         print("Error fetching pet: \(error.localizedDescription)")
-                        self?.loadFakeData()
                         completion(false)
                     }
                 }
             }
+        } else {
+            completion(false)
         }
     }
 

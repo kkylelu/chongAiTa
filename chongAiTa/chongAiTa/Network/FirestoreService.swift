@@ -335,11 +335,10 @@ class FirestoreService {
             }
         }
 
-    func fetchPet(userId: String, petName: String, completion: @escaping (Result<Pet, Error>) -> Void) {
+    func fetchPet(userId: String, completion: @escaping (Result<Pet, Error>) -> Void) {
         let collectionRef = db.collection("user").document(userId).collection("pets")
-        let query = collectionRef.whereField("name", isEqualTo: petName)
         
-        query.getDocuments { (snapshot, error) in
+        collectionRef.getDocuments { (snapshot, error) in
             if let error = error {
                 print("獲取寵物資料失敗: \(error.localizedDescription)")
                 completion(.failure(error))
@@ -347,11 +346,11 @@ class FirestoreService {
             }
             
             guard let documents = snapshot?.documents else {
-                        let error = NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)
-                        print("找不到寵物資料: \(error.localizedDescription)")
-                        completion(.failure(error))
-                        return
-                    }
+                let error = NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)
+                print("找不到寵物資料: \(error.localizedDescription)")
+                completion(.failure(error))
+                return
+            }
             
             if let document = documents.first {
                 let data = document.data()
@@ -364,11 +363,10 @@ class FirestoreService {
                       let type = Pet.PetType(rawValue: typeRaw),
                       let birthdayString = data["birthday"] as? String,
                       let joinDateString = data["joinDate"] as? String else {
-                    completion(.failure(NSError(domain: "DataFormatError", code: 1001, userInfo: nil)))
                     let error = NSError(domain: "DataFormatError", code: 1001, userInfo: nil)
-                                    print("寵物資料格式錯誤: \(error.localizedDescription)")
-                                    completion(.failure(error))
-                                    return
+                    print("寵物資料格式錯誤: \(error.localizedDescription)")
+                    completion(.failure(error))
+                    return
                 }
                 
                 let dateFormatter = DateFormatter()
@@ -383,11 +381,12 @@ class FirestoreService {
                 completion(.success(pet))
             } else {
                 let error = NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)
-                            print("找不到寵物資料: \(error.localizedDescription)")
-                completion(.failure(NSError(domain: "PetNotFoundError", code: -1, userInfo: nil)))
+                print("找不到寵物資料: \(error.localizedDescription)")
+                completion(.failure(error))
             }
         }
     }
+
 
 
     // MARK: - PerformRequest
