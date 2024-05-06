@@ -253,7 +253,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         bodyTextView.attributedText = attributedString
         selectedImages = journal.images
         selectedImageURLs = journal.imageUrls
-        insertImagesIntoTextView()
+        downloadAndInsertImagesIntoTextView()
     }
     
     
@@ -284,7 +284,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         formatter.locale = Locale(identifier: "zh_Hant_TW")
         formatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
         let formattedDate = formatter.string(from: datePicker.date)
-        print("Formatted Date: \(formattedDate)")
+        print("日期格式 : \(formattedDate)")
     }
     
     func uploadImagesToStorage(completion: @escaping ([String]) -> Void) {
@@ -304,7 +304,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
                         imageUrls.append(url.absoluteString)
                         image.accessibilityIdentifier = url.absoluteString
                     case .failure(let error):
-                        print("Failed to upload image: \(error)")
+                        print("上傳圖片失敗 : \(error)")
                     }
                     dispatchGroup.leave()
                 }
@@ -371,7 +371,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
                 }
             }
         } else {
-            print("Error: Missing information")
+            print("Error: 錯誤資訊")
         }
     }
     
@@ -440,7 +440,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
                     if let resizedImage = resizedImage {
                         self?.selectedImages.append(resizedImage)
                         self?.insertImage(resizedImage)
-                        print("Image processed and added to the array. Total now: \(self?.selectedImages.count ?? 0)")
+                        print("已處理圖片並加入 array. 目前總共: \(self?.selectedImages.count ?? 0)")
                         self?.imagesReadyToSave = true
                     }
                     self?.dismiss(animated: true, completion: nil)
@@ -473,12 +473,12 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
                             print("Failed to upload image: \(error)")
                         }
                         processedImagesCount += 1
-                        print("Processed \(processedImagesCount) of \(totalImages) images")
+                        print("處理所有 \(totalImages) 圖片中的第 \(processedImagesCount) 圖片")
                         self?.view.hideLoadingAnimation()
                         if processedImagesCount == totalImages {
-                            print("All images processed.")
+                            print("處理完所有圖片.")
                             self?.imagesReadyToSave = true
-                            self?.insertImagesIntoTextView()
+                            self?.downloadAndInsertImagesIntoTextView()
                         }
                     }
                 }
@@ -486,8 +486,11 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
     }
     
-    
-    func insertImagesIntoTextView() {
+    // 從 Firebase 下載圖片並插入 TextView
+    func downloadAndInsertImagesIntoTextView() {
+        
+        // TODO: 新增 if else 判斷是開新日記，或開啟舊日記，如果是後者則新增 attachment
+        
         let attributedString = NSMutableAttributedString(attributedString: bodyTextView.attributedText)
         
         let textViewFont = bodyTextView.font ?? UIFont.systemFont(ofSize: 24)
@@ -496,40 +499,45 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         ]
         
         for imageURL in selectedImageURLs {
-            if let url = URL(string: imageURL) {
-                let attachment = NSTextAttachment()
-                //                let placeholderImage = UIImage(named: "Placeholder picture")
-                //                            attachment.image = placeholderImage
-                let attachmentString = NSAttributedString(attachment: attachment)
-                
-                if attributedString.length > 0 {
-                    attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
-                }
-                
-                attributedString.append(attachmentString)
-                attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
+            if let url = URL(string: imageURL), !isImageAlreadyInserted(imageURL: imageURL) {
                 
                 KingfisherManager.shared.retrieveImage(with: url, options: [.transition(.fade(0.3))], progressBlock: nil) { result in
                     switch result {
                     case .success(let value):
-                        attachment.image = value.image
-                        self.bodyTextView.attributedText = attributedString
+                        DispatchQueue.main.async {
+//                            self.bodyTextView.attributedText = attributedString
+                        }
                     case .failure(let error):
-                        print("Error downloading image: \(error)")
+                        print("下載圖片錯誤: \(error)")
                     }
                 }
             }
         }
-        
-        bodyTextView.attributedText = attributedString
     }
-    
+
+    func isImageAlreadyInserted(imageURL: String) -> Bool {
+        return bodyTextView.text.contains(imageURL)
+    }
+
+
     // 在 textView 插入圖片並 resize
     func insertImage(_ image: UIImage) {
         DispatchQueue.main.async {
+            // 檢查圖片是否已經存在於 TextView 中
+            if let imageId = image.accessibilityIdentifier,
+               self.bodyTextView.text.contains(imageId) {
+                print("圖片已經存在 TextView")
+                return
+            }
+
             let textAttachment = NSTextAttachment()
             textAttachment.image = image
             
+            // 設定圖片的 accessibilityIdentifier 來區別圖片
+            if image.accessibilityIdentifier == nil {
+                image.accessibilityIdentifier = UUID().uuidString
+            }
+
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.alignment = .left
             
@@ -555,6 +563,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             self.bodyTextView.selectedTextRange = self.bodyTextView.textRange(from: newPosition, to: newPosition)
         }
     }
+
     
     func resizeImage(_ image: UIImage, targetWidth: CGFloat, completion: @escaping (UIImage?) -> Void) {
         
@@ -564,7 +573,6 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         let newSize = CGSize(width: targetWidth, height: newHeight)
         
         image.prepareThumbnail(of: newSize, completionHandler: { [weak self] thumbnail in
-            print("Is main thread: \(Thread.isMainThread)")
             guard let strongSelf = self else { return }
             completion(thumbnail)
         })
