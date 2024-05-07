@@ -15,6 +15,7 @@
 		2732C7872BDA5EA1004170C6 /* DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C7862BDA5EA1004170C6 /* DateFormatter.swift */; };
 		2739EA402BD241540054D455 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2739EA3F2BD241540054D455 /* CalendarViewController.swift */; };
 		2739EA432BD2424B0054D455 /* DateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2739EA422BD2424B0054D455 /* DateCell.swift */; };
+		2742D1482BE9D7080008E8D8 /* JournalingSuggestions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2742D1432BE9C57F0008E8D8 /* JournalingSuggestions.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		274A49FD2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274A49FC2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift */; };
 		274B83262BE5E5990066CB40 /* SetupBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274B83252BE5E5990066CB40 /* SetupBackgroundColor.swift */; };
 		274B83282BE6007E0066CB40 /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = 274B83272BE6007E0066CB40 /* style.json */; };
@@ -113,6 +114,7 @@
 		2732C7862BDA5EA1004170C6 /* DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatter.swift; sourceTree = "<group>"; };
 		2739EA3F2BD241540054D455 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
 		2739EA422BD2424B0054D455 /* DateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateCell.swift; sourceTree = "<group>"; };
+		2742D1432BE9C57F0008E8D8 /* JournalingSuggestions.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JournalingSuggestions.framework; path = System/Library/Frameworks/JournalingSuggestions.framework; sourceTree = SDKROOT; };
 		274A49FC2BD7A2D600DDEEBF /* RecurrenceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrenceSettingsView.swift; sourceTree = "<group>"; };
 		274B83252BE5E5990066CB40 /* SetupBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupBackgroundColor.swift; sourceTree = "<group>"; };
 		274B83272BE6007E0066CB40 /* style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = style.json; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 				275CC3612BC7BF3D0062C75C /* FirebaseStorage in Frameworks */,
 				27F62CAD2BE08F9D005A91F2 /* FirebaseAuth in Frameworks */,
 				275CC35F2BC7BF3D0062C75C /* FirebaseFirestoreSwift in Frameworks */,
+				2742D1482BE9D7080008E8D8 /* JournalingSuggestions.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,6 +442,7 @@
 		5F99B7E00C8664F0DF0D1A3B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2742D1432BE9C57F0008E8D8 /* JournalingSuggestions.framework */,
 				14A74EBB65BE9EEC875C9D19 /* Pods_chongAiTa.framework */,
 				CECCCE7E6A56C5FDEDBFFD2C /* Pods_chongAiTa_chongAiTaUITests.framework */,
 				30459DD25007C6CCFBF088A9 /* Pods_chongAiTaTests.framework */,
