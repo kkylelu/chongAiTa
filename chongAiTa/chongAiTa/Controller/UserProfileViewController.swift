@@ -22,12 +22,16 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
     ]
     var errorMessage = ""
     var user: User?
+    var aboutAppView: UIView?
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
         applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissAboutAppView))
+                view.addGestureRecognizer(tapGesture)
     }
     
     // MARK: - Setup UI
@@ -63,6 +67,78 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
     }
     
     // MARK: - Action
+    
+    @objc func dismissAboutAppView() {
+            aboutAppView?.removeFromSuperview()
+            aboutAppView = nil
+        }
+    
+    func didTapButton(in cell: UserProfileCollectionViewCell) {
+        if let indexPath = collectionView.indexPath(for: cell) {
+            switch sections[indexPath.section] {
+            case .about:
+                showAboutAppView()
+            case .account(let actions):
+                let action = actions[indexPath.item]
+                switch action {
+                case .logout:
+                    print("點擊 登出 按鈕")
+                    signOut()
+                case .deleteAccount:
+                    print("點擊 刪除帳號 按鈕")
+                    let alert = UIAlertController(title: "確定要刪除帳號嗎？", message: "帳號一旦刪除，將無法復原", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+                    alert.addAction(UIAlertAction(title: "確定", style: .destructive, handler: { [weak self] _ in
+                        guard let strongSelf = self else { return }
+                        Task {
+                            let success = await strongSelf.deleteAccount()
+                            if success {
+                                print("帳號已刪除。")
+                            } else {
+                                print("刪除帳號失敗")
+                            }
+                        }
+                    }))
+                    if let viewController = collectionView.window?.rootViewController {
+                        viewController.present(alert, animated: true, completion: nil)
+                    }
+                default:
+                    break
+                }
+            default:
+                break
+            }
+        }
+    }
+    
+    func showAboutAppView() {
+        let aboutAppView = UIView(frame: UIScreen.main.bounds)
+        aboutAppView.backgroundColor = UIColor.B1
+        
+        let backButton = UIButton(type: .custom)
+        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        backButton.tintColor = .white
+        backButton.frame = CGRect(x: 20, y: 50, width: 40, height: 40)
+        backButton.addTarget(self, action: #selector(dismissAboutAppView), for: .touchUpInside)
+        aboutAppView.addSubview(backButton)
+        
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 128, height: 128))
+        imageView.center = CGPoint(x: aboutAppView.center.x, y: aboutAppView.center.y - 63)
+        imageView.image = UIImage(named: "pawsPalIcon_pure")
+        aboutAppView.addSubview(imageView)
+        
+        let label = UILabel(frame: CGRect(x: 0, y: imageView.frame.maxY + 10, width: aboutAppView.frame.width, height: 50))
+        label.text = "PawsPal"
+        label.textColor = .white
+        label.font = UIFont(name: "Helvetica Neue Bold", size: 30)
+        label.textAlignment = .center
+        aboutAppView.addSubview(label)
+        
+        if let viewController = self.view.window?.rootViewController {
+            viewController.view.addSubview(aboutAppView)
+            self.aboutAppView = aboutAppView
+        }
+    }
     
     func signOut(){
         do {
@@ -181,7 +257,7 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
         
         switch sections[indexPath.section] {
         case .about:
-            cell.configure(with: UIImage(systemName: "person.fill"), title: "使用者資料")
+            cell.configure(with: UIImage(systemName: "pawprint.fill"), title: "關於 PawsPal")
         case .account(let actions):
             let action = actions[indexPath.item]
             switch action {
@@ -227,41 +303,7 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
         }
     }
     
-    func didTapButton(in cell: UserProfileCollectionViewCell) {
-        if let indexPath = collectionView.indexPath(for: cell) {
-            switch sections[indexPath.section] {
-            case .account(let actions):
-                let action = actions[indexPath.item]
-                switch action {
-                case .logout:
-                    print("點擊 登出 按鈕")
-                    signOut()
-                case .deleteAccount:
-                    print("點擊 刪除帳號 按鈕")
-                    let alert = UIAlertController(title: "確定要刪除帳號嗎？", message: "帳號一旦刪除，將無法復原", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-                    alert.addAction(UIAlertAction(title: "確定", style: .destructive, handler: { [weak self] _ in
-                        guard let strongSelf = self else { return }
-                        Task {
-                            let success = await strongSelf.deleteAccount()
-                            if success {
-                                print("帳號已刪除。")
-                            } else {
-                                print("刪除帳號失敗")
-                            }
-                        }
-                    }))
-                    if let viewController = collectionView.window?.rootViewController {
-                        viewController.present(alert, animated: true, completion: nil)
-                    }
-                default:
-                    break
-                }
-            default:
-                break
-            }
-        }
-    }
+    
 }
 
 class SignInWithApple: NSObject, ASAuthorizationControllerDelegate {
