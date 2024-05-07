@@ -37,7 +37,7 @@ enum PetDetailItem {
         }
     }
     
-    static func forIndexPath(_ indexPath: IndexPath) -> PetDetailItem {
+    static func forIndexPath(_ indexPath: IndexPath) -> PetDetailItem? {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
             return .name
@@ -56,7 +56,7 @@ enum PetDetailItem {
         case (1, 3):
             return .isNeutered
         default:
-            fatalError("Invalid indexPath for PetDetailItem")
+            return nil
         }
     }
     

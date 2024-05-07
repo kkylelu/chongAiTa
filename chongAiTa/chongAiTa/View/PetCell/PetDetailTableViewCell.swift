@@ -28,7 +28,10 @@ class PetDetailTableViewCell: UITableViewCell {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        #if DEBUG
+        assertionFailure("init(coder:) has not been implemented")
+        #endif
+        return nil
     }
     
     // MARK: - Setup UI
