@@ -50,7 +50,6 @@ enum ActivityCategory: Int {
     case toy = 3
     case walk = 4
     case others = 5
-    // 後續可增加更多類別
     
     var displayName: String {
         switch self {

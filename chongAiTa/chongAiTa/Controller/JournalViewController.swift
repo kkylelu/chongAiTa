@@ -185,7 +185,6 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func setupConstraints() {
-        // 移除原有約束的設定
         // 使用 keyboardLayoutGuide 設定 containerView 的底部約束
         bottomConstraint = buttonContainerView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
         bottomConstraint?.isActive = true

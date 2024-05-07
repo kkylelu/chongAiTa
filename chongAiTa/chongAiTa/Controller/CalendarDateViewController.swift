@@ -165,8 +165,12 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "JournalHomeCell", for: indexPath) as? JournalHomeTableViewCell else {
-            fatalError("無法取得 JournalHomeTableViewCell 的實例。")
+            let cell = UITableViewCell()
+            cell.textLabel?.text = "無法載入資料"
+            cell.imageView?.image = UIImage(named: "placeholder")
+            return cell
         }
+        
         let event = dataSource[indexPath.row]
         
         let dateFormatter = DateFormatter()

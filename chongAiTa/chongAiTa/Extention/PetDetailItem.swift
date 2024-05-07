@@ -15,6 +15,7 @@ enum PetDetailItem {
     case joinDate
     case weight
     case isNeutered
+    case placeholder
     
     var icon: UIImage? {
         switch self {
@@ -34,10 +35,12 @@ enum PetDetailItem {
             return UIImage(systemName: "scalemass")
         case .isNeutered:
             return UIImage(systemName: "scissors")
+        case .placeholder:
+            return UIImage(systemName: "Placeholder picture")
         }
     }
     
-    static func forIndexPath(_ indexPath: IndexPath) -> PetDetailItem? {
+    static func forIndexPath(_ indexPath: IndexPath) -> PetDetailItem {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
             return .name
@@ -56,7 +59,7 @@ enum PetDetailItem {
         case (1, 3):
             return .isNeutered
         default:
-            return nil
+            return .placeholder
         }
     }
     
@@ -79,6 +82,8 @@ enum PetDetailItem {
             return "體重"
         case .isNeutered:
             return "結紮狀態"
+        case .placeholder:
+            return "N/A"
         }
     }
 }

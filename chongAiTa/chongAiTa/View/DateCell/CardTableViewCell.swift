@@ -20,8 +20,11 @@ class CardTableViewCell: UITableViewCell {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+            #if DEBUG
+            assertionFailure("init(coder:) has not been implemented")
+            #endif
+            return nil
+        }
 
     func setupUI() {
         iconImageView.translatesAutoresizingMaskIntoConstraints = false

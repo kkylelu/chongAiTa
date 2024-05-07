@@ -580,11 +580,20 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         let item = PetDetailItem.forIndexPath(indexPath)
-        if let pet = pet {
-            cell.configure(with: item, pet: pet)
-        } else {
-            print("No pet data available for row \(indexPath.row)")
-        }
+        switch item {
+            case .placeholder:
+                cell.titleLabel.text = "N/A"
+                cell.valueLabel.text = ""
+            default:
+                if let pet = pet {
+                    // 設定對應的pet資料
+                    cell.configure(with: item, pet: pet)
+                } else {
+                    print("目前沒有寵物資料 \(indexPath.row)")
+                    cell.titleLabel.text = "N/A"
+                    cell.valueLabel.text = ""
+                }
+            }
         
         return cell
     }

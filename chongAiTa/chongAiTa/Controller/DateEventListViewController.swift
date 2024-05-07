@@ -19,8 +19,11 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+            #if DEBUG
+            assertionFailure("init(coder:) has not been implemented")
+            #endif
+            return nil
+        }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -97,9 +100,14 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ActivityCollectionViewCell", for: indexPath) as? ActivityCollectionViewCell else {
-            fatalError("Unable to dequeue ActivityCollectionViewCell")
+            let cell = UICollectionViewCell()
+            let label = UILabel(frame: cell.bounds)
+            label.text = "無法載入資料"
+            label.textAlignment = .center
+            cell.backgroundView = label
+            return cell
         }
-
+        
         let activity = defaultActivities[indexPath.item]
         cell.configure(with: activity.category.displayName, icon: getIconForCategory(activity.category), date: activity.date)
         return cell

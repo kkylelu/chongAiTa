@@ -150,6 +150,8 @@ class PetDetailTableViewCell: UITableViewCell {
             }
         case .isNeutered:
             valueLabel.text = pet.isNeutered ? "已結紮" : "未結紮"
+        case .placeholder:
+            valueLabel.text = "N/A"
         }
     }
     @objc func buttonTapped(_ sender: UIButton) {
