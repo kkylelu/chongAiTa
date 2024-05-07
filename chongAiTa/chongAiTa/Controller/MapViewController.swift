@@ -165,7 +165,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         mapView.clear()
         if CLLocationManager.locationServicesEnabled() {
-            locationManager.startUpdatingLocation()
+            if let location = locationManager.location {
+                let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude, longitude: location.coordinate.longitude, zoom: mapView.camera.zoom)
+                mapView.animate(to: camera)
+            }
         }
     }
     
@@ -251,17 +254,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     // MARK: - CLLocationManager Delegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
-            let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude, longitude: location.coordinate.longitude, zoom: 16.0)
-            mapView.animate(to: camera)
-            
+                // 只在第一次定位時設定地圖相機位置
+                if mapView.camera.target.latitude == 0 && mapView.camera.target.longitude == 0 {
+                    let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude, longitude: location.coordinate.longitude, zoom: 16.0)
+                    mapView.animate(to: camera)
+                }
+            }
         }
-    }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("找不到使用者的位置: \(error.localizedDescription)")
     }
-    
-    
     
     func addPlaceMarker(_ place: Place) {
         let marker = GMSMarker()
@@ -303,7 +306,4 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         present(alertController, animated: true, completion: nil)
     }
-    
-    
-    
 }
