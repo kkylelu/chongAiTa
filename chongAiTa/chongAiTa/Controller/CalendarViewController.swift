@@ -154,11 +154,24 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         let titleButton = UIButton(type: .system)
         titleButton.setTitle(titleForCurrentMonth(), for: .normal)
         titleButton.addTarget(self, action: #selector(presentDatePicker), for: .touchUpInside)
+        titleButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        titleButton.titleLabel?.minimumScaleFactor = 0.5
+        titleButton.contentHorizontalAlignment = .center
         
         navigationItem.leftBarButtonItem = previousMonthButton
         navigationItem.rightBarButtonItem = nextMonthButton
-        // 將 UIButton 設置為 titleView
         navigationItem.titleView = titleButton
+        
+        if let titleView = navigationItem.titleView {
+            titleView.sizeToFit()
+        }
+        
+        titleButton.translatesAutoresizingMaskIntoConstraints = false
+        navigationItem.titleView = titleButton
+        NSLayoutConstraint.activate([
+            titleButton.centerXAnchor.constraint(equalTo: navigationItem.titleView?.centerXAnchor ?? view.centerXAnchor),
+            titleButton.centerYAnchor.constraint(equalTo: navigationItem.titleView?.centerYAnchor ?? view.centerYAnchor)
+        ])
     }
     
     @objc func presentDatePicker() {
@@ -324,8 +337,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         return cell
     }
-    
-    
     
     func firstOfMonth() -> Date {
         let calendar = Calendar.current
