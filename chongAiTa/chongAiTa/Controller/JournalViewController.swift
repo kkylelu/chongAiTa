@@ -7,11 +7,14 @@
 
 import UIKit
 import SwiftUI
-import JournalingSuggestions
 import FirebaseFirestore
 import Kingfisher
 import FirebaseStorage
 import FirebaseAuth
+
+#if !targetEnvironment(simulator)
+import JournalingSuggestions
+#endif
 
 class JournalViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
     
@@ -148,19 +151,21 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         imageButton.tintColor = grayColor
         imageButton.titleLabel?.textAlignment = .center
         
-        // 在 ipad 禁用 suggestionAPI 避免 crash
-        if UIDevice.current.userInterfaceIdiom == .phone {
-                suggestionsButton.isHidden = false
-                suggestionsButton.isEnabled = true
-                suggestionsButton.setImage(UIImage(systemName: "wand.and.stars")?.withTintColor(UIColor.systemGray, renderingMode: .alwaysOriginal), for: .normal)
-                suggestionsButton.setTitle("靈感", for: .normal)
-                suggestionsButton.tintColor = UIColor.systemGray
-                suggestionsButton.titleLabel?.textAlignment = .center
-                suggestionsButton.addTarget(self, action: #selector(didTapSuggestionsButton), for: .touchUpInside)
-            } else {
-                suggestionsButton.isHidden = true
-                suggestionsButton.isEnabled = false
-            }
+        // 在 ipad 和模擬器禁用 suggestionAPI 避免 crash
+#if !targetEnvironment(simulator)
+    if UIDevice.current.userInterfaceIdiom == .phone {
+        // 啟用按鈕並設定屬性
+        suggestionsButton.isHidden = false
+        suggestionsButton.isEnabled = true
+        setupSuggestionsButton()
+    } else {
+        // 在 iPad 上禁用按鈕
+        disableSuggestionsButton()
+    }
+#else
+    // 在模擬器上禁用按鈕
+    disableSuggestionsButton()
+#endif
         
         imageButton.addTarget(self, action: #selector(didTapImageButton), for: .touchUpInside)
         //            templateButton.addTarget(self, action: #selector(didTapTemplateButton), for: .touchUpInside)
@@ -182,6 +187,19 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         setupConstraints()
         
+    }
+    
+    func setupSuggestionsButton() {
+        suggestionsButton.setImage(UIImage(systemName: "wand.and.stars")?.withTintColor(UIColor.systemGray, renderingMode: .alwaysOriginal), for: .normal)
+        suggestionsButton.setTitle("靈感", for: .normal)
+        suggestionsButton.tintColor = UIColor.systemGray
+        suggestionsButton.titleLabel?.textAlignment = .center
+        suggestionsButton.addTarget(self, action: #selector(didTapSuggestionsButton), for: .touchUpInside)
+    }
+
+    func disableSuggestionsButton() {
+        suggestionsButton.isHidden = true
+        suggestionsButton.isEnabled = false
     }
     
     func setupConstraints() {

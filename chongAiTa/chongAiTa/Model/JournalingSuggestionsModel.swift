@@ -7,14 +7,19 @@
 
 import UIKit
 import CoreLocation
+
+#if !targetEnvironment(simulator)
 import JournalingSuggestions
+#endif
 
 struct JournalingSuggestionContent {
+    #if !targetEnvironment(simulator)
     var podcast: JournalingSuggestion.Podcast
     var photo: JournalingSuggestion.Photo
     var livePhoto: JournalingSuggestion.LivePhoto
     var contact: JournalingSuggestion.Contact
     var song: JournalingSuggestion.Song
+    #endif
 }
 
 struct UIImageWrapper {
@@ -23,6 +28,8 @@ struct UIImageWrapper {
 
 struct IdentifiableLocation: Identifiable {
     let id = UUID()
+    #if !targetEnvironment(simulator)
     let location: JournalingSuggestion.Location
+    #endif
 }
 

@@ -6,9 +6,12 @@
 //
 
 import SwiftUI
-import JournalingSuggestions
 import CoreLocation
 import MapKit
+
+#if !targetEnvironment(simulator)
+import JournalingSuggestions
+#endif
 
 
 struct ContentView: View {
@@ -25,6 +28,7 @@ struct ContentView: View {
         VStack {
             Spacer()
             
+#if !targetEnvironment(simulator)
             JournalingSuggestionsPicker {
                     VStack {
                         Spacer()
@@ -41,6 +45,7 @@ struct ContentView: View {
                     loadContent(suggestion: suggestion)
                     loadLocation(suggestion: suggestion)
                 }
+#endif
                         
                 Spacer()
                         
@@ -57,6 +62,7 @@ struct ContentView: View {
             
             
             if !suggestionLocations.isEmpty {
+#if !targetEnvironment(simulator)
                 let location = suggestionLocations[0].location
                 VStack(alignment: .leading) {
                     Map(coordinateRegion: $region, annotationItems: suggestionLocations) { identifiableLocation in
@@ -71,10 +77,14 @@ struct ContentView: View {
                         Text("Date: \(date)")
                     }
                 }
+#else
+    Text("無法在模擬器上顯示地圖和位置資訊")
+#endif
             }
         }
     }
     
+#if !targetEnvironment(simulator)
     func loadContent(suggestion: JournalingSuggestion) {
         Task {
             let images = await suggestion.content(forType: UIImage.self)
@@ -101,6 +111,6 @@ struct ContentView: View {
             }
         }
     }
-
+#endif
 }
 

@@ -6,10 +6,13 @@
 //
 
 import UIKit
-import JournalingSuggestions
 import Kingfisher
 import Lottie
 import FirebaseAuth
+
+#if !targetEnvironment(simulator)
+import JournalingSuggestions
+#endif
 
 class JournalHomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
