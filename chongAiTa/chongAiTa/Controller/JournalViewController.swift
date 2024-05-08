@@ -382,6 +382,13 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     @objc func doneButtonTapped() {
+        if navigationItem.rightBarButtonItem?.isEnabled == false {
+            return
+        }
+        
+        // 禁用按鈕，避免重複點擊
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        
         if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
             view.showLoadingAnimation()
             uploadImagesToStorage { [weak self] imageUrls in
@@ -401,11 +408,17 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
                         case .failure(let error):
                             print("日記上傳失敗: \(error)")
                         }
+                        
+                        // 不管成功或失敗，重新啟用按鈕
+                        self.navigationItem.rightBarButtonItem?.isEnabled = true
                     }
                 }
             }
         } else {
             print("Error: 錯誤資訊")
+            
+            // 發生錯誤，也重新啟用按鈕
+            navigationItem.rightBarButtonItem?.isEnabled = true
         }
     }
     
