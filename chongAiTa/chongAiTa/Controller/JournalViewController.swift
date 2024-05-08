@@ -244,10 +244,10 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView === titleTextView && textView.text == titlePlaceholder {
             textView.text = nil
-            textView.textColor = .black
+            textView.textColor = view.traitCollection.userInterfaceStyle == .dark ? .white : .black
         } else if textView === bodyTextView && textView.text == bodyPlaceholder {
             textView.text = nil
-            textView.textColor = .black
+            textView.textColor = view.traitCollection.userInterfaceStyle == .dark ? .white : .black
         }
     }
     
@@ -266,40 +266,42 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     func updateUI(with journal: Journal) {
         titleTextView.text = journal.title
         bodyTextView.text = journal.body
-        
-        titleTextView.textColor = journal.title.isEmpty ? .lightGray : .black
-        bodyTextView.textColor = journal.body.isEmpty ? .lightGray : .black
-        
+
+        let placeholderColor: UIColor = view.traitCollection.userInterfaceStyle == .dark ? .lightGray : .darkGray
+        titleTextView.textColor = journal.title.isEmpty ? placeholderColor : (view.traitCollection.userInterfaceStyle == .dark ? .white : .black)
+        bodyTextView.textColor = journal.body.isEmpty ? placeholderColor : (view.traitCollection.userInterfaceStyle == .dark ? .white : .black)
+
         if titleTextView.text == titlePlaceholder {
-            titleTextView.textColor = .lightGray
+            titleTextView.textColor = placeholderColor
         }
+
         if bodyTextView.text == bodyPlaceholder {
-            bodyTextView.textColor = .lightGray
+            bodyTextView.textColor = placeholderColor
         }
-        
+
         let attributedString = NSMutableAttributedString(string: journal.body)
         let textViewFont = bodyTextView.font ?? UIFont.systemFont(ofSize: 24)
         let range = NSRange(location: 0, length: attributedString.length)
         attributedString.addAttribute(.font, value: textViewFont, range: range)
-        
+
         bodyTextView.attributedText = attributedString
         selectedImages = journal.images
         selectedImageURLs = journal.imageUrls
         downloadAndInsertImagesIntoTextView()
     }
     
-    
     func updateTextViews(title: String, body: String) {
         let titleFont = UIFont.boldSystemFont(ofSize: 30)
         let bodyFont = UIFont.systemFont(ofSize: 24)
-        
+
         titleTextView.font = titleFont
         titleTextView.text = title
-        
+        titleTextView.textColor = view.traitCollection.userInterfaceStyle == .dark ? .white : .black
+
         bodyTextView.font = bodyFont
         bodyTextView.text = body
+        bodyTextView.textColor = view.traitCollection.userInterfaceStyle == .dark ? .white : .black
     }
-    
     
     //MARK: - Action
     
