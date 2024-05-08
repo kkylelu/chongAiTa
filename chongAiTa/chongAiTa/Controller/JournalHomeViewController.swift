@@ -174,10 +174,14 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
                     case .success(let journals):
                         // 加入假資料和從 Firebase 下載資料
                         self?.journalsArray = journals + FakeDataGenerator.generateFakeJournals(count: 2)
+                        
+                        // 依照日期從新到舊排序
+                        self?.journalsArray.sort { $0.date > $1.date }
+                        
                         self?.updateUI()
                     case .failure(let error):
                         print("Failed to fetch journals from Firebase: \(error)")
-                        // 當從 Firebase 下載失敗時，還是可以顯示假資料
+                        // 當從 Firebase 下載失敗時,還是可以顯示假資料
                         self?.journalsArray = FakeDataGenerator.generateFakeJournals(count: 2)
                         self?.updateUI()
                     }
@@ -185,7 +189,6 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
             }
         }
     }
-
     
     // AI 日記回顧
     @objc func generateSummary() {
