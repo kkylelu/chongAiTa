@@ -76,15 +76,18 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        fetchPetDataFromFirebase { [weak self] hasData in
-            if !hasData {
-                // 如果 Firebase 中沒有資料，則加載假資料
-                self?.loadFakeData()
+        if let currentPet = pet {
+            updateImageView(with: currentPet.imageUrl)
+            updateInfoLabelText()
+        } else {
+            fetchPetDataFromFirebase { [weak self] hasData in
+                if !hasData {
+                    self?.loadFakeData()
+                }
             }
         }
-        
-        updateInfoLabelText()
     }
+
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -95,24 +98,18 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             if isPetDataChanged, let currentPet = pet {
                 FirestoreService.shared.uploadPet(userId: userId, pet: currentPet) { error in
                     if let error = error {
-                        print("Error uploading pet data: \(error.localizedDescription)")
+                        print("上傳寵物資料失敗: \(error.localizedDescription)")
                     } else {
-                        print("Pet data uploaded successfully")
+                        print("寵物資料成功上傳")
                         self.isPetDataChanged = false
                         
-                        // 上傳完成後重新獲取寵物資料
-                        self.fetchPetDataFromFirebase { _ in
-                            DispatchQueue.main.async {
-                                self.tableView.reloadData()
-                                self.updateImageView(with: currentPet.imageUrl)
-                                self.updateInfoLabelText()
-                            }
-                        }
+                       
                     }
                 }
             }
         }
     }
+
 
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -289,10 +286,15 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
                         return
                     }
                     
+                    // 更新本地的 pet 物件的 imageUrl 屬性
                     self.pet?.imageUrl = [imageUrl]
                     self.isPetDataChanged = true
+                    
+                    // 立即更新 UI
+                    DispatchQueue.main.async {
+                        self.updateImageView(with: [imageUrl])
+                    }
                 }
-                
             }
         }
     }
