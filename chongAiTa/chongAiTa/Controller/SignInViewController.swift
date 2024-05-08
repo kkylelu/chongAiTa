@@ -16,6 +16,7 @@ class SignInViewController: UIViewController {
     let welcomeLabel = UILabel()
     let imageView = UIImageView(image: UIImage(named: "Good Dog"))
     let descriptionLabel = UILabel()
+    var signInWithAppleBtn: ASAuthorizationAppleIDButton!
     
     
     override func viewDidLoad() {
@@ -77,7 +78,7 @@ class SignInViewController: UIViewController {
     
     // MARK: - create Sign in with Apple button
     func setSignInWithAppleButton() {
-        let signInWithAppleBtn = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: chooseAppleButtonStyle())
+        signInWithAppleBtn = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: chooseAppleButtonStyle())
         view.addSubview(signInWithAppleBtn)
         signInWithAppleBtn.cornerRadius = 25
         signInWithAppleBtn.addTarget(self, action: #selector(signInWithAppleTapped), for: .touchUpInside)
@@ -96,6 +97,8 @@ class SignInViewController: UIViewController {
     fileprivate var currentNonce: String?
     
     @objc func signInWithAppleTapped() {
+        signInWithAppleBtn.isEnabled = false
+        
         let nonce = randomNonceString()
         currentNonce = nonce
         let appleIDProvider = ASAuthorizationAppleIDProvider()
@@ -187,6 +190,9 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
             let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
             // 與 Firebase Auth 進行串接
             firebaseSignInWithApple(credential: credential)
+            
+            // 登入成功後重新啟用 Sign in with Apple 按鈕
+            signInWithAppleBtn.isEnabled = true
         }
     }
     
@@ -211,6 +217,8 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         default:
             break
         }
+        // 登入失敗後重新啟用 Sign in with Apple 按鈕
+                signInWithAppleBtn.isEnabled = true
     }
 }
 
