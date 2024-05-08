@@ -32,7 +32,6 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        print("viewDidAppear called")
         
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: selectedDate)

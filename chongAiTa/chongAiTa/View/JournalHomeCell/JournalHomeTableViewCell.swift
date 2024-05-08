@@ -97,12 +97,13 @@ class JournalHomeTableViewCell: UITableViewCell {
         journalImageView.contentMode = .scaleAspectFill
         journalImageView.clipsToBounds = true
 
-        if let imageName = event.imageName, let image = UIImage(named: imageName) {
-            journalImageView.image = image
-            print("Displaying event image for '\(event.title)'")
-        } else {
-            journalImageView.image = UIImage(named: "Placeholder")
-            print("No image to display for event '\(event.title)'")
-        }
+        let iconName = event.activity.category.iconName
+            if let image = UIImage(named: iconName) {
+                journalImageView.image = image
+                print("顯示圖片 '\(event.title)'")
+            } else {
+                journalImageView.image = UIImage(named: "Placeholder picture")
+                print("沒有圖片可顯示 '\(event.title)'")
+            }
     }
 }
