@@ -13,17 +13,17 @@ struct CalendarEvents {
     var date: Date
     var activity: DefaultActivity
     var content: String?
-    var image: UIImage?
+    var imageName: String?
     var cost: Double?
     var recurrence: Recurrence?
     
-    init(id: UUID = UUID(), title: String, date: Date, activity: DefaultActivity, content: String? = nil, image: UIImage? = nil, cost: Double? = nil, recurrence: Recurrence? = nil) {
+    init(id: UUID = UUID(), title: String, date: Date, activity: DefaultActivity, content: String? = nil, imageName: String? = nil, cost: Double? = nil, recurrence: Recurrence? = nil) {
         self.id = id
         self.title = title
         self.date = date
         self.activity = activity
         self.content = content
-        self.image = image
+        self.imageName = imageName
         self.cost = cost
         self.recurrence = recurrence
     }
@@ -68,20 +68,14 @@ enum ActivityCategory: Int {
         }
     }
     
-    var icon: UIImage? {
+    var iconName: String {
         switch self {
-        case .food:
-            return UIImage(named: "Feed")
-        case .medication:
-            return UIImage(named: "Vet Visit")
-        case .shower:
-            return UIImage(named: "Groom")
-        case .toy:
-            return UIImage(named: "Toy Shopping")
-        case .walk:
-            return UIImage(named: "Walk")
-        case .others:
-            return UIImage(named: "Others")
+        case .food: return "Feed"
+        case .medication: return "Vet Visit"
+        case .shower: return "Groom"
+        case .toy: return "Toy Shopping"
+        case .walk: return "Walk"
+        case .others: return "Others"
         }
     }
 }

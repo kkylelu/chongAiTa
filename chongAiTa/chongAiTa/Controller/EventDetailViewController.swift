@@ -195,13 +195,17 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     }
     
     func configure(event: CalendarEvents) {
-        self.eventImage = event.image
+        let imageName = event.activity.category.iconName
+        self.eventImage = UIImage(named: imageName)
+        
         self.eventTitle = event.title
         self.eventDate = event.date
         self.selectedActivity = event.activity
         self.currentEventId = event.id
+        
         displayEventDetails()
     }
+
     
     func displayEventDetails() {
         iconImageView.image = eventImage
@@ -272,13 +276,15 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
         if let activity = selectedActivity, let currentId = currentEventId {
             let title = titleTextField.text?.isEmpty ?? true ? (eventTitle ?? activity.category.displayName) : titleTextField.text!
             
+            let imageName = activity.category.iconName
+            
             let event = CalendarEvents(
                 id: currentId,
                 title: title,
                 date: datePicker.date,
                 activity: activity,
                 content: noteTextView.text,
-                image: iconImageView.image,
+                imageName: imageName,
                 cost: cost,
                 recurrence: selectedRecurrence
             )

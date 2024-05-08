@@ -165,24 +165,25 @@ class CalendarDateViewController: UIViewController, UITableViewDelegate, UITable
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "JournalHomeCell", for: indexPath) as? JournalHomeTableViewCell else {
-            let cell = UITableViewCell()
-            cell.textLabel?.text = "無法載入資料"
-            cell.imageView?.image = UIImage(named: "placeholder")
-            return cell
+            return UITableViewCell()
         }
         
         let event = dataSource[indexPath.row]
-        
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
         dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
         let formattedDate = dateFormatter.string(from: event.date)
-        
+
+        // 使用圖片名稱載入圖片
+        let imageName = event.activity.category.iconName
+        cell.journalImageView.image = UIImage(named: imageName)
+
         cell.configure(with: event, formattedDate: formattedDate)
-        cell.selectionStyle = .none
-        
+
         return cell
     }
+
+
 
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

@@ -12,7 +12,7 @@ class JournalHomeTableViewCell: UITableViewCell {
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var journalTitleLabel: UILabel!
     @IBOutlet weak var journalContentLabel: UILabel!
-    @IBOutlet weak var JournalImageView: UIImageView!
+    @IBOutlet weak var journalImageView: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -58,13 +58,51 @@ class JournalHomeTableViewCell: UITableViewCell {
         
     }
     
+    func configure(with journal: Journal) {
+        journalTitleLabel.text = journal.title
+        
+        // 設定預覽文字
+        let previewText = journal.body.prefix(12)
+        journalContentLabel.text = String(previewText) + "..."
+        
+        // 設定日期格式
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
+        dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
+        timeLabel.text = dateFormatter.string(from: journal.date)
+        
+        // 設定圖片顯示
+        journalImageView.contentMode = .scaleAspectFill
+        journalImageView.clipsToBounds = true
+        
+        // 嘗試使用內建圖片，如果沒有，就使用 URL 載入
+        if !journal.images.isEmpty {
+            journalImageView.image = journal.images.first
+            print("從內建圖庫載入圖片 '\(journal.title)'")
+        } else if let imageURL = URL(string: journal.imageUrls.first ?? "") {
+            journalImageView.kf.setImage(with: imageURL, placeholder: nil, options: [.transition(.fade(0.3))])
+            print("從 URL 載入圖片 '\(journal.title)'")
+        } else {
+            journalImageView.image = nil
+            print("沒有圖片可顯示 '\(journal.title)'")
+        }
+    }
+
     func configure(with event: CalendarEvents, formattedDate: String) {
-        timeLabel.text = formattedDate
-        
         journalTitleLabel.text = event.title
-        journalTitleLabel.baselineAdjustment = .alignCenters
-        
         journalContentLabel.text = event.content
-        JournalImageView.image = event.image
+        timeLabel.text = formattedDate
+
+        // 處理圖片
+        journalImageView.contentMode = .scaleAspectFill
+        journalImageView.clipsToBounds = true
+
+        if let imageName = event.imageName, let image = UIImage(named: imageName) {
+            journalImageView.image = image
+            print("Displaying event image for '\(event.title)'")
+        } else {
+            journalImageView.image = UIImage(named: "Placeholder")
+            print("No image to display for event '\(event.title)'")
+        }
     }
 }

@@ -248,32 +248,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         let journal = journalsArray[indexPath.row]
-        cell.journalTitleLabel.text = journal.title
-        
-        let previewText = journal.body.prefix(12)
-        cell.journalContentLabel.text = String(previewText) + "..."
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "zh_Hant_TW")
-        dateFormatter.dateFormat = "yyyy 年 M 月 d 日 EEEE"
-        cell.timeLabel.text = dateFormatter.string(from: journal.date)
-        
-        if !journal.images.isEmpty {
-            cell.JournalImageView.contentMode = .scaleAspectFill
-            cell.JournalImageView.clipsToBounds = true
-            cell.JournalImageView.image = journal.images.first
-            print("Displaying image for row \(indexPath.row)")
-        } else {
-            cell.JournalImageView.image = nil
-            print("No image to display for row \(indexPath.row)")
-        }
-        
-        if let imageURL = URL(string: journal.imageUrls.first ?? "") {
-            cell.JournalImageView.kf.setImage(with: imageURL, placeholder: nil, options: [.transition(.fade(0.3))])
-        } else {
-            cell.JournalImageView.image = nil
-        }
-        
+        cell.configure(with: journal)
         return cell
     }
     

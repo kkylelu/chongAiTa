@@ -75,7 +75,7 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
         ]
     }
     
-    func getIconForCategory(_ category: ActivityCategory) -> UIImage {
+    func getIconForCategory(_ category: ActivityCategory) -> UIImage? {
         switch category {
         case .food:
             return UIImage(named: "Feed")!
@@ -109,7 +109,10 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
         }
         
         let activity = defaultActivities[indexPath.item]
-        cell.configure(with: activity.category.displayName, icon: getIconForCategory(activity.category), date: activity.date)
+            if let icon = getIconForCategory(activity.category) {
+                cell.configure(with: activity.category.displayName, icon: icon, date: activity.date)
+            }
+        
         return cell
     }
     
@@ -118,12 +121,13 @@ class DateEventListViewController: UIViewController, UICollectionViewDelegate, U
         let icon = getIconForCategory(activity.category)
         let displayName = activity.category.displayName
         let selectedTime = activity.date
+        let imageName = activity.category.iconName
 
         let event = CalendarEvents(
             title: displayName,
             date: selectedTime,
             activity: activity,
-            image: icon
+            imageName: imageName
         )
 
         let eventDetailVC = EventDetailViewController()

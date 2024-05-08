@@ -70,8 +70,8 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
-                <outlet property="JournalImageView" destination="tup-Va-jQc" id="Ml0-HD-mMK"/>
                 <outlet property="journalContentLabel" destination="RGG-zd-xhO" id="9Hd-Ss-zTF"/>
+                <outlet property="journalImageView" destination="tup-Va-jQc" id="Ml0-HD-mMK"/>
                 <outlet property="journalTitleLabel" destination="Taj-NR-Eg9" id="b0w-pd-Ir0"/>
                 <outlet property="timeLabel" destination="NVe-BT-gHT" id="PiJ-pi-3fM"/>
             </connections>

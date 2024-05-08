@@ -103,7 +103,7 @@ class EventsManager {
             date: nextDate,
             activity: event.activity,
             content: event.content,
-            image: event.image,
+            imageName: event.imageName,
             cost: event.cost,
             recurrence: event.recurrence
         )
@@ -168,7 +168,7 @@ class EventsManager {
                                 date: nextDate,
                                 activity: event.activity,
                                 content: event.content,
-                                image: event.image,
+                                imageName: event.imageName,
                                 cost: event.cost,
                                 recurrence: event.recurrence
                             )
