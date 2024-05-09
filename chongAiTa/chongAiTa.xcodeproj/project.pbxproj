@@ -57,6 +57,8 @@
 		27A939072BD3AC2200BF4845 /* EventDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A939062BD3AC2200BF4845 /* EventDetailViewController.swift */; };
 		27A9390B2BD4206E00BF4845 /* NewJournalNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390A2BD4206E00BF4845 /* NewJournalNotification.swift */; };
 		27A9390F2BD55D8B00BF4845 /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A9390E2BD55D8B00BF4845 /* EventsManager.swift */; };
+		27B1913B2BEC78D800A4340A /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 27B1913A2BEC78D800A4340A /* FirebaseCrashlytics */; };
+		27B1913D2BEC796C00A4340A /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 27B1913C2BEC796C00A4340A /* FirebaseAnalyticsSwift */; };
 		27BC7D472BDCFAB5007B73BF /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BC7D462BDCFAB5007B73BF /* MainTabBarController.swift */; };
 		27D471FD2BE4FEF900D92B01 /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D471FC2BE4FEF900D92B01 /* UserProfileViewController.swift */; };
 		27D471FF2BE5034600D92B01 /* UserProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D471FE2BE5034600D92B01 /* UserProfileItem.swift */; };
@@ -199,8 +201,10 @@
 				31B11AA4BBB594B0494B8965 /* Pods_chongAiTa.framework in Frameworks */,
 				275CC35D2BC7BF3D0062C75C /* FirebaseFirestore in Frameworks */,
 				27F0044C2BCD33A500C87472 /* Alamofire in Frameworks */,
+				27B1913D2BEC796C00A4340A /* FirebaseAnalyticsSwift in Frameworks */,
 				275CC3612BC7BF3D0062C75C /* FirebaseStorage in Frameworks */,
 				27F62CAD2BE08F9D005A91F2 /* FirebaseAuth in Frameworks */,
+				27B1913B2BEC78D800A4340A /* FirebaseCrashlytics in Frameworks */,
 				275CC35F2BC7BF3D0062C75C /* FirebaseFirestoreSwift in Frameworks */,
 				2742D1482BE9D7080008E8D8 /* JournalingSuggestions.framework in Frameworks */,
 			);
@@ -463,6 +467,7 @@
 				27F9758E2BC6B01100B2A041 /* Resources */,
 				6ACEA9D4EDE9564215F2B1E3 /* [CP] Embed Pods Frameworks */,
 				0D805CF432E2EEB8E3170A40 /* [CP] Copy Pods Resources */,
+				27B1913E2BEC799700A4340A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -476,6 +481,8 @@
 				275CC3602BC7BF3D0062C75C /* FirebaseStorage */,
 				27F0044B2BCD33A500C87472 /* Alamofire */,
 				27F62CAC2BE08F9D005A91F2 /* FirebaseAuth */,
+				27B1913A2BEC78D800A4340A /* FirebaseCrashlytics */,
+				27B1913C2BEC796C00A4340A /* FirebaseAnalyticsSwift */,
 			);
 			productName = chongAiTa;
 			productReference = 27F975902BC6B01100B2A041 /* chongAiTa.app */;
@@ -619,6 +626,25 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-chongAiTa/Pods-chongAiTa-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		27B1913E2BEC799700A4340A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
 		};
 		6ACEA9D4EDE9564215F2B1E3 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -982,6 +1008,7 @@
 				CODE_SIGN_ENTITLEMENTS = chongAiTa/chongAiTa.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = K4Y56753AN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = chongAiTa/Info.plist;
@@ -1213,6 +1240,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 275CC3592BC7BF3D0062C75C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		27B1913A2BEC78D800A4340A /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 275CC3592BC7BF3D0062C75C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		27B1913C2BEC796C00A4340A /* FirebaseAnalyticsSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 275CC3592BC7BF3D0062C75C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsSwift;
 		};
 		27F0044B2BCD33A500C87472 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
