@@ -386,6 +386,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             return
         }
         
+        
         // 禁用按鈕，避免重複點擊
         navigationItem.rightBarButtonItem?.isEnabled = false
         

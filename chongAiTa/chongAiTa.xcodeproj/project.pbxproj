@@ -1014,7 +1014,7 @@
 				INFOPLIST_FILE = chongAiTa/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "請開啟相機權限，讓您拍攝照片加入日記";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "請開啟位置權限，讓您瀏覽附近動物醫院";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "請開啟位置權限，用來定位您的位置";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "請開啟位置權限，讓您了解目前位置和鄰近地標的距離與相對方位";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "請開啟相簿權限，讓您選擇照片加入日記";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -1054,7 +1054,7 @@
 				INFOPLIST_FILE = chongAiTa/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "請開啟相機權限，讓您拍攝照片加入日記";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "請開啟位置權限，讓您瀏覽附近動物醫院";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "請開啟位置權限，用來定位您的位置";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "請開啟位置權限，讓您了解目前位置和鄰近地標的距離與相對方位";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "請開啟相簿權限，讓您選擇照片加入日記";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
