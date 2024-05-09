@@ -9,6 +9,7 @@ import UIKit
 enum ProfileSection {
     case about([UserInfo])
     case account([AccountAction])
+    case contactDeveloper
 }
 
 enum UserInfo {

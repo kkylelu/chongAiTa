@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import MessageUI
 
 // For Sign in with Apple
 import AuthenticationServices
@@ -18,7 +19,8 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
     var collectionView: UICollectionView!
     var sections: [ProfileSection] = [
         .about([.userDetails]),
-        .account([.logout, .deleteAccount])
+        .account([.logout, .deleteAccount]),
+        ProfileSection.contactDeveloper
     ]
     var errorMessage = ""
     var user: User?
@@ -105,6 +107,8 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
                 default:
                     break
                 }
+            case .contactDeveloper:
+                   presentMailComposer()
             default:
                 break
             }
@@ -248,6 +252,8 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
             return 1
         case .account(let actions):
             return actions.count
+        case .contactDeveloper:
+                return 1
         }
     }
     
@@ -266,7 +272,9 @@ class UserProfileViewController: UIViewController, UICollectionViewDataSource, U
                     case .deleteAccount:
                         cell.configure(with: UIImage(systemName: "trash"), title: "刪除帳號")
                     }
-                }
+        case .contactDeveloper:
+            cell.configure(with: UIImage(systemName: "envelope"), title: "聯絡開發者")
+        }
         
         return cell
     }
@@ -339,5 +347,29 @@ extension Date {
         let timeAgo = Date.now.addingTimeInterval(-1 * TimeInterval(60 * minutes))
         let range = timeAgo...now
         return range.contains(self)
+    }
+}
+
+extension UserProfileViewController: MFMailComposeViewControllerDelegate {
+    func presentMailComposer() {
+        guard MFMailComposeViewController.canSendMail() else {
+            showMailErrorAlert()
+            return
+        }
+
+        let composer = MFMailComposeViewController()
+        composer.mailComposeDelegate = self
+        composer.setToRecipients(["pawspalhelp@gmail.com"])
+        present(composer, animated: true)
+    }
+
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true)
+    }
+
+    private func showMailErrorAlert() {
+        let alert = UIAlertController(title: "無法傳送郵件", message: "您的裝置沒有設定任何郵件帳號。請先在「設定 > 郵件」中設定郵件帳號，然後再試一次。", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "確認", style: .default))
+        present(alert, animated: true)
     }
 }
