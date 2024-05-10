@@ -19,7 +19,6 @@ extension UIViewController {
                 }
             }
         } else {
-            // 對於 iOS 13 以下版本，可以設定一個默認顏色
             view.backgroundColor = lightModeColor
         }
     }
