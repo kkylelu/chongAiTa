@@ -9,6 +9,7 @@ import UIKit
 import Kingfisher
 import Lottie
 import FirebaseAuth
+import CoreMotion
 
 #if !targetEnvironment(simulator)
 import JournalingSuggestions
@@ -21,6 +22,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     var journalsArray: [Journal] = []
     var emptyPlaceholderLabel: UILabel!
     var activityIndicator: UIActivityIndicatorView!
+    var motionManager: CMMotionManager!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +40,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
+        setupPolaroidButton()
         setupFloatingButton()
         NotificationCenter.default.addObserver(self, selector: #selector(handleNewJournalEntry(_:)), name: .newJournalEntrySaved, object: nil)
         
@@ -50,6 +53,12 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     // MARK: - Setup UI
+    
+    func setupPolaroidButton() {
+            let polaroidButton = UIBarButtonItem(image: UIImage(systemName: "camera"), style: .plain, target: self, action: #selector(showPolaroid))
+            navigationItem.rightBarButtonItems?.append(polaroidButton)
+        }
+    
     func generateFakeDataAndUpdateUI() {
         // 產生 3 篇假日記資料
         journalsArray = FakeDataGenerator.generateFakeJournals(count: 3)
@@ -149,6 +158,36 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     
     // MARK: - Action
+    
+    @objc func showPolaroid() {
+        let polaroidView = PolaroidView(frame: CGRect(x: 0, y: 0, width: 300, height: 400))
+        polaroidView.center = self.view.center
+        polaroidView.alpha = 0.0
+        view.addSubview(polaroidView)
+        
+        // 配置影像
+        if let sampleImage = UIImage(named: "sampleImage") {
+            polaroidView.configureWithImage(sampleImage)
+        }
+        
+        motionManager = CMMotionManager()
+        motionManager.accelerometerUpdateInterval = 0.2
+        motionManager.startAccelerometerUpdates(to: OperationQueue.main) { (data, error) in
+            guard let data = data else { return }
+            
+            let acceleration = data.acceleration
+            let threshold: Double = 2.0
+            
+            if fabs(acceleration.x) > threshold || fabs(acceleration.y) > threshold || fabs(acceleration.z) > threshold {
+                polaroidView.revealPhoto()
+            }
+        }
+        
+        UIView.animate(withDuration: 0.5) {
+            polaroidView.alpha = 1.0
+        }
+    }
+
     
     @objc func handleNewJournalEntry(_ notification: Notification) {
         if let newJournal = notification.userInfo?["journal"] as? Journal {

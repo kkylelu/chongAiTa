@@ -10,7 +10,7 @@ import UIKit
 class FakeDataGenerator {
     static func generateFakeJournals(count: Int) -> [Journal] {
         var journals: [Journal] = []
-        for i in 0...count {
+        for i in 0...2 {
             let titleBodyPair = generateFakeTitleBodyPair(index: i)
             let journal = Journal(
                 title: titleBodyPair.title,
