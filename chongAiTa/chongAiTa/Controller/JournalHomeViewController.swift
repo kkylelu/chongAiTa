@@ -56,7 +56,12 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     func setupPolaroidButton() {
             let polaroidButton = UIBarButtonItem(image: UIImage(systemName: "camera"), style: .plain, target: self, action: #selector(showPolaroid))
-            navigationItem.rightBarButtonItems?.append(polaroidButton)
+            if var rightBarButtonItems = navigationItem.rightBarButtonItems {
+                rightBarButtonItems.append(polaroidButton)
+                navigationItem.rightBarButtonItems = rightBarButtonItems
+            } else {
+                navigationItem.rightBarButtonItems = [polaroidButton]
+            }
         }
     
     func generateFakeDataAndUpdateUI() {
@@ -160,34 +165,9 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - Action
     
     @objc func showPolaroid() {
-        let polaroidView = PolaroidView(frame: CGRect(x: 0, y: 0, width: 300, height: 400))
-        polaroidView.center = self.view.center
-        polaroidView.alpha = 0.0
-        view.addSubview(polaroidView)
-        
-        // 配置影像
-        if let sampleImage = UIImage(named: "sampleImage") {
-            polaroidView.configureWithImage(sampleImage)
+            let polaroidVC = PolaroidViewController()
+            navigationController?.pushViewController(polaroidVC, animated: true)
         }
-        
-        motionManager = CMMotionManager()
-        motionManager.accelerometerUpdateInterval = 0.2
-        motionManager.startAccelerometerUpdates(to: OperationQueue.main) { (data, error) in
-            guard let data = data else { return }
-            
-            let acceleration = data.acceleration
-            let threshold: Double = 2.0
-            
-            if fabs(acceleration.x) > threshold || fabs(acceleration.y) > threshold || fabs(acceleration.z) > threshold {
-                polaroidView.revealPhoto()
-            }
-        }
-        
-        UIView.animate(withDuration: 0.5) {
-            polaroidView.alpha = 1.0
-        }
-    }
-
     
     @objc func handleNewJournalEntry(_ notification: Notification) {
         if let newJournal = notification.userInfo?["journal"] as? Journal {
