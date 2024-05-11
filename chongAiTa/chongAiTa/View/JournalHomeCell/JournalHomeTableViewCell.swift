@@ -37,11 +37,11 @@ class JournalHomeTableViewCell: UITableViewCell {
         contentView.layer.cornerRadius = 10
         contentView.clipsToBounds = true
         
-        layer.shadowColor = UIColor.gray.cgColor
-        layer.shadowOpacity = 0.2
-        layer.shadowOffset = CGSize(width: 0, height: 2)
-        layer.shadowRadius = 6
-        layer.masksToBounds = false
+        contentView.layer.shadowColor = UIColor.gray.cgColor
+        contentView.layer.shadowOpacity = 0.2
+        contentView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        contentView.layer.shadowRadius = 6
+        contentView.layer.masksToBounds = false
         
         if #available(iOS 13.0, *) {
             contentView.backgroundColor = UIColor { (traitCollection) -> UIColor in

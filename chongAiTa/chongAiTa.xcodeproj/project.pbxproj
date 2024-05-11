@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		270D97772BCD3E7A00AA8D79 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270D97762BCD3E7A00AA8D79 /* APIKeys.swift */; };
+		272563EA2BEE2064001510B4 /* PolaroidViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 272563E92BEE2064001510B4 /* PolaroidViewController.swift */; };
 		2732C7782BDA1BA5004170C6 /* PetDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C7772BDA1BA5004170C6 /* PetDetailViewController.swift */; };
 		2732C77A2BDA385B004170C6 /* Pets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C7792BDA385B004170C6 /* Pets.swift */; };
 		2732C77F2BDA4CC1004170C6 /* PetDetailItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C77E2BDA4CC1004170C6 /* PetDetailItem.swift */; };
@@ -109,6 +110,7 @@
 /* Begin PBXFileReference section */
 		14A74EBB65BE9EEC875C9D19 /* Pods_chongAiTa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_chongAiTa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		270D97762BCD3E7A00AA8D79 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
+		272563E92BEE2064001510B4 /* PolaroidViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolaroidViewController.swift; sourceTree = "<group>"; };
 		2732C7772BDA1BA5004170C6 /* PetDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetDetailViewController.swift; sourceTree = "<group>"; };
 		2732C7792BDA385B004170C6 /* Pets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pets.swift; sourceTree = "<group>"; };
 		2732C77E2BDA4CC1004170C6 /* PetDetailItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetDetailItem.swift; sourceTree = "<group>"; };
@@ -316,6 +318,7 @@
 				2732C7772BDA1BA5004170C6 /* PetDetailViewController.swift */,
 				27F62CAE2BE09130005A91F2 /* SignInViewController.swift */,
 				27D471FC2BE4FEF900D92B01 /* UserProfileViewController.swift */,
+				272563E92BEE2064001510B4 /* PolaroidViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -813,6 +816,7 @@
 				2732C7852BDA542D004170C6 /* PetDetailTableViewCell.swift in Sources */,
 				277092592BD67B93004F2553 /* CostChartView.swift in Sources */,
 				27BC7D472BDCFAB5007B73BF /* MainTabBarController.swift in Sources */,
+				272563EA2BEE2064001510B4 /* PolaroidViewController.swift in Sources */,
 				274B832A2BE675300066CB40 /* User.swift in Sources */,
 				277EE07F2BE0C86A000439E4 /* ActivityCollectionViewCell.swift in Sources */,
 				2732C7872BDA5EA1004170C6 /* DateFormatter.swift in Sources */,

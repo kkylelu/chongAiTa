@@ -9,6 +9,7 @@ import UIKit
 import Kingfisher
 import Lottie
 import FirebaseAuth
+import CoreMotion
 
 #if !targetEnvironment(simulator)
 import JournalingSuggestions
@@ -21,6 +22,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     var journalsArray: [Journal] = []
     var emptyPlaceholderLabel: UILabel!
     var activityIndicator: UIActivityIndicatorView!
+    var motionManager: CMMotionManager!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +37,8 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         view.addSubview(tableView)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatBot))
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "camera"), style: .plain, target: self, action: #selector(showPolaroid))
+//        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         setupFloatingButton()
@@ -50,6 +53,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     // MARK: - Setup UI
+    
     func generateFakeDataAndUpdateUI() {
         // 產生 3 篇假日記資料
         journalsArray = FakeDataGenerator.generateFakeJournals(count: 3)
@@ -150,6 +154,11 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     
     // MARK: - Action
     
+    @objc func showPolaroid() {
+            let polaroidVC = PolaroidViewController()
+            navigationController?.pushViewController(polaroidVC, animated: true)
+        }
+    
     @objc func handleNewJournalEntry(_ notification: Notification) {
         if let newJournal = notification.userInfo?["journal"] as? Journal {
             if let index = journalsArray.firstIndex(where: { $0.id == newJournal.id }) {
@@ -191,45 +200,45 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     // AI 日記回顧
-    @objc func generateSummary() {
-        navigationItem.leftBarButtonItem?.isEnabled = false
-        
-        // 延遲 1 秒後重新啟用按鈕，避免連續點擊
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            self?.navigationItem.leftBarButtonItem?.isEnabled = true
-        }
-        
-        // 檢查日記內容是否超過 50 個中文字
-        let totalChineseCharacters = journalsArray.reduce(0) { count, journal in
-            return count + journal.body.count
-        }
-        
-        if totalChineseCharacters >= 50 {
-            view.showLoadingAnimation()
-            TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
-                DispatchQueue.main.async {
-                    self?.view.hideLoadingAnimation()
-                    switch result {
-                    case .success(let summary):
-                        self?.displaySummaryAlert(summary)
-                    case .failure(let error):
-                        print("Error generating summary: \(error)")
-                    }
-                }
-            }
-        } else {
-            // 顯示提示訊息
-            let alert = UIAlertController(title: "缺少日記內容", message: "日記內容需要超過 50 個中文字，才能使用 AI 回顧功能哦🐾", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "確定", style: .default))
-            self.present(alert, animated: true)
-        }
-    }
+//    @objc func generateSummary() {
+//        navigationItem.leftBarButtonItem?.isEnabled = false
+//        
+//        // 延遲 1 秒後重新啟用按鈕，避免連續點擊
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+//            self?.navigationItem.leftBarButtonItem?.isEnabled = true
+//        }
+//        
+//        // 檢查日記內容是否超過 50 個中文字
+//        let totalChineseCharacters = journalsArray.reduce(0) { count, journal in
+//            return count + journal.body.count
+//        }
+//        
+//        if totalChineseCharacters >= 50 {
+//            view.showLoadingAnimation()
+//            TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
+//                DispatchQueue.main.async {
+//                    self?.view.hideLoadingAnimation()
+//                    switch result {
+//                    case .success(let summary):
+//                        self?.displaySummaryAlert(summary)
+//                    case .failure(let error):
+//                        print("Error generating summary: \(error)")
+//                    }
+//                }
+//            }
+//        } else {
+//            // 顯示提示訊息
+//            let alert = UIAlertController(title: "缺少日記內容", message: "日記內容需要超過 50 個中文字，才能使用 AI 回顧功能哦🐾", preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: "確定", style: .default))
+//            self.present(alert, animated: true)
+//        }
+//    }
     
-    func displaySummaryAlert(_ summary: String) {
-        let customAlert = CustomAlertView()
-        customAlert.configureWith(summary: summary)
-        customAlert.show(in: self)
-    }
+//    func displaySummaryAlert(_ summary: String) {
+//        let customAlert = CustomAlertView()
+//        customAlert.configureWith(summary: summary)
+//        customAlert.show(in: self)
+//    }
     
     @objc func navigateToChatBot() {
         let chatVC = ChatBotViewController()
@@ -253,7 +262,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 165.0
+        return 180.0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
