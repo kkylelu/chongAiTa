@@ -33,7 +33,7 @@ class SignInViewController: UIViewController {
         
         imageView.contentMode = .scaleAspectFit
         
-        descriptionLabel.text = "PawsPal 寵愛牠 \n 幫你輕鬆紀錄與寵物的美好生活"
+        descriptionLabel.text = "PawsPal 寵愛牠 \n 輕鬆紀錄毛小孩的每一刻"
         descriptionLabel.numberOfLines = 0
         descriptionLabel.textAlignment = .center
         descriptionLabel.font = UIFont.systemFont(ofSize: 24)
@@ -212,7 +212,7 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
             CustomFunc.customAlert(title: "授權請求未處理", message: "", vc: self, actionHandler: nil)
             break
         case ASAuthorizationError.unknown:
-            CustomFunc.customAlert(title: "授權失敗，原因不知", message: "", vc: self, actionHandler: nil)
+            CustomFunc.customAlert(title: "授權失敗，原因不明", message: "", vc: self, actionHandler: nil)
             break
         default:
             break
