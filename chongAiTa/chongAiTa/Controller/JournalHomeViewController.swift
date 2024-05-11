@@ -38,7 +38,6 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatBot))
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "camera"), style: .plain, target: self, action: #selector(showPolaroid))
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "AI 回顧", style: .plain, target: self, action: #selector(generateSummary))
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         setupFloatingButton()
@@ -112,6 +111,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         ])
         
     }
+    
     
     @objc func floatingButtonTapped() {
         // 提供觸覺回饋
@@ -197,6 +197,11 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
                 }
             }
         }
+    }
+    
+    // 提供所有日記內容
+    func getAllJournals() -> [Journal] {
+        return journalsArray
     }
     
     // AI 日記回顧

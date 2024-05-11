@@ -154,14 +154,20 @@ class PolaroidViewController: UIViewController {
             self?.navigationItem.leftBarButtonItem?.isEnabled = true
         }
         
+        guard let journalHomeVC = navigationController?.viewControllers.first(where: { $0 is JournalHomeViewController }) as? JournalHomeViewController else {
+            return
+        }
+        
+        let allJournals = journalHomeVC.getAllJournals()
+        
         // 檢查日記內容是否超過 50 個中文字
-        let totalChineseCharacters = journalsArray.reduce(0) { count, journal in
+        let totalChineseCharacters = allJournals.reduce(0) { count, journal in
             return count + journal.body.count
         }
         
         if totalChineseCharacters >= 50 {
             view.showLoadingAnimation()
-            TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
+            TextGenerationManager.shared.generateSummary(from: allJournals) { [weak self] result in
                 DispatchQueue.main.async {
                     self?.view.hideLoadingAnimation()
                     switch result {
@@ -179,6 +185,7 @@ class PolaroidViewController: UIViewController {
             self.present(alert, animated: true)
         }
     }
+
     
     func displaySummaryAlert(_ summary: String) {
         let customAlert = CustomAlertView()
