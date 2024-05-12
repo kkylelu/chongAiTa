@@ -41,6 +41,8 @@ class PolaroidViewController: UIViewController {
     func setupView() {
         applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
         
+        navigationItem.title = "成長日記回顧"
+        
         polaroidContainerView.translatesAutoresizingMaskIntoConstraints = false
         polaroidContainerView.backgroundColor = .white
         
