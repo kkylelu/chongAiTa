@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -16,6 +17,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     let filters = ["speedline", "glasses", "notice", "shine"]
     let overlayImages = ["speedline", "glasses", "notice", "shine"]
     var filterPreviews: [UIImage] = []
+    var animationView: LottieAnimationView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,12 +34,10 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         
     }
     
-    
     // MARK: - Setup UI
     
     func setupUI() {
         view.backgroundColor = .white
-        
     }
     
     func setupNavigationBar() {
@@ -113,29 +113,27 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         ])
     }
     
-    
-    
     // MARK: - Action
     
     @objc func savePetMeme(){
         if let finalMemeImage = combineMeme() {
             UIImageWriteToSavedPhotosAlbum(finalMemeImage, nil, nil, nil)
+            
+            let alert = UIAlertController(title: "儲存成功", message: "已儲存照片至相簿", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "確定", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
 
     func combineMeme() -> UIImage? {
         let render = UIGraphicsImageRenderer(size: layerEditingView.bounds.size)
         let combinedImage = render.image { (context) in
-            // 渲染底圖（layerEditingView）的內容
             layerEditingView.drawHierarchy(in: layerEditingView.bounds, afterScreenUpdates: true)
-            // 渲染濾鏡層（overlayContainerView）的內容
             overlayContainerView.drawHierarchy(in: overlayContainerView.bounds, afterScreenUpdates: true)
         }
         return combinedImage
     }
 
-    
-    
     func generateFilterPreviews() {
         guard let originalImage = petImageView.image else { return }
         filterPreviews = filters.map { filterName in
@@ -210,7 +208,6 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         }
     }
 
-    
     @objc func panOverlayView(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: overlayContainerView)
         if let view = gesture.view {
