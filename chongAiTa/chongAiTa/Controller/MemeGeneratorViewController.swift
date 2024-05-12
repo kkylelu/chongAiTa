@@ -13,7 +13,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     var overlayContainerView: UIView!
     var layerEditingView: UIView!
     var filterCollectionView: UICollectionView!
-    let filters = ["None", "Sepia", "Mono", "Noir"]
+    let filters = ["speedline", "glasses", "notice", "shine"]
     let overlayImages = ["speedline", "glasses", "notice", "shine"]
     var filterPreviews: [UIImage] = []
     
@@ -35,7 +35,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     // MARK: - Setup UI
     
     func setupUI() {
-        applyDynamicBackgroundColor(lightModeColor: .white, darkModeColor: .black)
+        view.backgroundColor = .white
         
     }
     
@@ -49,7 +49,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         layerEditingView = UIView()
         
         petImageView = UIImageView()
-        petImageView.contentMode = .scaleAspectFit
+        petImageView.contentMode = .scaleAspectFill
         
         layerEditingView.translatesAutoresizingMaskIntoConstraints = false
         petImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -61,7 +61,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             layerEditingView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             layerEditingView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             layerEditingView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-            layerEditingView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.7),
+            layerEditingView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.5),
             
             petImageView.leadingAnchor.constraint(equalTo: layerEditingView.leadingAnchor),
             petImageView.trailingAnchor.constraint(equalTo: layerEditingView.trailingAnchor),
@@ -174,18 +174,25 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        // 套用濾鏡
         if let currentImage = petImageView.image {
             let filterName = filters[indexPath.item]
             petImageView.image = applyFilter(to: currentImage, filterName: filterName)
         }
-        
+
+        // 新增圖層到 overlayContainerView
         if indexPath.item < overlayImages.count {
             let overlayImageName = overlayImages[indexPath.item]
             if let overlayImage = UIImage(named: overlayImageName) {
                 let overlayView = UIImageView(image: overlayImage)
                 overlayView.isUserInteractionEnabled = true
+                overlayView.contentMode = .scaleAspectFit
+
+                let overlaySize = overlayContainerView.bounds.size
+                overlayView.frame.size = CGSize(width: overlaySize.width * 0.9, height: overlaySize.height * 0.9)
                 
+                overlayView.center = CGPoint(x: overlayContainerView.bounds.midX, y: overlayContainerView.bounds.midY)
+
                 let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panOverlayView(_:)))
                 overlayView.addGestureRecognizer(panGesture)
                 
@@ -199,6 +206,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             }
         }
     }
+
     
     @objc func panOverlayView(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: overlayContainerView)
@@ -216,10 +224,22 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     }
     
     @objc func tapOverlayView(_ gesture: UITapGestureRecognizer) {
-        if let view = gesture.view {
-            view.removeFromSuperview()
+        if let overlayView = gesture.view {
+            let alert = UIAlertController(title: "確定要刪除嗎？", message: nil, preferredStyle: .alert)
+            
+            let deleteAction = UIAlertAction(title: "確定", style: .destructive) { _ in
+                overlayView.removeFromSuperview()
+            }
+            
+            let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+            
+            alert.addAction(deleteAction)
+            alert.addAction(cancelAction)
+            
+            self.present(alert, animated: true, completion: nil)
         }
     }
+
     
     
     
