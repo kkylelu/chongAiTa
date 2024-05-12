@@ -12,6 +12,7 @@ enum NavigationTitle {
     case costChart
     case calendarDate
     case map
+    case MemeGenerator
     
     var title: String {
         switch self {
@@ -25,6 +26,8 @@ enum NavigationTitle {
             return "當日活動列表"
         case .map:
             return "寵物地圖"
+        case .MemeGenerator:
+            return "毛孩貼圖"
             
         }
     }

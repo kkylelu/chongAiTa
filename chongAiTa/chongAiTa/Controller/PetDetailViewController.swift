@@ -62,7 +62,7 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.delegate = self
         tableView.dataSource = self
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addNewPets))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "dog.circle.fill"), style: .plain, target: self, action: #selector(goMemePage))
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape.fill"), style: .plain, target: self, action: #selector(goSettingPage))
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
@@ -548,10 +548,10 @@ class PetDetailViewController: UIViewController, UITableViewDelegate, UITableVie
             completion(false)
         }
     }
-
     
-    @objc func addNewPets(){
-        print("tapped addNewPets function")
+    @objc func goMemePage(){
+        let userVC = MemeGeneratorViewController()
+        navigationController?.pushViewController(userVC, animated: true)
     }
     
     @objc func goSettingPage(){

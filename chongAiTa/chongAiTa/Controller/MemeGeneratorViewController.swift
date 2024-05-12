@@ -20,6 +20,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setNavigationTitle(.MemeGenerator)
         setupUI()
         setupNavigationBar()
         setupLayerEditingView()
@@ -40,9 +41,12 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     }
     
     func setupNavigationBar() {
-        navigationItem.title = "毛孩表情包"
-        let saveButton = UIBarButtonItem(title: "儲存", style: .done, target: self, action: #selector(savePetMeme))
-        navigationController?.navigationBar.prefersLargeTitles = true
+//        navigationItem.title = "毛孩貼圖"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "儲存", style: .done, target: self, action: #selector(savePetMeme))
+//        UINavigationBar.appearance().largeTitleTextAttributes =  [.foregroundColor: UIColor.white]
+//        navigationController?.navigationBar.prefersLargeTitles = false
+
+
     }
     
     func setupLayerEditingView() {
@@ -239,8 +243,4 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             self.present(alert, animated: true, completion: nil)
         }
     }
-
-    
-    
-    
 }
