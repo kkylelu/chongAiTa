@@ -166,8 +166,11 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
             } else {
                 journalsArray.append(newJournal)
             }
+            
+            // 對 journalsArray 按日期排序，確保新增的日記在最上面
+            journalsArray.sort { $0.date > $1.date }
+            
             DispatchQueue.main.async {
-                self.tableView.reloadData()
                 self.updateUI()
             }
         }
