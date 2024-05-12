@@ -18,7 +18,6 @@ class SignInViewController: UIViewController {
     let descriptionLabel = UILabel()
     var signInWithAppleBtn: ASAuthorizationAppleIDButton!
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()

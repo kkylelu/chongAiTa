@@ -6,7 +6,10 @@
 //
 
 import UIKit
+import FirebaseAuth
 import CoreMotion
+import FirebaseFirestore
+import Kingfisher
 
 class PolaroidViewController: UIViewController {
     
@@ -25,6 +28,7 @@ class PolaroidViewController: UIViewController {
         
         setupView()
         setupMotionManager()
+        fetchJournalsFromFirebase()
     }
     
     override func viewDidLayoutSubviews() {
@@ -43,7 +47,7 @@ class PolaroidViewController: UIViewController {
         imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.image = UIImage(named: "dogInPark")
+//        imageView.image = UIImage(named: "dogInPark")
         
         maskView = UIView()
         maskView.backgroundColor = UIColor.white
@@ -121,30 +125,78 @@ class PolaroidViewController: UIViewController {
     }
     
     func setupMotionManager() {
+        // 初始化 CMMotionManager 實例
         motionManager = CMMotionManager()
+        
+        // 設定加速度計更新的時間間隔為 0.2 秒
         motionManager.accelerometerUpdateInterval = 0.2
         
+        // 檢查手機的加速度計是否可用
         if motionManager.isAccelerometerAvailable {
+            // 開始加速度計更新，並將資料傳到 main Queue
             motionManager.startAccelerometerUpdates(to: OperationQueue.main) { [weak self] (data, error) in
+                // 確保 self 存在且 data 不為空
                 guard let self = self, let data = data else { return }
                 
+                // 獲取加速度資料
                 let acceleration = data.acceleration
+                
+                // 設定搖晃偵測的門檻值
                 let threshold: Double = 2.0
                 
+                // 檢查任一方向的加速度是否超過門檻
                 if fabs(acceleration.x) > threshold || fabs(acceleration.y) > threshold || fabs(acceleration.z) > threshold {
+                    // 如果超過門檻，call revealPhoto function
                     self.revealPhoto()
                 }
             }
         }
     }
+
+
+    func fetchJournalsFromFirebase() {
+            if let currentUser = Auth.auth().currentUser {
+                let userId = currentUser.uid
+                FirestoreService.shared.fetchJournals(userId: userId) { [weak self] result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let journals):
+                            self?.journalsArray = journals
+                            self?.setupPolaroidImage()
+                        case .failure(let error):
+                            print("Error fetching journals: \(error)")
+                        }
+                    }
+                }
+            }
+        }
     
+    func setupPolaroidImage() {
+            guard let randomJournal = journalsArray.randomElement(),
+                  let imageURLString = randomJournal.imageUrls.randomElement(),
+                  let imageURL = URL(string: imageURLString)
+            else {
+                print("日記是空值")
+                return
+            }
+
+            imageView.kf.setImage(with: imageURL) { result in
+                switch result {
+                case .success(_):
+                    print("成功讀取圖片")
+                case .failure(let error):
+                    print("讀取圖片失敗: \(error)")
+                }
+            }
+        }
+        
     // MARK: - Action
     func revealPhoto() {
         UIView.animate(withDuration: 2.0) {
             self.maskView.alpha = 0.0
         }
     }
-    
+
     // AI 日記回顧
     @objc func generateSummary() {
         navigationItem.leftBarButtonItem?.isEnabled = false
@@ -179,7 +231,6 @@ class PolaroidViewController: UIViewController {
                 }
             }
         } else {
-            // 顯示提示訊息
             let alert = UIAlertController(title: "缺少日記內容", message: "日記內容需要超過 50 個中文字，才能使用 AI 回顧功能哦🐾", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "確定", style: .default))
             self.present(alert, animated: true)

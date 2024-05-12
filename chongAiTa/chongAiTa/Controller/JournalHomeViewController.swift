@@ -37,7 +37,7 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         view.addSubview(tableView)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatBot))
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "camera"), style: .plain, target: self, action: #selector(showPolaroid))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "photo.artframe"), style: .plain, target: self, action: #selector(showPolaroid))
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         setupFloatingButton()
@@ -204,46 +204,6 @@ class JournalHomeViewController: UIViewController, UITableViewDataSource, UITabl
         return journalsArray
     }
     
-    // AI 日記回顧
-//    @objc func generateSummary() {
-//        navigationItem.leftBarButtonItem?.isEnabled = false
-//        
-//        // 延遲 1 秒後重新啟用按鈕，避免連續點擊
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-//            self?.navigationItem.leftBarButtonItem?.isEnabled = true
-//        }
-//        
-//        // 檢查日記內容是否超過 50 個中文字
-//        let totalChineseCharacters = journalsArray.reduce(0) { count, journal in
-//            return count + journal.body.count
-//        }
-//        
-//        if totalChineseCharacters >= 50 {
-//            view.showLoadingAnimation()
-//            TextGenerationManager.shared.generateSummary(from: journalsArray) { [weak self] result in
-//                DispatchQueue.main.async {
-//                    self?.view.hideLoadingAnimation()
-//                    switch result {
-//                    case .success(let summary):
-//                        self?.displaySummaryAlert(summary)
-//                    case .failure(let error):
-//                        print("Error generating summary: \(error)")
-//                    }
-//                }
-//            }
-//        } else {
-//            // 顯示提示訊息
-//            let alert = UIAlertController(title: "缺少日記內容", message: "日記內容需要超過 50 個中文字，才能使用 AI 回顧功能哦🐾", preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: "確定", style: .default))
-//            self.present(alert, animated: true)
-//        }
-//    }
-    
-//    func displaySummaryAlert(_ summary: String) {
-//        let customAlert = CustomAlertView()
-//        customAlert.configureWith(summary: summary)
-//        customAlert.show(in: self)
-//    }
     
     @objc func navigateToChatBot() {
         let chatVC = ChatBotViewController()
