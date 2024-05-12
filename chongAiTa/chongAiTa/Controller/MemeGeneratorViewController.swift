@@ -75,6 +75,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     func setupOverlayContainerView() {
         overlayContainerView = UIView()
         overlayContainerView.translatesAutoresizingMaskIntoConstraints = false
+        overlayContainerView.clipsToBounds = true
         view.addSubview(overlayContainerView)
         
         NSLayoutConstraint.activate([
@@ -85,10 +86,16 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         ])
     }
     
-    
     func setupFilterCollectionView() {
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
+        layout.scrollDirection = .vertical
+        let itemsPerRow: CGFloat = 4
+        let spacing: CGFloat = 10
+        let totalSpacing = (itemsPerRow - 1) * spacing
+        let itemWidth = (view.frame.width - totalSpacing) / itemsPerRow
+        layout.itemSize = CGSize(width: itemWidth, height: itemWidth)
+        layout.minimumInteritemSpacing = spacing
+        layout.minimumLineSpacing = spacing
         
         filterCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         filterCollectionView.delegate = self
@@ -106,6 +113,8 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             filterCollectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
     }
+    
+    
     
     // MARK: - Action
     
@@ -131,8 +140,6 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         }
     }
     
-    
-    
     func applyFilter(to image: UIImage, filterName: String) -> UIImage {
         let context = CIContext(options: nil)
         if filterName == "None" {
@@ -156,10 +163,8 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FilterCell", for: indexPath) as! FilterCell
-        cell.imageView.image = filterPreviews[indexPath.item]
-        cell.nameLabel.text = filters[indexPath.item]
+        cell.overlayImageView.image = filterPreviews[indexPath.item]
         
-        // 確保素材數量匹配
         if indexPath.item < overlayImages.count {
             cell.overlayImageView.image = UIImage(named: overlayImages[indexPath.item])
         } else {
@@ -168,16 +173,13 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         return cell
     }
     
-    
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // 濾鏡切換
+        
         if let currentImage = petImageView.image {
             let filterName = filters[indexPath.item]
             petImageView.image = applyFilter(to: currentImage, filterName: filterName)
         }
         
-        // 新增圖層
         if indexPath.item < overlayImages.count {
             let overlayImageName = overlayImages[indexPath.item]
             if let overlayImage = UIImage(named: overlayImageName) {
@@ -189,6 +191,9 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
                 
                 let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchOverlayView(_:)))
                 overlayView.addGestureRecognizer(pinchGesture)
+                
+                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOverlayView(_:)))
+                overlayView.addGestureRecognizer(tapGesture)
                 
                 overlayContainerView.addSubview(overlayView)
             }
@@ -209,6 +214,13 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             gesture.scale = 1.0
         }
     }
+    
+    @objc func tapOverlayView(_ gesture: UITapGestureRecognizer) {
+        if let view = gesture.view {
+            view.removeFromSuperview()
+        }
+    }
+    
     
     
 }
