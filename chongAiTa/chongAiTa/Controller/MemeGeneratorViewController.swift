@@ -41,12 +41,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     }
     
     func setupNavigationBar() {
-//        navigationItem.title = "毛孩貼圖"
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "儲存", style: .done, target: self, action: #selector(savePetMeme))
-//        UINavigationBar.appearance().largeTitleTextAttributes =  [.foregroundColor: UIColor.white]
-//        navigationController?.navigationBar.prefersLargeTitles = false
-
-
     }
     
     func setupLayerEditingView() {
@@ -123,18 +118,22 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     // MARK: - Action
     
     @objc func savePetMeme(){
-        if let finalMemeImage = combineMeme(){
+        if let finalMemeImage = combineMeme() {
             UIImageWriteToSavedPhotosAlbum(finalMemeImage, nil, nil, nil)
         }
     }
-    
+
     func combineMeme() -> UIImage? {
-        let render = UIGraphicsImageRenderer(size: self.view.bounds.size)
+        let render = UIGraphicsImageRenderer(size: layerEditingView.bounds.size)
         let combinedImage = render.image { (context) in
-            self.view.drawHierarchy(in: self.view.bounds, afterScreenUpdates: true)
+            // 渲染底圖（layerEditingView）的內容
+            layerEditingView.drawHierarchy(in: layerEditingView.bounds, afterScreenUpdates: true)
+            // 渲染濾鏡層（overlayContainerView）的內容
+            overlayContainerView.drawHierarchy(in: overlayContainerView.bounds, afterScreenUpdates: true)
         }
         return combinedImage
     }
+
     
     
     func generateFilterPreviews() {
