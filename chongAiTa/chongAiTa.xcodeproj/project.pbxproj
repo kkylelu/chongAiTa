@@ -32,6 +32,7 @@
 		27694F502BD0F80F00D90167 /* MessageBubbleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694F4F2BD0F80F00D90167 /* MessageBubbleTableViewCell.swift */; };
 		27694F532BD1232E00D90167 /* petsfaq.json in Resources */ = {isa = PBXBuildFile; fileRef = 27694F522BD1232E00D90167 /* petsfaq.json */; };
 		27694F552BD124AB00D90167 /* FAQEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694F542BD124AB00D90167 /* FAQEntry.swift */; };
+		276AB14C2BF1BEDA00630085 /* FilterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276AB14B2BF1BEDA00630085 /* FilterType.swift */; };
 		277092572BD670FC004F2553 /* CostChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277092562BD670FC004F2553 /* CostChartViewController.swift */; };
 		277092592BD67B93004F2553 /* CostChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277092582BD67B93004F2553 /* CostChartView.swift */; };
 		277EE07F2BE0C86A000439E4 /* ActivityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277EE07E2BE0C86A000439E4 /* ActivityCollectionViewCell.swift */; };
@@ -133,6 +134,7 @@
 		27694F4F2BD0F80F00D90167 /* MessageBubbleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleTableViewCell.swift; sourceTree = "<group>"; };
 		27694F522BD1232E00D90167 /* petsfaq.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = petsfaq.json; sourceTree = "<group>"; };
 		27694F542BD124AB00D90167 /* FAQEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQEntry.swift; sourceTree = "<group>"; };
+		276AB14B2BF1BEDA00630085 /* FilterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterType.swift; sourceTree = "<group>"; };
 		277092562BD670FC004F2553 /* CostChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostChartViewController.swift; sourceTree = "<group>"; };
 		277092582BD67B93004F2553 /* CostChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostChartView.swift; sourceTree = "<group>"; };
 		277EE07E2BE0C86A000439E4 /* ActivityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -284,6 +286,7 @@
 				27E855C72BE2396A0079E216 /* LayerButtonType.swift */,
 				27D471FE2BE5034600D92B01 /* UserProfileItem.swift */,
 				274B83292BE675300066CB40 /* User.swift */,
+				276AB14B2BF1BEDA00630085 /* FilterType.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -801,6 +804,7 @@
 				27E855C82BE2396A0079E216 /* LayerButtonType.swift in Sources */,
 				2780026F2BD0B426007AD842 /* GooglePlacesResponse.swift in Sources */,
 				27D472042BE50C3400D92B01 /* UserProfileHeaderReusableView.swift in Sources */,
+				276AB14C2BF1BEDA00630085 /* FilterType.swift in Sources */,
 				27A939012BD3680F00BF4845 /* CalendarEvents.swift in Sources */,
 				27F0044F2BCD36E200C87472 /* TextGenerationManager.swift in Sources */,
 				27D471FF2BE5034600D92B01 /* UserProfileItem.swift in Sources */,
