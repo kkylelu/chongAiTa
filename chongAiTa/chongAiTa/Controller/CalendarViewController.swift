@@ -48,6 +48,14 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
+            let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+            swipeLeft.direction = .left
+            collectionView.addGestureRecognizer(swipeLeft)
+            
+            let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+            swipeRight.direction = .right
+            collectionView.addGestureRecognizer(swipeRight)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -259,16 +267,30 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     @objc func goToPreviousMonth() {
         guard let prevMonthDate = Calendar.current.date(byAdding: .month, value: -1, to: currentMonthDate) else { return }
-        currentMonthDate = prevMonthDate
-        collectionView.reloadData()
+        UIView.transition(with: collectionView, duration: 0.5, options: [.curveLinear], animations:  {
+            self.currentMonthDate = prevMonthDate
+            self.collectionView.reloadData()
+        }, completion: nil)
+        
         updateTitleButton()
     }
     
     @objc func goToNextMonth() {
         guard let nextMonthDate = Calendar.current.date(byAdding: .month, value: 1, to: currentMonthDate) else { return }
-        currentMonthDate = nextMonthDate
-        collectionView.reloadData()
+        UIView.transition(with: collectionView, duration: 0.5, options: [.curveLinear], animations: {
+            self.currentMonthDate = nextMonthDate
+            self.collectionView.reloadData()
+        })
+
         updateTitleButton()
+    }
+    
+    @objc func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+        if gesture.direction == .left {
+            goToNextMonth()
+        } else if gesture.direction == .right {
+            goToPreviousMonth()
+        }
     }
     
     func titleForCurrentMonth() -> String {
