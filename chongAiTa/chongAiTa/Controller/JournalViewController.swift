@@ -391,6 +391,13 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         navigationItem.rightBarButtonItem?.isEnabled = false
         
         if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
+            // 檢查日記是否有變更
+                    if title == journal?.title && body == journal?.body {
+                        // 日記內容沒有變更，不需要上傳到 Firebase
+                        self.navigationController?.popViewController(animated: true)
+                        return
+                    }
+            
             view.showLoadingAnimation()
             uploadImagesToStorage { [weak self] imageUrls in
                 guard let self = self else { return }
