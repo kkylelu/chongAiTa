@@ -8,14 +8,14 @@
 import UIKit
 import Lottie
 
-class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var petImageView: UIImageView!
-    var overlayContainerView: UIView!
     var layerEditingView: UIView!
     var filterCollectionView: UICollectionView!
     var filterPreviews: [UIImage] = []
     var animationView: LottieAnimationView!
+    var imagePickerController = UIImagePickerController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +47,12 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         
         petImageView = UIImageView()
         petImageView.contentMode = .scaleAspectFill
+        petImageView.isUserInteractionEnabled = true
+        petImageView.clipsToBounds = true
+        
+        // 添加點擊手勢識別器
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
+        petImageView.addGestureRecognizer(tapGestureRecognizer)
         
         layerEditingView.translatesAutoresizingMaskIntoConstraints = false
         petImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -66,21 +72,6 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             petImageView.bottomAnchor.constraint(equalTo: layerEditingView.bottomAnchor)
         ])
         
-        setupOverlayContainerView()
-    }
-    
-    func setupOverlayContainerView() {
-        overlayContainerView = UIView()
-        overlayContainerView.translatesAutoresizingMaskIntoConstraints = false
-        overlayContainerView.clipsToBounds = true
-        view.addSubview(overlayContainerView)
-        
-        NSLayoutConstraint.activate([
-            overlayContainerView.leadingAnchor.constraint(equalTo: layerEditingView.leadingAnchor),
-            overlayContainerView.trailingAnchor.constraint(equalTo: layerEditingView.trailingAnchor),
-            overlayContainerView.topAnchor.constraint(equalTo: layerEditingView.topAnchor),
-            overlayContainerView.bottomAnchor.constraint(equalTo: layerEditingView.bottomAnchor)
-        ])
     }
     
     func setupFilterCollectionView() {
@@ -107,7 +98,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             filterCollectionView.topAnchor.constraint(equalTo: layerEditingView.bottomAnchor),
             filterCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             filterCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            filterCollectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            filterCollectionView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
     
@@ -127,7 +118,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         let render = UIGraphicsImageRenderer(size: layerEditingView.bounds.size)
         let combinedImage = render.image { (context) in
             layerEditingView.drawHierarchy(in: layerEditingView.bounds, afterScreenUpdates: true)
-            overlayContainerView.drawHierarchy(in: overlayContainerView.bounds, afterScreenUpdates: true)
+            petImageView.drawHierarchy(in: petImageView.bounds, afterScreenUpdates: true)
         }
         return combinedImage
     }
@@ -153,6 +144,18 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             }
             return image
         }
+    
+    @objc func imageTapped(_ sender: UITapGestureRecognizer) {
+        presentImagePicker()
+    }
+    
+    func presentImagePicker() {
+        imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
+        imagePickerController.sourceType = .photoLibrary
+        
+        present(imagePickerController, animated: true, completion: nil)
+    }
     
     // MARK: - CollectionView Delegate
     
@@ -180,10 +183,10 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
                 overlayView.isUserInteractionEnabled = true
                 overlayView.contentMode = .scaleAspectFit
 
-                let overlaySize = overlayContainerView.bounds.size
+                let overlaySize = petImageView.bounds.size
                 overlayView.frame.size = CGSize(width: overlaySize.width * 0.9, height: overlaySize.height * 0.9)
                 
-                overlayView.center = CGPoint(x: overlayContainerView.bounds.midX, y: overlayContainerView.bounds.midY)
+                overlayView.center = CGPoint(x: petImageView.bounds.midX, y: petImageView.bounds.midY)
 
                 let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panOverlayView(_:)))
                 overlayView.addGestureRecognizer(panGesture)
@@ -194,16 +197,16 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
                 let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOverlayView(_:)))
                 overlayView.addGestureRecognizer(tapGesture)
                 
-                overlayContainerView.addSubview(overlayView)
+                petImageView.addSubview(overlayView)
             }
         }
 
     @objc func panOverlayView(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: overlayContainerView)
+        let translation = gesture.translation(in: petImageView)
         if let view = gesture.view {
             view.center = CGPoint(x: view.center.x + translation.x, y: view.center.y + translation.y)
         }
-        gesture.setTranslation(.zero, in: overlayContainerView)
+        gesture.setTranslation(.zero, in: petImageView)
     }
     
     @objc func pinchOverlayView(_ gesture: UIPinchGestureRecognizer) {
@@ -228,5 +231,15 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             
             self.present(alert, animated: true, completion: nil)
         }
+    }
+    
+    // MARK: - ImagePicker Delegate
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let editedImage = info[.editedImage] as? UIImage {
+            petImageView.image = editedImage
+        } else if let originalImage = info[.originalImage] as? UIImage {
+            petImageView.image = originalImage
+        }
+        dismiss(animated: true, completion: nil)
     }
 }
