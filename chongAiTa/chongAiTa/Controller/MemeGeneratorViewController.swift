@@ -11,8 +11,8 @@ import Lottie
 class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var viewModel = MemeGeneratorViewModel()
-    var petImageView: UIImageView!
-    var layerEditingView: UIView!
+    var originalPetImageView: UIImageView!
+    var layerEditingContainer: UIView!
     var filterCollectionView: UICollectionView!
     var animationView: LottieAnimationView!
     var imagePickerController = UIImagePickerController()
@@ -28,7 +28,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         
         // 設定 VM 的 callback 方法
         viewModel.onImageUpdated = { [weak self] image in
-            self?.petImageView.image = image
+            self?.originalPetImageView.image = image
         }
         
         viewModel.onFilterPreviewsUpdated = { [weak self] in
@@ -36,8 +36,8 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         }
         
         // 預設圖片
-        petImageView.image = UIImage(named: "dogInPark")
-        viewModel.updateImage(petImageView.image!)
+        originalPetImageView.image = UIImage(named: "dogInPark")
+        viewModel.updateImage(originalPetImageView.image!)
         
     }
     
@@ -52,33 +52,33 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     }
     
     func setupLayerEditingView() {
-        layerEditingView = UIView()
+        layerEditingContainer = UIView()
         
-        petImageView = UIImageView()
-        petImageView.contentMode = .scaleAspectFill
-        petImageView.isUserInteractionEnabled = true
-        petImageView.clipsToBounds = true
+        originalPetImageView = UIImageView()
+        originalPetImageView.contentMode = .scaleAspectFill
+        originalPetImageView.isUserInteractionEnabled = true
+        originalPetImageView.clipsToBounds = true
         
         // 添加點擊手勢識別器
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
-        petImageView.addGestureRecognizer(tapGestureRecognizer)
+        originalPetImageView.addGestureRecognizer(tapGestureRecognizer)
         
-        layerEditingView.translatesAutoresizingMaskIntoConstraints = false
-        petImageView.translatesAutoresizingMaskIntoConstraints = false
+        layerEditingContainer.translatesAutoresizingMaskIntoConstraints = false
+        originalPetImageView.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(layerEditingView)
-        layerEditingView.addSubview(petImageView)
+        self.view.addSubview(layerEditingContainer)
+        layerEditingContainer.addSubview(originalPetImageView)
         
         NSLayoutConstraint.activate([
-            layerEditingView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            layerEditingView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            layerEditingView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-            layerEditingView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.5),
+            layerEditingContainer.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            layerEditingContainer.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            layerEditingContainer.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            layerEditingContainer.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.5),
             
-            petImageView.leadingAnchor.constraint(equalTo: layerEditingView.leadingAnchor),
-            petImageView.trailingAnchor.constraint(equalTo: layerEditingView.trailingAnchor),
-            petImageView.topAnchor.constraint(equalTo: layerEditingView.topAnchor),
-            petImageView.bottomAnchor.constraint(equalTo: layerEditingView.bottomAnchor)
+            originalPetImageView.leadingAnchor.constraint(equalTo: layerEditingContainer.leadingAnchor),
+            originalPetImageView.trailingAnchor.constraint(equalTo: layerEditingContainer.trailingAnchor),
+            originalPetImageView.topAnchor.constraint(equalTo: layerEditingContainer.topAnchor),
+            originalPetImageView.bottomAnchor.constraint(equalTo: layerEditingContainer.bottomAnchor)
         ])
         
     }
@@ -104,7 +104,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
         self.view.addSubview(filterCollectionView)
         
         NSLayoutConstraint.activate([
-            filterCollectionView.topAnchor.constraint(equalTo: layerEditingView.bottomAnchor),
+            filterCollectionView.topAnchor.constraint(equalTo: layerEditingContainer.bottomAnchor),
             filterCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             filterCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             filterCollectionView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
@@ -114,7 +114,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     // MARK: - Action
     
     @objc func savePetMeme(){
-        if let finalMemeImage = viewModel.saveMeme(from: layerEditingView) {
+        if let finalMemeImage = viewModel.saveMeme(from: layerEditingContainer) {
             UIImageWriteToSavedPhotosAlbum(finalMemeImage, nil, nil, nil)
             
             let alert = UIAlertController(title: "儲存成功", message: "已儲存照片至相簿", preferredStyle: .alert)
@@ -136,11 +136,12 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     }
     
     @objc func panOverlayView(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: petImageView)
+        let translation = gesture.translation(in: originalPetImageView)
+        // gesture.view 就是 overlayView
         if let view = gesture.view {
             view.center = CGPoint(x: view.center.x + translation.x, y: view.center.y + translation.y)
         }
-        gesture.setTranslation(.zero, in: petImageView)
+        gesture.setTranslation(.zero, in: originalPetImageView)
     }
     
     @objc func pinchOverlayView(_ gesture: UIPinchGestureRecognizer) {
@@ -197,7 +198,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let filterType = FilterType.allCases[indexPath.item]
-        if let currentImage = viewModel.petImage {
+        if let currentImage = viewModel.currentPetImage {
             // 更新圖片並套用濾鏡
             viewModel.updateImage(viewModel.applyFilter(to: currentImage, filterType: filterType))
         }
@@ -208,10 +209,10 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             overlayView.isUserInteractionEnabled = true
             overlayView.contentMode = .scaleAspectFit
             
-            let overlaySize = petImageView.bounds.size
+            let overlaySize = originalPetImageView.bounds.size
             overlayView.frame.size = CGSize(width: overlaySize.width * 0.9, height: overlaySize.height * 0.9)
             
-            overlayView.center = CGPoint(x: petImageView.bounds.midX, y: petImageView.bounds.midY)
+            overlayView.center = CGPoint(x: originalPetImageView.bounds.midX, y: originalPetImageView.bounds.midY)
             
             let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panOverlayView(_:)))
             overlayView.addGestureRecognizer(panGesture)
@@ -222,7 +223,7 @@ class MemeGeneratorViewController: UIViewController, UICollectionViewDelegate, U
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOverlayView(_:)))
             overlayView.addGestureRecognizer(tapGesture)
             
-            petImageView.addSubview(overlayView)
+            originalPetImageView.addSubview(overlayView)
         }
     }
 }

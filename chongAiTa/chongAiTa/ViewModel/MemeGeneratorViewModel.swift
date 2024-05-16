@@ -10,7 +10,7 @@ import Lottie
 
 class MemeGeneratorViewModel {
     
-    var petImage: UIImage?
+    var currentPetImage: UIImage?
     var filterPreviews: [UIImage] = []
     var selectedFilterType: FilterType?
     
@@ -22,23 +22,25 @@ class MemeGeneratorViewModel {
         generateFilterPreviews()
     }
     
-    // 把預覽濾鏡從 VC 移到 VM
+    // 產生所有濾鏡效果的預覽圖片給 VC
     func generateFilterPreviews() {
-        guard let originalImage = petImage else { return }
+        guard let originalImage = currentPetImage else { return }
         filterPreviews = FilterType.allCases.map { filterType in
             return applyFilter(to: originalImage, filterType: filterType)
         }
         onFilterPreviewsUpdated?()
     }
 
-    // 把套用濾鏡從 VC 移到 VM
+    // 套用濾鏡的邏輯
     func applyFilter(to image: UIImage, filterType: FilterType) -> UIImage {
             let context = CIContext(options: nil)
             if filterType == .none {
                 return image
             }
             if let filter = CIFilter(name: filterType.filterName) {
+                // 把濾鏡套用到單張圖片上
                 filter.setValue(CIImage(image: image), forKey: kCIInputImageKey)
+                // 提供套了濾鏡的新圖片
                 if let outputImage = filter.outputImage,
                    let cgImage = context.createCGImage(outputImage, from: outputImage.extent) {
                     return UIImage(cgImage: cgImage)
@@ -48,7 +50,7 @@ class MemeGeneratorViewModel {
         }
     
     func updateImage(_ image: UIImage) {
-        self.petImage = image
+        self.currentPetImage = image
         onImageUpdated?(image)
         generateFilterPreviews()
     }
