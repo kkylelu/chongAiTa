@@ -6,7 +6,7 @@
 //
 
 import UIKit
-struct Journal {
+public struct Journal {
     var id: UUID
     var title: String
     var body: String

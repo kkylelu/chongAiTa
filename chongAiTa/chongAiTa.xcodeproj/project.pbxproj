@@ -35,6 +35,7 @@
 		27694F552BD124AB00D90167 /* FAQEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694F542BD124AB00D90167 /* FAQEntry.swift */; };
 		276AB14C2BF1BEDA00630085 /* FilterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276AB14B2BF1BEDA00630085 /* FilterType.swift */; };
 		276DE1242BF86E5E0012D9FE /* JournalViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276DE1232BF86E5E0012D9FE /* JournalViewControllerTest.swift */; };
+		276DE1262BF889BB0012D9FE /* PolaroidViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276DE1252BF889BB0012D9FE /* PolaroidViewControllerTest.swift */; };
 		277092572BD670FC004F2553 /* CostChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277092562BD670FC004F2553 /* CostChartViewController.swift */; };
 		277092592BD67B93004F2553 /* CostChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277092582BD67B93004F2553 /* CostChartView.swift */; };
 		277EE07F2BE0C86A000439E4 /* ActivityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277EE07E2BE0C86A000439E4 /* ActivityCollectionViewCell.swift */; };
@@ -139,6 +140,7 @@
 		27694F542BD124AB00D90167 /* FAQEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQEntry.swift; sourceTree = "<group>"; };
 		276AB14B2BF1BEDA00630085 /* FilterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterType.swift; sourceTree = "<group>"; };
 		276DE1232BF86E5E0012D9FE /* JournalViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalViewControllerTest.swift; sourceTree = "<group>"; };
+		276DE1252BF889BB0012D9FE /* PolaroidViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolaroidViewControllerTest.swift; sourceTree = "<group>"; };
 		277092562BD670FC004F2553 /* CostChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostChartViewController.swift; sourceTree = "<group>"; };
 		277092582BD67B93004F2553 /* CostChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostChartView.swift; sourceTree = "<group>"; };
 		277EE07E2BE0C86A000439E4 /* ActivityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -456,6 +458,7 @@
 			children = (
 				27F975AA2BC6B01300B2A041 /* chongAiTaTests.swift */,
 				276DE1232BF86E5E0012D9FE /* JournalViewControllerTest.swift */,
+				276DE1252BF889BB0012D9FE /* PolaroidViewControllerTest.swift */,
 			);
 			path = chongAiTaTests;
 			sourceTree = "<group>";
@@ -865,6 +868,7 @@
 			files = (
 				276DE1242BF86E5E0012D9FE /* JournalViewControllerTest.swift in Sources */,
 				27F975AB2BC6B01300B2A041 /* chongAiTaTests.swift in Sources */,
+				276DE1262BF889BB0012D9FE /* PolaroidViewControllerTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
