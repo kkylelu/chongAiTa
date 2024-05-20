@@ -6,37 +6,13 @@
 //
 
 import UIKit
-import FirebaseFirestore
-import FirebaseAuth
 
 class CalendarViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
     let weekHeaderView = UIView()
     let weekDays = ["一", "二", "三", "四", "五", "六", "日"]
     var collectionView: UICollectionView!
-    var currentMonthDate = Date()
-    var calendarEventsArray: [CalendarEvents] = []
-    var eventsListener: ListenerRegistration?
-    
-    
-    // 目前月份的天數
-    var daysInMonth: Int {
-        let calendar = Calendar.current
-        let range = calendar.range(of: .day, in: .month, for: currentMonthDate)!
-        return range.count
-    }
-    
-    var firstWeekdayOfMonth: Int {
-        let calendar = Calendar.current
-        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
-        components.day = 1
-        let firstDayOfMonthDate = calendar.date(from: components)!
-        let firstWeekday = calendar.component(.weekday, from: firstDayOfMonthDate)
-        
-        // 設定工作日第一天為星期一
-        return firstWeekday - 2
-    }
-    
+    var viewModel = CalendarViewModel()
     
     // MARK: - Life cycle
     
@@ -48,20 +24,25 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
-            let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
-            swipeLeft.direction = .left
-            collectionView.addGestureRecognizer(swipeLeft)
-            
-            let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
-            swipeRight.direction = .right
-            collectionView.addGestureRecognizer(swipeRight)
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeLeft.direction = .left
+        collectionView.addGestureRecognizer(swipeLeft)
         
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeRight.direction = .right
+        collectionView.addGestureRecognizer(swipeRight)
+        
+        viewModel.updateView = { [weak self] in
+            self?.collectionView.reloadData()
+            self?.updateTitleButton()
+        }
+        
+        viewModel.loadEventsForCurrentMonth()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        calendarEventsArray.removeAll()
-        loadEventsForCurrentMonth()
+        viewModel.loadEventsForCurrentMonth()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -113,7 +94,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
         ])
         
-        // 新增星期標籤到 weekHeaderView 中
         var lastAnchor = weekHeaderView.leadingAnchor
         for day in weekDays {
             let dayLabel = UILabel()
@@ -142,7 +122,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func configureCollectionView() {
         configureFlowLayout()
-
     }
     
     func configureFlowLayout() {
@@ -160,7 +139,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         let nextMonthButton = UIBarButtonItem(title: ">", style: .plain, target: self, action: #selector(goToNextMonth))
         
         let titleButton = UIButton(type: .system)
-        titleButton.setTitle(titleForCurrentMonth(), for: .normal)
+        titleButton.setTitle(viewModel.titleForCurrentMonth(), for: .normal)
         titleButton.addTarget(self, action: #selector(presentDatePicker), for: .touchUpInside)
         titleButton.titleLabel?.adjustsFontSizeToFitWidth = true
         titleButton.titleLabel?.minimumScaleFactor = 0.5
@@ -246,43 +225,29 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         }
     }
 
-    
     @objc func selectButtonTapped(_ sender: UIButton) {
         if let datePicker = self.view.subviews.last?.subviews.compactMap({ $0 as? UIDatePicker }).first {
-            currentMonthDate = datePicker.date
+            viewModel.currentMonthDate = datePicker.date
             collectionView.reloadData()
             updateTitleButton()
         }
         dismissCustomPopup()
     }
     
-    
     func updateTitleButton() {
         if let titleButton = navigationItem.titleView as? UIButton {
-            titleButton.setTitle(titleForCurrentMonth(), for: .normal)
+            titleButton.setTitle(viewModel.titleForCurrentMonth(), for: .normal)
         }
     }
     
     // MARK: - Action
     
     @objc func goToPreviousMonth() {
-        guard let prevMonthDate = Calendar.current.date(byAdding: .month, value: -1, to: currentMonthDate) else { return }
-        UIView.transition(with: collectionView, duration: 0.5, options: [.curveLinear], animations:  {
-            self.currentMonthDate = prevMonthDate
-            self.collectionView.reloadData()
-        }, completion: nil)
-        
-        updateTitleButton()
+        viewModel.goToPreviousMonth()
     }
     
     @objc func goToNextMonth() {
-        guard let nextMonthDate = Calendar.current.date(byAdding: .month, value: 1, to: currentMonthDate) else { return }
-        UIView.transition(with: collectionView, duration: 0.5, options: [.curveLinear], animations: {
-            self.currentMonthDate = nextMonthDate
-            self.collectionView.reloadData()
-        })
-
-        updateTitleButton()
+        viewModel.goToNextMonth()
     }
     
     @objc func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
@@ -290,37 +255,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             goToNextMonth()
         } else if gesture.direction == .right {
             goToPreviousMonth()
-        }
-    }
-    
-    func titleForCurrentMonth() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy 年 MM 月"
-        return formatter.string(from: currentMonthDate)
-    }
-    
-    func loadEventsForCurrentMonth() {
-        let startOfMonth = firstOfMonth()
-        let endOfMonth = Calendar.current.date(byAdding: .month, value: 1, to: startOfMonth)!
-        
-        if let currentUser = Auth.auth().currentUser {
-            let userId = currentUser.uid
-            
-            FirestoreService.shared.fetchEvents(userId: userId, from: startOfMonth, to: endOfMonth) { [weak self] result in
-                switch result {
-                case .success(let events):
-                    DispatchQueue.main.async {
-                        events.forEach { event in
-                            if !EventsManager.shared.hasEvent(event) { // 檢查活動是否已存在
-                                EventsManager.shared.saveEvents([event])  // 保存不存在的活動
-                            }
-                        }
-                        self?.collectionView.reloadData()
-                    }
-                case .failure(let error):
-                    print("從 Firestore 獲取活動時出錯：\(error)")
-                }
-            }
         }
     }
     
@@ -333,12 +267,12 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DateCell", for: indexPath) as! DateCell
         
-        let firstDayIndex = firstWeekdayOfMonth
+        let firstDayIndex = viewModel.firstWeekdayOfMonth
         let dateOffset = indexPath.item - firstDayIndex
         let calendar = Calendar.current
         
-        if dateOffset >= 0 && dateOffset < daysInMonth {
-            let dateForCell = calendar.date(byAdding: .day, value: dateOffset, to: firstOfMonth())!
+        if dateOffset >= 0 && dateOffset < viewModel.daysInMonth {
+            let dateForCell = calendar.date(byAdding: .day, value: dateOffset, to: viewModel.firstOfMonth())!
             let startOfDay = calendar.startOfDay(for: dateForCell)
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
             let events = EventsManager.shared.loadEvents(from: startOfDay, to: endOfDay)
@@ -346,13 +280,12 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
                 Event(title: $0.title, category: $0.activity.category)
             })
             
-            // 檢查日期是否是星期六或星期日
             let weekday = calendar.component(.weekday, from: dateForCell)
             if weekday == 7 {
                 cell.dateLabel.textColor = UIColor.B5
             } else if weekday == 1 {
                 cell.dateLabel.textColor = UIColor.B7
-            } 
+            }
         } else {
             cell.configureCell(with: nil, events: [])
         }
@@ -360,23 +293,15 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         return cell
     }
     
-    func firstOfMonth() -> Date {
-        let calendar = Calendar.current
-        let components = calendar.dateComponents([.year, .month], from: currentMonthDate)
-        return calendar.date(from: components)!
-    }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let firstDayIndex = firstWeekdayOfMonth
+        let firstDayIndex = viewModel.firstWeekdayOfMonth
         let dateOffset = indexPath.item - firstDayIndex
-        if dateOffset >= 0 && dateOffset < daysInMonth {
-            // 確保點擊的是有效日期
-            let selectedDate = Calendar.current.date(byAdding: .day, value: dateOffset, to: firstOfMonth())!
-            
+        if dateOffset >= 0 && dateOffset < viewModel.daysInMonth {
+            let selectedDate = Calendar.current.date(byAdding: .day, value: dateOffset, to: viewModel.firstOfMonth())!
             let calendarDateVC = CalendarDateViewController()
             calendarDateVC.selectedDate = selectedDate
             navigationController?.pushViewController(calendarDateVC, animated: true)
         }
     }
-    
 }
+
