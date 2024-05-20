@@ -37,9 +37,10 @@ final class JournalViewControllerTest: XCTestCase {
         // 傳送測試圖片和目標寬度
         sut.resizeImage(originalImage, targetWidth: targetWidth) { resizedImage in
             // then
+            // 第一次檢查：快速確認 resizedImage 是否為 nil
             XCTAssertNotNil(resizedImage, "縮放後的圖片不能是空值")
             
-            // 使用 XCTUnwrap 解包可選值
+            // 第二次檢查：用 XCTUnwrap 解包 optional
             do {
                 let resizedImage = try XCTUnwrap(resizedImage, "縮放後的圖片不能是空值")
                 XCTAssertEqual(resizedImage.size.width, targetWidth, accuracy: 0.1, "縮放後圖片的寬度應該是 \(targetWidth)")

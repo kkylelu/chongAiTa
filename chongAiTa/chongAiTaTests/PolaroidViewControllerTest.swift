@@ -42,7 +42,7 @@ final class PolaroidViewControllerTest: XCTestCase {
 
     
     func testSetupPolaroidImageFailure() throws {
-        // 準備 mock data
+        // Given: 準備 mock data
         let mockJournal = Journal(
             id: UUID(),
             title: "Test Title",
@@ -55,9 +55,10 @@ final class PolaroidViewControllerTest: XCTestCase {
         )
         sut.journalsArray = [mockJournal]
         
+        // When
         sut.setupPolaroidImage()
         
-        // 驗證 imageView 是否設定了圖片
+        // Then: 驗證 imageView 是否設定了圖片
         XCTAssertNil(sut.imageView.image, "照片的 URL 無效")
     }
 }
