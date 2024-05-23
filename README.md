@@ -51,15 +51,15 @@ To help pet owners better manage expenses, the app provides spending charts that
 
 ## Getting Started
 
-1. Download "PawsPal" from the App Store
+1. Download "PawsPal" from the App Store.
 
-2. Create your account and log in 
+2. Create your account and log in.
 
-3. Set up your pet's information
+3. Set up your pet's information.
 
 4. Start using various features like diary, calendar, finding nearby services etc.
 
-5. View your pet expenses through charts
+5. View your pet expenses through charts.
 
 ## Architecture
 
@@ -83,39 +83,39 @@ To help pet owners better manage expenses, the app provides spending charts that
 
 ## Built With
 
-- Utilized the Journaling Suggestions Framework introduced at WWDC23 for personalized diary suggestions
+- Utilized the Journaling Suggestions Framework introduced at WWDC23 for personalized diary suggestions.
 
-- Integrated OpenAI API for Chatbot and diary summaries
+- Integrated OpenAI API for Chatbot and diary summaries.
 
-- Developed custom calendar instead of using frameworks
+- Developed custom calendar instead of using frameworks.
 
-- Implemented expense charts with SwiftUI 
+- Implemented expense charts with SwiftUI.
 
-- Refactored architecture from MVC to MVVM for better maintainability and testability
+- Refactored architecture from MVC to MVVM for better maintainability and testability.
 
-- Used Google Maps and Places APIs to display user location, nearby animal hospitals and landmarks
+- Used Google Maps and Places APIs to display user location, nearby animal hospitals and landmarks.
 
-- Integrated Local JSON, Firebase Firestore and Storage for fast data access 
+- Integrated Local JSON, Firebase Firestore and Storage for fast data access.
 
-- Reduced photo loading time and storage by 50% through compression techniques
+- Reduced photo loading time and storage by 50% through compression techniques.
 
-- Utilized Kingfisher for optimized image loading
+- Utilized Kingfisher for optimized image loading.
 
-- Adopted FirebaseAuth and Sign in with Apple for secure authentication
+- Adopted FirebaseAuth and Sign in with Apple for secure authentication.
 
-- Applied Lottie animation for enhanced visual appeal and UX
+- Applied Lottie animation for enhanced visual appeal and UX.
 
 ## Running the Tests
 
 The "PawsPal" project uses the XCTest framework for testing. To start testing:
 
-1. Create a new test target in Xcode and add test files to it 
+1. Create a new test target in Xcode and add test files to it.
 
-2. Place test files in the "test" folder, following the project structure
+2. Place test files in the "test" folder, following the project structure.
 
-3. Write test functions using XCTest
+3. Write test functions using XCTest.
 
-4. Run the tests from Xcode
+4. Run the tests from Xcode.
 
 ## Dependencies
 
