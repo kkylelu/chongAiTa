@@ -20,7 +20,7 @@ A pet management app that combines AI to make it easy to record life with your f
 - [Dependencies](#dependencies)
 - [Design](#design)
 - [API](#api)
-- [Contact Us](#contact-us)
+- [Contact Me](#contact-me)
 
 ## Description
 
@@ -34,6 +34,8 @@ To help pet owners better manage expenses, the app provides spending charts that
 
 ## Key Features
 
+![pawspal_diary_calendar_chatbot](https://github.com/kkylelu/chongAiTa/assets/61376338/7307ebc4-9b79-4131-abd5-a5728721eeff)
+
 - **AI Diary Summary**: Review lively memories with one click. Diary leverages Apple's latest Journaling Suggestions technology to automatically organize photos and activity records.
 
 - **Calendar Reminders**: Never miss any important events! Record important schedules like weekly grooming, monthly vet follow-ups, so you can accompany your furry baby's growth with peace of mind.  
@@ -42,7 +44,9 @@ To help pet owners better manage expenses, the app provides spending charts that
 
 - **Nearby Services Map**: Whether urgently looking for a nearby animal hospital, wanting to take your furry baby for a walk, or needing to buy pet supplies, the built-in map uses Google Places technology to immediately provide the nearest options.
 
-- **Spending Charts**: "PawsPal" also provides spending charts, letting you see monthly expenses at a glance, easily maintaining your furry baby's quality of life.
+- **Spending Charts**: Let you see monthly expenses at a glance, easily maintaining your furry baby's quality of life.
+
+- **Pet Stickers**: You can customize pet stickers, create unique profile pictures by dragging, scaling, and applying filters.
 
 ## Getting Started
 
