@@ -35,6 +35,7 @@ To help pet owners better manage expenses, the app provides spending charts that
 ## Key Features
 
 ![pawspal_diary_calendar_chatbot](https://github.com/kkylelu/chongAiTa/assets/61376338/7307ebc4-9b79-4131-abd5-a5728721eeff)
+![Pawspal Stickers Map Chart](https://github.com/kkylelu/chongAiTa/assets/61376338/59dc6fc3-0cda-4d94-b95d-c2a50f55a3bb)
 
 - **AI Diary Summary**: Review lively memories with one click. Diary leverages Apple's latest Journaling Suggestions technology to automatically organize photos and activity records.
 
