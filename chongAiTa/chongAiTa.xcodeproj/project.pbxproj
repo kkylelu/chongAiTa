@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		270D97772BCD3E7A00AA8D79 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270D97762BCD3E7A00AA8D79 /* APIKeys.swift */; };
+		2720A1192BFB667900A27393 /* CalendarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2720A1182BFB667900A27393 /* CalendarViewModel.swift */; };
 		272563EA2BEE2064001510B4 /* PolaroidViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 272563E92BEE2064001510B4 /* PolaroidViewController.swift */; };
+		2725C9C02BF5E6C800C0BC7A /* MemeGeneratorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2725C9BF2BF5E6C800C0BC7A /* MemeGeneratorViewModel.swift */; };
 		2732C7782BDA1BA5004170C6 /* PetDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C7772BDA1BA5004170C6 /* PetDetailViewController.swift */; };
 		2732C77A2BDA385B004170C6 /* Pets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C7792BDA385B004170C6 /* Pets.swift */; };
 		2732C77F2BDA4CC1004170C6 /* PetDetailItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2732C77E2BDA4CC1004170C6 /* PetDetailItem.swift */; };
@@ -33,6 +35,8 @@
 		27694F532BD1232E00D90167 /* petsfaq.json in Resources */ = {isa = PBXBuildFile; fileRef = 27694F522BD1232E00D90167 /* petsfaq.json */; };
 		27694F552BD124AB00D90167 /* FAQEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27694F542BD124AB00D90167 /* FAQEntry.swift */; };
 		276AB14C2BF1BEDA00630085 /* FilterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276AB14B2BF1BEDA00630085 /* FilterType.swift */; };
+		276DE1242BF86E5E0012D9FE /* JournalViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276DE1232BF86E5E0012D9FE /* JournalViewControllerTest.swift */; };
+		276DE1262BF889BB0012D9FE /* PolaroidViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276DE1252BF889BB0012D9FE /* PolaroidViewControllerTest.swift */; };
 		277092572BD670FC004F2553 /* CostChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277092562BD670FC004F2553 /* CostChartViewController.swift */; };
 		277092592BD67B93004F2553 /* CostChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277092582BD67B93004F2553 /* CostChartView.swift */; };
 		277EE07F2BE0C86A000439E4 /* ActivityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277EE07E2BE0C86A000439E4 /* ActivityCollectionViewCell.swift */; };
@@ -113,7 +117,9 @@
 /* Begin PBXFileReference section */
 		14A74EBB65BE9EEC875C9D19 /* Pods_chongAiTa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_chongAiTa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		270D97762BCD3E7A00AA8D79 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
+		2720A1182BFB667900A27393 /* CalendarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewModel.swift; sourceTree = "<group>"; };
 		272563E92BEE2064001510B4 /* PolaroidViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolaroidViewController.swift; sourceTree = "<group>"; };
+		2725C9BF2BF5E6C800C0BC7A /* MemeGeneratorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemeGeneratorViewModel.swift; sourceTree = "<group>"; };
 		2732C7772BDA1BA5004170C6 /* PetDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetDetailViewController.swift; sourceTree = "<group>"; };
 		2732C7792BDA385B004170C6 /* Pets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pets.swift; sourceTree = "<group>"; };
 		2732C77E2BDA4CC1004170C6 /* PetDetailItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetDetailItem.swift; sourceTree = "<group>"; };
@@ -135,6 +141,8 @@
 		27694F522BD1232E00D90167 /* petsfaq.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = petsfaq.json; sourceTree = "<group>"; };
 		27694F542BD124AB00D90167 /* FAQEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQEntry.swift; sourceTree = "<group>"; };
 		276AB14B2BF1BEDA00630085 /* FilterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterType.swift; sourceTree = "<group>"; };
+		276DE1232BF86E5E0012D9FE /* JournalViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalViewControllerTest.swift; sourceTree = "<group>"; };
+		276DE1252BF889BB0012D9FE /* PolaroidViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolaroidViewControllerTest.swift; sourceTree = "<group>"; };
 		277092562BD670FC004F2553 /* CostChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostChartViewController.swift; sourceTree = "<group>"; };
 		277092582BD67B93004F2553 /* CostChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostChartView.swift; sourceTree = "<group>"; };
 		277EE07E2BE0C86A000439E4 /* ActivityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -248,6 +256,15 @@
 				A992B10CE45DF4AC6BD8A9DA /* Pods-chongAiTaTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		2725C9BE2BF5E6A300C0BC7A /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				2725C9BF2BF5E6C800C0BC7A /* MemeGeneratorViewModel.swift */,
+				2720A1182BFB667900A27393 /* CalendarViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		2732C77B2BDA3A52004170C6 /* PetCell */ = {
@@ -421,6 +438,7 @@
 		27F975922BC6B01100B2A041 /* chongAiTa */ = {
 			isa = PBXGroup;
 			children = (
+				2725C9BE2BF5E6A300C0BC7A /* ViewModel */,
 				27694F512BD1230200D90167 /* Resources */,
 				27F0044D2BCD36CD00C87472 /* Network */,
 				27A462172BCBE25300503F3E /* Extention */,
@@ -442,6 +460,8 @@
 			isa = PBXGroup;
 			children = (
 				27F975AA2BC6B01300B2A041 /* chongAiTaTests.swift */,
+				276DE1232BF86E5E0012D9FE /* JournalViewControllerTest.swift */,
+				276DE1252BF889BB0012D9FE /* PolaroidViewControllerTest.swift */,
 			);
 			path = chongAiTaTests;
 			sourceTree = "<group>";
@@ -815,6 +835,7 @@
 				2786C4EE2BDF9D4100481C6F /* FakeDataGenerator.swift in Sources */,
 				27F62CAF2BE09130005A91F2 /* SignInViewController.swift in Sources */,
 				27694EF92BD0D28200D90167 /* ChatBotViewController.swift in Sources */,
+				2720A1192BFB667900A27393 /* CalendarViewModel.swift in Sources */,
 				27F841F62BDB5A7E0062EC4B /* FirestoreService.swift in Sources */,
 				2732C77A2BDA385B004170C6 /* Pets.swift in Sources */,
 				27E855C62BE2065A0079E216 /* NavigationTitle.swift in Sources */,
@@ -831,6 +852,7 @@
 				272563EA2BEE2064001510B4 /* PolaroidViewController.swift in Sources */,
 				274B832A2BE675300066CB40 /* User.swift in Sources */,
 				277EE07F2BE0C86A000439E4 /* ActivityCollectionViewCell.swift in Sources */,
+				2725C9C02BF5E6C800C0BC7A /* MemeGeneratorViewModel.swift in Sources */,
 				2732C7872BDA5EA1004170C6 /* DateFormatter.swift in Sources */,
 				27A939072BD3AC2200BF4845 /* EventDetailViewController.swift in Sources */,
 				27F975962BC6B01100B2A041 /* SceneDelegate.swift in Sources */,
@@ -848,7 +870,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				276DE1242BF86E5E0012D9FE /* JournalViewControllerTest.swift in Sources */,
 				27F975AB2BC6B01300B2A041 /* chongAiTaTests.swift in Sources */,
+				276DE1262BF889BB0012D9FE /* PolaroidViewControllerTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1043,7 +1067,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kylelu.chongAiTa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1083,7 +1107,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kylelu.chongAiTa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

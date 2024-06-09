@@ -29,6 +29,7 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     var selectedRecurrence: Recurrence?
     var recurrenceButton: UIButton!
     var currentEventId: UUID?
+    var currentEvent: CalendarEvents?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -195,38 +196,43 @@ class EventDetailViewController: UIViewController,UINavigationControllerDelegate
     }
     
     func configure(event: CalendarEvents) {
-        let imageName = event.activity.category.iconName
-        self.eventImage = UIImage(named: imageName)
-        
+        self.currentEvent = event
+        self.eventImage = UIImage(named: event.activity.category.iconName)
         self.eventTitle = event.title
         self.eventDate = event.date
         self.selectedActivity = event.activity
         self.currentEventId = event.id
+        self.selectedRecurrence = event.recurrence
         
         displayEventDetails()
     }
-
     
     func displayEventDetails() {
-        iconImageView.image = eventImage
-        titleLabel.text = eventTitle
-        
-        // 檢查是否有傳來的 eventDate
-        if let eventDate = eventDate {
-            // 使用傳來的日期，但設定時間為上午 9:00
-            var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: eventDate)
-            dateComponents.hour = 9
-            dateComponents.minute = 0
-            datePicker.date = Calendar.current.date(from: dateComponents) ?? eventDate
-        } else {
-            // 如果沒有傳遞日期，則使用當天日期並設為上午 9:00
-            let now = Date()
-            var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: now)
-            dateComponents.hour = 9
-            dateComponents.minute = 0
-            datePicker.date = Calendar.current.date(from: dateComponents) ?? now
+        guard let event = currentEvent else {
+            print("沒有活動可以顯示。")
+            return
         }
+        
+        iconImageView.image = eventImage
+        titleLabel.text = event.title
+        titleTextField.text = event.title
+        noteTextView.text = event.content ?? ""
+        
+        // 將 cost 的值轉換為 Int 類型，顯示為整數
+            if let cost = event.cost {
+                costTextField.text = "\(Int(cost))"
+            } else {
+                costTextField.text = "0"
+            }
+        
+        // 直接使用 event.date 設置 datePicker
+        let eventDate = event.date
+        var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: eventDate)
+        dateComponents.hour = 9
+        dateComponents.minute = 0
+        datePicker.date = Calendar.current.date(from: dateComponents) ?? eventDate
     }
+
     
     // MARK: - Action
     
