@@ -9,6 +9,7 @@ import UIKit
 import GoogleMaps
 import GooglePlaces
 import CoreLocation
+import Alamofire
 
 class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDelegate {
     
@@ -222,7 +223,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
             return
         }
         
-        let type = buttonType.placesType
         guard let location = locationManager.location else {
             print("無法獲取用戶位置")
             return
@@ -230,23 +230,101 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         mapView.clear()
         
+        // 使用新的 Places API (New) - Nearby Search
         let apiKeys = APIKeys(resourceName: "API-Keys")
         let googlePlacesAPIKey = apiKeys.googlePlacesAPIKey
         
         let latitude = location.coordinate.latitude
         let longitude = location.coordinate.longitude
-        let radius = 3000  // 查詢範圍為 3000 公尺
+        
+        // 根據按鈕類型設定搜尋的地點類型（使用新的 Places API 類型）
+        var includedTypes: [String] = []
+        switch buttonType {
+        case .animalHospital:
+            includedTypes = ["veterinary_care"]
+        case .park:
+            includedTypes = ["park"]
+        case .petStore:
+            includedTypes = ["pet_store"]
+        default:
+            break
+        }
+        
+        // 建立新的 Places API (New) 請求
+        let url = "https://places.googleapis.com/v1/places:searchNearby"
+        
+        // 建立請求參數（使用新的 API 格式）
+        let parameters: [String: Any] = [
+            "includedTypes": includedTypes,
+            "maxResultCount": 20,
+            "locationRestriction": [
+                "circle": [
+                    "center": [
+                        "latitude": latitude,
+                        "longitude": longitude
+                    ],
+                    "radius": 3000.0
+                ]
+            ]
+        ]
+        
+        // 設定標頭（新的 API 需要特殊標頭）
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": googlePlacesAPIKey,
+            "X-Goog-FieldMask": "places.displayName,places.location,places.formattedAddress,places.id,places.types,places.rating,places.internationalPhoneNumber"
+        ]
+        
+        print("🔍 使用新的 Places API 搜尋 \(buttonType.rawValue) 類型的地點...")
+        
+        NetworkManager.shared.request(url: url, method: .post, parameters: parameters, headers: headers) { (result: Result<NewPlacesResponse, Error>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    let places = data.places ?? []
+                    print("✅ 新的 Places API 搜尋成功：找到 \(places.count) 個地點")
+                    
+                    for place in places {
+                        self.addNewPlaceMarker(place)
+                    }
+                    
+                    if places.isEmpty {
+                        print("⚠️ 警告：搜尋成功但沒有找到任何地點")
+                    }
+                case .failure(let error):
+                    print("❌ 新的 Places API 搜尋失敗：\(error.localizedDescription)")
+                    // 降級到舊版 API 作為備用
+                    self.fallbackToLegacyAPI(buttonType: buttonType, location: location)
+                }
+            }
+        }
+    }
+    
+    // 備用方法：使用舊版 Places API
+    private func fallbackToLegacyAPI(buttonType: LayerButtonType, location: CLLocation) {
+        print("🔄 降級使用舊版 Places API...")
+        
+        let type = buttonType.placesType
+        let apiKeys = APIKeys(resourceName: "API-Keys")
+        let googlePlacesAPIKey = apiKeys.googlePlacesAPIKey
+        
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
+        let radius = 3000
         
         let url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(latitude),\(longitude)&radius=\(radius)&type=\(type)&key=\(googlePlacesAPIKey)"
         
-        NetworkManager.shared.request(url: url, method: .get, parameters: nil, headers: []) { (result: Result<PlacesResponse, Error>) in
-            switch result {
-            case .success(let data):
-                for place in data.results {
-                    self.addPlaceMarker(place)
+        NetworkManager.shared.request(url: url, method: .get, parameters: nil, headers: HTTPHeaders()) { (result: Result<PlacesResponse, Error>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    print("✅ 舊版 Places API 搜尋成功：找到 \(data.results.count) 個地點")
+                    for place in data.results {
+                        self.addPlaceMarker(place)
+                    }
+                case .failure(let error):
+                    print("❌ 舊版 Places API 也失敗：\(error.localizedDescription)")
                 }
-            case .failure(let error):
-                print("錯誤：\(error.localizedDescription)")
             }
         }
     }
@@ -275,8 +353,44 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         marker.map = mapView
     }
     
+    func addNewPlaceMarker(_ place: NewPlace) {
+        let marker = GMSMarker()
+        marker.position = CLLocationCoordinate2D(latitude: place.location.latitude, longitude: place.location.longitude)
+        marker.title = place.displayName?.text ?? "未知地點"
+        marker.snippet = place.formattedAddress ?? ""
+        marker.userData = place
+        marker.map = mapView
+    }
+    
     func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker) {
         
+        // 處理新版 Places API 的地點
+        if let newPlace = marker.userData as? NewPlace {
+            let alertController = UIAlertController(
+                title: "導航到 \(newPlace.displayName?.text ?? "此地點")",
+                message: "你想要打開 Google 地圖進行導航嗎？",
+                preferredStyle: .alert
+            )
+            
+            let openAction = UIAlertAction(title: "打開", style: .default) { _ in
+                if let url = URL(string: "comgooglemaps://?saddr=&daddr=\(newPlace.location.latitude),\(newPlace.location.longitude)&directionsmode=driving"),
+                   UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                } else if let webUrl = URL(string: "https://www.google.com/maps/dir/?api=1&destination=\(newPlace.location.latitude),\(newPlace.location.longitude)&travelmode=driving") {
+                    UIApplication.shared.open(webUrl, options: [:], completionHandler: nil)
+                }
+            }
+            
+            let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+            
+            alertController.addAction(openAction)
+            alertController.addAction(cancelAction)
+            
+            present(alertController, animated: true, completion: nil)
+            return
+        }
+        
+        // 處理舊版 Places API 的地點
         guard let place = marker.userData as? Place else {
             print("錯誤：無法獲取地點資料")
             return
@@ -291,10 +405,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         let openAction = UIAlertAction(title: "打開", style: .default) { _ in
             if let url = URL(string: "comgooglemaps://?saddr=&daddr=\(place.geometry.location.lat),\(place.geometry.location.lng)&directionsmode=driving"),
                UIApplication.shared.canOpenURL(url) {
-                // 如果有安裝 Google 地圖 App 就打開
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else if let webUrl = URL(string: "https://www.google.com/maps/dir/?api=1&destination=\(place.geometry.location.lat),\(place.geometry.location.lng)&travelmode=driving") {
-                // 如果沒有地圖 App，打開瀏覽器中的 Google 地圖
                 UIApplication.shared.open(webUrl, options: [:], completionHandler: nil)
             }
         }
