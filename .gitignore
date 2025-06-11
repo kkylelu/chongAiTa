@@ -90,3 +90,7 @@ fastlane/test_output
 iOSInjectionProject/
 
 *.plist
+
+# OS or Editor folders
+.DS_Store
+.DS_Store?
