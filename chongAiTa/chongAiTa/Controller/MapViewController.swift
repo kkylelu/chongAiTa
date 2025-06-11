@@ -19,7 +19,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     
     var layerButton: UIButton!
     var animalHospitalButton: UIButton!
-    var parkButton: UIButton!
+    var petFriendlyRestaurantButton: UIButton!
     var petSuppliesButton: UIButton!
     var currentLocButton: UIButton!
     
@@ -63,7 +63,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         layerButton = createLayerButton(type: .layer, action: #selector(toggleLayerButtons))
         animalHospitalButton = createLayerButton(type: .animalHospital, action: #selector(findNearbyPlaces(_:)))
-        parkButton = createLayerButton(type: .park, action: #selector(findNearbyPlaces(_:)))
+        petFriendlyRestaurantButton = createLayerButton(type: .petFriendlyRestaurant, action: #selector(findNearbyPlaces(_:)))
         petSuppliesButton = createLayerButton(type: .petStore, action: #selector(findNearbyPlaces(_:)))
         currentLocButton = createLayerButton(type: .currentLocation, action: #selector(goToCurrentLocation))
         
@@ -71,20 +71,20 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         view.addSubview(layerButton)
         view.addSubview(currentLocButton)
         view.addSubview(animalHospitalButton)
-        view.addSubview(parkButton)
+        view.addSubview(petFriendlyRestaurantButton)
         view.addSubview(petSuppliesButton)
         
         animalHospitalButton.tag = LayerButtonType.animalHospital.rawValue
-        parkButton.tag = LayerButtonType.park.rawValue
+        petFriendlyRestaurantButton.tag = LayerButtonType.petFriendlyRestaurant.rawValue
         petSuppliesButton.tag = LayerButtonType.petStore.rawValue
         
         
         animalHospitalButton.center = layerButton.center
-        parkButton.center = layerButton.center
+        petFriendlyRestaurantButton.center = layerButton.center
         petSuppliesButton.center = layerButton.center
         
         animalHospitalButton.alpha = 0
-        parkButton.alpha = 0
+        petFriendlyRestaurantButton.alpha = 0
         petSuppliesButton.alpha = 0
         
         NSLayoutConstraint.activate([
@@ -141,7 +141,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         switch type {
         case .animalHospital:
             button.addTarget(self, action: #selector(findNearbyPlaces(_:)), for: .touchUpInside)
-        case .park:
+        case .petFriendlyRestaurant:
             button.addTarget(self, action: #selector(findNearbyPlaces(_:)), for: .touchUpInside)
         case .petStore:
             button.addTarget(self, action: #selector(findNearbyPlaces(_:)), for: .touchUpInside)
@@ -185,28 +185,28 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
             if self.isLayerButtonExpanded {
                 
                 self.animalHospitalButton.alpha = 1
-                self.parkButton.alpha = 1
+                self.petFriendlyRestaurantButton.alpha = 1
                 self.petSuppliesButton.alpha = 1
                 
                 self.animalHospitalButton.isUserInteractionEnabled = true
-                self.parkButton.isUserInteractionEnabled = true
+                self.petFriendlyRestaurantButton.isUserInteractionEnabled = true
                 self.petSuppliesButton.isUserInteractionEnabled = true
                 
                 self.animalHospitalButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y - 80)
-                self.parkButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y)
+                self.petFriendlyRestaurantButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y)
                 self.petSuppliesButton.center = CGPoint(x: self.layerButton.center.x - 80, y: self.layerButton.center.y + 80)
             } else {
                 
                 self.animalHospitalButton.center = self.layerButton.center
-                self.parkButton.center = self.layerButton.center
+                self.petFriendlyRestaurantButton.center = self.layerButton.center
                 self.petSuppliesButton.center = self.layerButton.center
                 
                 self.animalHospitalButton.alpha = 0
-                self.parkButton.alpha = 0
+                self.petFriendlyRestaurantButton.alpha = 0
                 self.petSuppliesButton.alpha = 0
                 
                 self.animalHospitalButton.isUserInteractionEnabled = false
-                self.parkButton.isUserInteractionEnabled = false
+                self.petFriendlyRestaurantButton.isUserInteractionEnabled = false
                 self.petSuppliesButton.isUserInteractionEnabled = false
             }
         }
@@ -242,8 +242,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         switch buttonType {
         case .animalHospital:
             includedTypes = ["veterinary_care"]
-        case .park:
-            includedTypes = ["park"]
+        case .petFriendlyRestaurant:
+            includedTypes = ["restaurant"]
         case .petStore:
             includedTypes = ["pet_store"]
         default:
@@ -276,6 +276,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         ]
         
         print("🔍 使用新的 Places API 搜尋 \(buttonType.rawValue) 類型的地點...")
+        
+        // 針對寵物友善餐廳，使用文字搜尋會更精確
+        if buttonType == .petFriendlyRestaurant {
+            performPetFriendlyRestaurantSearch(near: location.coordinate)
+            return
+        }
         
         NetworkManager.shared.request(url: url, method: .post, parameters: parameters, headers: headers) { (result: Result<NewPlacesResponse, Error>) in
             DispatchQueue.main.async {
@@ -324,6 +330,109 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
                     }
                 case .failure(let error):
                     print("❌ 舊版 Places API 也失敗：\(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    // 搜尋寵物友善餐廳的方法
+    private func performPetFriendlyRestaurantSearch(near coordinate: CLLocationCoordinate2D) {
+        print("🐕 開始搜尋寵物友善餐廳...")
+        
+        let apiKeys = APIKeys(resourceName: "API-Keys")
+        let googlePlacesAPIKey = apiKeys.googlePlacesAPIKey
+        
+        // 使用新的 Places API (New) 的文字搜尋
+        let url = "https://places.googleapis.com/v1/places:searchText"
+        
+        // 建立搜尋參數
+        let parameters: [String: Any] = [
+            "textQuery": "寵物餐廳",
+            "maxResultCount": 20,
+            "locationBias": [
+                "circle": [
+                    "center": [
+                        "latitude": coordinate.latitude,
+                        "longitude": coordinate.longitude
+                    ],
+                    "radius": 5000.0  // 擴大搜尋範圍到5km
+                ]
+            ]
+        ]
+        
+        // 設定標頭
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": googlePlacesAPIKey,
+            "X-Goog-FieldMask": "places.displayName,places.location,places.formattedAddress,places.id,places.types,places.rating,places.internationalPhoneNumber"
+        ]
+        
+        NetworkManager.shared.request(url: url, method: .post, parameters: parameters, headers: headers) { (result: Result<NewPlacesResponse, Error>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    let places = data.places ?? []
+                    print("✅ 寵物友善餐廳搜尋成功：找到 \(places.count) 個地點")
+                    
+                    for place in places {
+                        self.addNewPlaceMarker(place)
+                    }
+                    
+                    if places.isEmpty {
+                        print("⚠️ 沒有找到寵物友善餐廳，嘗試一般餐廳搜尋...")
+                        self.performGeneralRestaurantSearch(near: coordinate)
+                    }
+                case .failure(let error):
+                    print("❌ 寵物友善餐廳搜尋失敗：\(error.localizedDescription)")
+                    // 降級到一般餐廳搜尋
+                    self.performGeneralRestaurantSearch(near: coordinate)
+                }
+            }
+        }
+    }
+    
+    // 一般餐廳搜尋作為備用
+    private func performGeneralRestaurantSearch(near coordinate: CLLocationCoordinate2D) {
+        print("🍽️ 執行一般餐廳搜尋...")
+        
+        let apiKeys = APIKeys(resourceName: "API-Keys")
+        let googlePlacesAPIKey = apiKeys.googlePlacesAPIKey
+        
+        // 使用新的 Places API (New) - Nearby Search 搜尋餐廳
+        let url = "https://places.googleapis.com/v1/places:searchNearby"
+        
+        let parameters: [String: Any] = [
+            "includedTypes": ["restaurant"],
+            "maxResultCount": 15,
+            "locationRestriction": [
+                "circle": [
+                    "center": [
+                        "latitude": coordinate.latitude,
+                        "longitude": coordinate.longitude
+                    ],
+                    "radius": 3000.0
+                ]
+            ]
+        ]
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": googlePlacesAPIKey,
+            "X-Goog-FieldMask": "places.displayName,places.location,places.formattedAddress,places.id,places.types,places.rating,places.internationalPhoneNumber"
+        ]
+        
+        NetworkManager.shared.request(url: url, method: .post, parameters: parameters, headers: headers) { (result: Result<NewPlacesResponse, Error>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    let places = data.places ?? []
+                    print("✅ 一般餐廳搜尋成功：找到 \(places.count) 個地點")
+                    
+                    for place in places {
+                        self.addNewPlaceMarker(place)
+                    }
+                case .failure(let error):
+                    print("❌ 一般餐廳搜尋也失敗：\(error.localizedDescription)")
                 }
             }
         }
