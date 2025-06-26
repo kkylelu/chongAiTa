@@ -50,9 +50,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let journal = journal {
-                isNewDiary = journal.id == UUID()
-            }
+        isNewDiary = (journal == nil)
         
         setupUI()
 
@@ -265,28 +263,35 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     // MARK: - Update UI
     func updateUI(with journal: Journal) {
         titleTextView.text = journal.title
-        bodyTextView.text = journal.body
 
         let placeholderColor: UIColor = view.traitCollection.userInterfaceStyle == .dark ? .lightGray : .darkGray
         titleTextView.textColor = journal.title.isEmpty ? placeholderColor : (view.traitCollection.userInterfaceStyle == .dark ? .white : .black)
-        bodyTextView.textColor = journal.body.isEmpty ? placeholderColor : (view.traitCollection.userInterfaceStyle == .dark ? .white : .black)
 
         if titleTextView.text == titlePlaceholder {
             titleTextView.textColor = placeholderColor
         }
 
-        if bodyTextView.text == bodyPlaceholder {
-            bodyTextView.textColor = placeholderColor
-        }
-
+        // 設定圖片相關變數
+        selectedImages = journal.images
+        selectedImageURLs = journal.imageUrls
+        selectedDate = journal.date
+        selectedPlace = journal.place
+        selectedCity = journal.city
+        
+        // 先設定純文字內容
         let attributedString = NSMutableAttributedString(string: journal.body)
         let textViewFont = bodyTextView.font ?? UIFont.systemFont(ofSize: 24)
         let range = NSRange(location: 0, length: attributedString.length)
         attributedString.addAttribute(.font, value: textViewFont, range: range)
 
         bodyTextView.attributedText = attributedString
-        selectedImages = journal.images
-        selectedImageURLs = journal.imageUrls
+        bodyTextView.textColor = journal.body.isEmpty ? placeholderColor : (view.traitCollection.userInterfaceStyle == .dark ? .white : .black)
+
+        if bodyTextView.text == bodyPlaceholder {
+            bodyTextView.textColor = placeholderColor
+        }
+        
+        // 載入圖片（如果有的話）
         downloadAndInsertImagesIntoTextView()
     }
     
@@ -391,12 +396,14 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         navigationItem.rightBarButtonItem?.isEnabled = false
         
         if let title = titleTextView.text, let body = bodyTextView.text, let date = selectedDate {
-            // 檢查日記是否有變更
-                    if title == journal?.title && body == journal?.body {
-                        // 日記內容沒有變更，不需要上傳到 Firebase
-                        self.navigationController?.popViewController(animated: true)
-                        return
-                    }
+            // 檢查日記是否有變更（提取純文字內容進行比較）
+            let bodyPlainText = bodyTextView.attributedText?.string ?? body
+            let originalImagesCount = journal?.images.count ?? 0
+            if title == journal?.title && bodyPlainText == journal?.body && selectedImages.count == originalImagesCount {
+                // 日記內容沒有變更，不需要上傳到 Firebase
+                self.navigationController?.popViewController(animated: true)
+                return
+            }
             
             view.showLoadingAnimation()
             uploadImagesToStorage { [weak self] imageUrls in
@@ -543,7 +550,12 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     // 從 Firebase 下載圖片並插入 TextView
     func downloadAndInsertImagesIntoTextView() {
-        let attributedString = NSMutableAttributedString(attributedString: bodyTextView.attributedText)
+        guard !selectedImageURLs.isEmpty else { 
+            print("沒有圖片 URL 需要下載")
+            return 
+        }
+        
+        let attributedString = NSMutableAttributedString(attributedString: bodyTextView.attributedText ?? NSAttributedString())
         
         let textViewFont = bodyTextView.font ?? UIFont.systemFont(ofSize: 24)
         let textViewAttributes: [NSAttributedString.Key: Any] = [
@@ -551,44 +563,65 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
         ]
         
         if isNewDiary {
-            // 新增日記
-            for imageURL in selectedImageURLs {
-                    if let url = URL(string: imageURL), !isImageAlreadyInserted(imageURL: imageURL) {
-                        print("新增日記，圖片已經插入，不需要下載和插入")
-                    }
-                }
+            // 新增日記 - 圖片已經在 insertImage 方法中插入，不需要額外處理
+            print("新增日記，圖片已經插入，不需要下載和插入")
         } else {
-            // 開啟舊日記
-            for imageURL in selectedImageURLs {
+            // 開啟舊日記 - 需要從 Firebase 下載圖片
+            print("開啟舊日記，準備下載 \(selectedImageURLs.count) 張圖片")
+            let group = DispatchGroup()
+            var attachments: [(NSTextAttachment, Int)] = []
+            
+            for (index, imageURL) in selectedImageURLs.enumerated() {
+                print("準備下載圖片 \(index + 1): \(imageURL)")
                 if let url = URL(string: imageURL), !isImageAlreadyInserted(imageURL: imageURL) {
-                    let attachment = NSTextAttachment()
-                    let attachmentString = NSAttributedString(attachment: attachment)
+                    group.enter()
                     
-                    attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
-                    attributedString.append(attachmentString)
-                    attributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
+                    let attachment = NSTextAttachment()
+                    attachments.append((attachment, index))
                     
                     KingfisherManager.shared.retrieveImage(with: url, options: [.transition(.fade(0.3))], progressBlock: nil) { result in
                         switch result {
                         case .success(let value):
                             attachment.image = value.image
-                            DispatchQueue.main.async {
-                                self.bodyTextView.attributedText = attributedString
-                            }
+                            print("成功下載圖片 \(index + 1): \(imageURL)")
                         case .failure(let error):
-                            print("下載圖片錯誤: \(error)")
+                            print("下載圖片 \(index + 1) 錯誤: \(error)")
                         }
+                        group.leave()
+                    }
+                } else {
+                    print("跳過下載圖片 \(index + 1) (已存在)")
+                }
+            }
+            
+            // 等待所有圖片下載完成後一次性更新 UI
+            group.notify(queue: .main) {
+                guard let currentAttributedText = self.bodyTextView.attributedText else { return }
+                let mutableAttributedString = NSMutableAttributedString(attributedString: currentAttributedText)
+                
+                for (attachment, index) in attachments {
+                    if attachment.image != nil {
+                        let attachmentString = NSAttributedString(attachment: attachment)
+                        
+                        mutableAttributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
+                        mutableAttributedString.append(attachmentString)
+                        mutableAttributedString.append(NSAttributedString(string: "\n", attributes: textViewAttributes))
+                        print("已插入圖片 \(index + 1) 到 TextView")
+                    } else {
+                        print("圖片 \(index + 1) 下載失敗，跳過插入")
                     }
                 }
+                
+                self.bodyTextView.attributedText = mutableAttributedString
+                print("已完成所有 \(attachments.count) 張圖片的下載和插入")
             }
         }
     }
 
-
     func isImageAlreadyInserted(imageURL: String) -> Bool {
-        return bodyTextView.text.contains(imageURL)
+        // 當載入舊日記時，一開始一定沒有圖片，都需要從 Firebase 下載
+        return false
     }
-
 
     // 在 textView 插入圖片並 resize
     func insertImage(_ image: UIImage) {
@@ -620,7 +653,7 @@ class JournalViewController: UIViewController, UIImagePickerControllerDelegate, 
             let imageString = NSMutableAttributedString(attributedString: attributedStringWithImage)
             imageString.addAttributes(attrs, range: NSRange(location: 0, length: imageString.length))
             
-            let mutableAttributedString = NSMutableAttributedString(attributedString: self.bodyTextView.attributedText)
+            let mutableAttributedString = NSMutableAttributedString(attributedString: self.bodyTextView.attributedText ?? NSAttributedString())
             
             mutableAttributedString.append(NSAttributedString(string: "\n", attributes: attrs))
             mutableAttributedString.append(imageString)
