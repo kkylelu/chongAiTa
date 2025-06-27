@@ -277,9 +277,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         print("🔍 使用新的 Places API 搜尋 \(buttonType.rawValue) 類型的地點...")
         
-        // 針對寵物友善餐廳，使用文字搜尋會更精確
+        // 針對不同按鈕類型使用文字搜尋
         if buttonType == .petFriendlyRestaurant {
             performPetFriendlyRestaurantSearch(near: location.coordinate)
+            return
+        } else if buttonType == .animalHospital {
+            performAnimalHospitalTextSearch(near: location.coordinate)
+            return
+        } else if buttonType == .petStore {
+            performPetSuppliesTextSearch(near: location.coordinate)
             return
         }
         
@@ -386,6 +392,92 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
                     print("❌ 寵物友善餐廳搜尋失敗：\(error.localizedDescription)")
                     // 降級到一般餐廳搜尋
                     self.performGeneralRestaurantSearch(near: coordinate)
+                }
+            }
+        }
+    }
+    
+    // 新增：搜尋動物醫院的文字搜尋方法
+    private func performAnimalHospitalTextSearch(near coordinate: CLLocationCoordinate2D) {
+        print("🐾 開始搜尋動物醫院...")
+        let apiKeys = APIKeys(resourceName: "API-Keys")
+        let googlePlacesAPIKey = apiKeys.googlePlacesAPIKey
+        let url = "https://places.googleapis.com/v1/places:searchText"
+        let parameters: [String: Any] = [
+            "textQuery": "動物醫院",
+            "maxResultCount": 20,
+            "locationBias": [
+                "circle": [
+                    "center": [
+                        "latitude": coordinate.latitude,
+                        "longitude": coordinate.longitude
+                    ],
+                    "radius": 4000.0
+                ]
+            ]
+        ]
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": googlePlacesAPIKey,
+            "X-Goog-FieldMask": "places.displayName,places.location,places.formattedAddress,places.id,places.types,places.rating,places.internationalPhoneNumber"
+        ]
+        NetworkManager.shared.request(url: url, method: .post, parameters: parameters, headers: headers) { (result: Result<NewPlacesResponse, Error>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    let places = data.places ?? []
+                    print("✅ 動物醫院文字搜尋成功：找到 \(places.count) 個地點")
+                    for place in places {
+                        self.addNewPlaceMarker(place)
+                    }
+                    if places.isEmpty {
+                        print("⚠️ 沒有找到動物醫院，以型別搜尋為備援...")
+                    }
+                case .failure(let error):
+                    print("❌ 動物醫院文字搜尋失敗：\(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    // 新增：搜尋寵物用品店的文字搜尋方法
+    private func performPetSuppliesTextSearch(near coordinate: CLLocationCoordinate2D) {
+        print("🛒 開始搜尋寵物用品店...")
+        let apiKeys = APIKeys(resourceName: "API-Keys")
+        let googlePlacesAPIKey = apiKeys.googlePlacesAPIKey
+        let url = "https://places.googleapis.com/v1/places:searchText"
+        let parameters: [String: Any] = [
+            "textQuery": "寵物用品店",
+            "maxResultCount": 20,
+            "locationBias": [
+                "circle": [
+                    "center": [
+                        "latitude": coordinate.latitude,
+                        "longitude": coordinate.longitude
+                    ],
+                    "radius": 4000.0
+                ]
+            ]
+        ]
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": googlePlacesAPIKey,
+            "X-Goog-FieldMask": "places.displayName,places.location,places.formattedAddress,places.id,places.types,places.rating,places.internationalPhoneNumber"
+        ]
+        NetworkManager.shared.request(url: url, method: .post, parameters: parameters, headers: headers) { (result: Result<NewPlacesResponse, Error>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    let places = data.places ?? []
+                    print("✅ 寵物用品店文字搜尋成功：找到 \(places.count) 個地點")
+                    for place in places {
+                        self.addNewPlaceMarker(place)
+                    }
+                    if places.isEmpty {
+                        print("⚠️ 沒有找到寵物用品店，以型別搜尋為備援...")
+                    }
+                case .failure(let error):
+                    print("❌ 寵物用品店文字搜尋失敗：\(error.localizedDescription)")
                 }
             }
         }
